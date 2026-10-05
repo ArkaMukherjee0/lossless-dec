@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amo Results</title>
+<style>
+:root { color-scheme: light; --bg:#f6f5f1; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#7a7974;
+  --line:#e4e3df; --accent:#2a78d6; --code:#efeee9; --warn:#8a5a00; --warnbg:#fff6e0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --bg:#141413; --surface:#1d1d1b;
+  --ink:#f4f3ee; --ink2:#c3c2b7; --muted:#9a998f; --line:#34332f; --accent:#3987e5; --code:#262623; --warn:#f0c46b; --warnbg:#2b2416; } }
+:root[data-theme="dark"] { color-scheme: dark; --bg:#141413; --surface:#1d1d1b; --ink:#f4f3ee; --ink2:#c3c2b7; --muted:#9a998f;
+  --line:#34332f; --accent:#3987e5; --code:#262623; --warn:#f0c46b; --warnbg:#2b2416; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:40px 16px 80px; }
+h1 { font-size:2rem; line-height:1.2; margin:0 0 6px; }
+h2 { font-size:1.35rem; margin:44px 0 12px; padding-top:8px; border-top:1px solid var(--line); }
+h3 { font-size:1.05rem; margin:0 0 4px; }
+.fn { color:var(--muted); font-weight:500; margin-right:4px; }
+p, li { color:var(--ink2); } strong { color:var(--ink); }
+code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.88em; }
+a { color:var(--accent); }
+.conf { display:inline-block; font-size:.8rem; font-weight:600; letter-spacing:.04em; color:var(--warn); background:var(--warnbg);
+  border-radius:4px; padding:2px 8px; margin-bottom:12px; }
+nav { display:flex; flex-wrap:wrap; gap:6px 16px; margin:18px 0 0; font-size:.92rem; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px; margin:20px 0; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+.card .big { font-size:1.6rem; font-weight:650; line-height:1.1; color:var(--ink); }
+.card .lbl { font-size:.85rem; color:var(--ink2); margin-top:4px; }
+.fig { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px; margin:18px 0; }
+.fig img { width:100%; height:auto; display:block; margin:10px 0 6px; border-radius:6px; background:#fcfcfb; }
+.take { margin:0; }
+details summary { cursor:pointer; color:var(--accent); font-size:.9rem; margin-top:6px; }
+.tbl { overflow-x:auto; margin:10px 0; }
+table { border-collapse:collapse; width:100%; font-size:.86rem; background:var(--surface); }
+th, td { text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); }
+th { color:var(--ink2); font-weight:600; white-space:nowrap; } td { color:var(--ink); }
+.note { font-size:.88rem; color:var(--muted); }
+</style></head>
+<body><main>
+<span class="conf">AMD CONFIDENTIAL · INTERNAL</span>
+<h1>Amo Results</h1>
+<p>Agentic Model Optimization: results so far. An agent loop searches serving configurations and kernel- or weight-level changes for the fastest setup that doesn’t measurably lose accuracy. MI355X runs from August 2026; MI250X runs from September 23–25, 2026.</p>
+<nav><a href="#summary">Summary</a><a href="#how">How Amo works</a><a href="#mi250x">MI250X runs</a><a href="#feas">gfx90a feasibility</a>
+<a href="#eval">Evaluation reliability</a><a href="#mi355x">MI355X runs</a><a href="#caveats">Caveats</a><a href="#sources">Sources</a>
+<a href="../index.html">← Lossless decoding study</a></nav>
+
+<h2 id="summary">Summary</h2>
+<div class="cards">
+  <div class="card"><div class="big">3.16×</div><div class="lbl">Qwen3.6-35B-A3B on MI250X, throughput at c=64 (CI 3.09–3.24×).</div></div>
+  <div class="card"><div class="big">1.52×</div><div class="lbl">Qwen3.8-27B on MI250X, throughput at c=64 (CI 1.48–1.56×).</div></div>
+  <div class="card"><div class="big">1.54× · 2.25×</div><div class="lbl">Qwen3-14B on MI355X: throughput (c=512) and KV capacity, combined objective.</div></div>
+  <div class="card"><div class="big">1.93×</div><div class="lbl">KV capacity on gfx90a at no throughput or accuracy cost (fp8 per-token-head KV).</div></div>
+</div>
+<ul>
+  <li><strong>On MI250X, the throughput wins come from code the agents wrote</strong>, not from flags or checkpoints. The biggest step on both models is lossless speculative decoding plus fixes for the hybrid models’ recurrent state. Every off-the-shelf quantization tested on gfx90a costs speed.</li>
+  <li><strong>All MI250X winners pass the gated accuracy check</strong> (gsm8k, aime) against the baseline. The Qwen3.6 winner shows a reproducible ~3-point MMLU drop (report-only), so the runner-up (2.70×, no drop) is the safer deployment.</li>
+  <li><strong>On MI355X, the wins are mostly capacity:</strong> fp8 KV appears in every capacity or combined winner. GPT-OSS-120B was already at the hardware throughput ceiling.</li>
+  <li><strong>Evaluation noise drove a protocol change.</strong> A 100-item, 1% gate couldn’t separate candidates from noise, so the MI250X runs use 3 fresh servers per config and non-overlapping 95% bootstrap CIs.</li>
+</ul>
+
+<h2 id="how">How Amo works</h2>
+<section class="fig"><h3><span class="fn">Schematic</span> The optimization loop</h3>
+<img src="plots/amo00_loop.svg" alt="Amo loop: run config, then rounds of explorer ranking, parallel executors and CI gate, then finalize" loading="lazy"></section>
+<ul>
+  <li><strong>Explorer:</strong> each round, re-diagnoses the bottleneck from what was measured and writes a ranked queue of actions (the <em>frontier</em>) into a shared search tree.</li>
+  <li><strong>Executors:</strong> one sub-agent per action implements and screens it on a free GPU set; candidates run in parallel.</li>
+  <li><strong>Gate (MI250X runs):</strong> 3 fresh-server runs per config; keep only if the throughput CI clears the current best and no gated accuracy CI falls entirely below it. MI355X runs used a 2% relative per-task tolerance instead.</li>
+</ul>
+
+<h2 id="mi250x">MI250X runs: throughput objective</h2>
+<p>8× MI250X GCDs (gfx90a), vLLM 0.28.0, TP=2 (4 parallel slots). Engine and TP were fixed by the user. Metric: output tok/s from InferenceX at 64 concurrent requests, 1k input / 1k output tokens. Gated accuracy: gsm8k and aime at N=100 with a 16k-token answer cap.</p>
+<section class="fig"><h3><span class="fn">Fig. 1</span> Kept configurations, step by step (95% CI over 3 servers)</h3><p class="take">Each bar is a change the gate kept. Speculative decoding with a lossless spec bundle (deferred-commit recurrent state, packed verify attention, scheduler fixes) is the largest step on both models.</p><img src="plots/amo01_kept_chains.png" alt="Kept configurations, step by step (95% CI over 3 servers)" loading="lazy"><details><summary>Data</summary><div class="tbl"><table><thead><tr><th>config</th><th>tok/s</th><th>95% CI</th><th>× baseline</th></tr></thead><tbody><tr><td>baseline</td><td>689.2</td><td>[684.8, 695.2]</td><td>1.00×</td></tr><tr><td>int8 state + split-KV</td><td>762.5</td><td>[746.9, 781.5]</td><td>1.11×</td></tr><tr><td>+ small-tile GEMM</td><td>905.1</td><td>[898.4, 915.3]</td><td>1.31×</td></tr><tr><td>+ DFlash2 spec (K=3)</td><td>1050.6</td><td>[1015.9, 1071.1]</td><td>1.52×</td></tr></tbody></table></div><div class="tbl"><table><thead><tr><th>config</th><th>tok/s</th><th>95% CI</th><th>× baseline</th></tr></thead><tbody><tr><td>baseline</td><td>1079.8</td><td>[1059.3, 1100.0]</td><td>1.00×</td></tr><tr><td>MoE tables</td><td>1254.3</td><td>[1243.6, 1265.8]</td><td>1.16×</td></tr><tr><td>+ MTP spec (K=4)</td><td>2434.6</td><td>[2358.6, 2512.2]</td><td>2.25×</td></tr><tr><td>+ int8 experts</td><td>2562.3</td><td>[2519.3, 2628.9]</td><td>2.37×</td></tr><tr><td>+ fused prefill</td><td>2689.5</td><td>[2640.7, 2718.3]</td><td>2.49×</td></tr><tr><td>+ kernel stack</td><td>2918.7</td><td>[2836.6, 3008.4]</td><td>2.70×</td></tr><tr><td>+ hybrid drafter</td><td>3413.4</td><td>[3368.1, 3480.2]</td><td>3.16×</td></tr></tbody></table></div></details></section>
+<section class="fig"><h3><span class="fn">Fig. 2</span> Qwen3.8-27B winner across shapes and concurrency</h3><p class="take">Wins at every point, most at low concurrency and decode-heavy shapes. Single runs, not CIs. No baseline grid exists for Qwen3.6.</p><img src="plots/amo02_grid_27b.png" alt="Qwen3.8-27B winner across shapes and concurrency" loading="lazy"><details><summary>Data</summary><div class="tbl"><table><thead><tr><th>shape</th><th>c=4</th><th>c=16</th><th>c=64</th></tr></thead><tbody><tr><td>1k:1k</td><td>2.14×</td><td>2.25×</td><td>1.40×</td></tr><tr><td>8k:1k</td><td>2.59×</td><td>1.41×</td><td>1.21×</td></tr><tr><td>1k:8k</td><td>3.06×</td><td>3.54×</td><td>2.23×</td></tr></tbody></table></div></details></section>
+<h3 style="margin-top:22px">Accuracy at the final configs</h3>
+<div class="tbl"><table><thead><tr><th>model</th><th>metric</th><th>baseline</th><th>winner</th><th>verdict</th></tr></thead><tbody><tr><td>Qwen3.8-27B</td><td>gsm8k strict / flex</td><td>0.707 / 0.770</td><td>0.697 / 0.757</td><td>pass (CI overlap)</td></tr><tr><td>Qwen3.8-27B</td><td>aime (16k cap)</td><td>0.687</td><td>0.693</td><td>pass</td></tr><tr><td>Qwen3.8-27B</td><td>mmlu · hellaswag · wikitext ppl</td><td>0.8432 · 0.61/0.75 · 9.2943</td><td>0.8447 · 0.61/0.75 · 9.2946</td><td>unchanged (report-only)</td></tr><tr><td>Qwen3.6-35B-A3B</td><td>gsm8k strict / flex</td><td>0.970 / 0.980</td><td>0.980 / 0.990</td><td>pass</td></tr><tr><td>Qwen3.6-35B-A3B</td><td>aime (16k cap)</td><td>0.043</td><td>0.033</td><td>pass (floor-bound)</td></tr><tr><td>Qwen3.6-35B-A3B</td><td>mmlu (report-only)</td><td>0.8435</td><td>0.816 / 0.810</td><td>~3-pt drop, reproducible</td></tr></tbody></table></div>
+<p class="note">Qwen3.6 AIME scores sit near the floor because its verbose thinking rarely finishes inside the 16k cap. The MMLU drop was localized to the hybrid-drafter step (not the int8 experts); the runner-up config without it reaches 2.70× [2.62, 2.79].</p>
+
+<h2 id="feas">gfx90a feasibility of known levers</h2>
+<section class="fig"><h3><span class="fn">Fig. 3</span> Throughput vs KV capacity per lever (Qwen3.8-27B, MI250X)</h3><p class="take">fp8 per-token-head KV is the one free lever: 1.93× capacity at unchanged speed. Turboquant trades 13–30% speed for 2.6–4.8× capacity. FP8 and MXFP4 weights have no native path on gfx90a.</p><img src="plots/amo03_gfx90a_feasibility.png" alt="Throughput vs KV capacity per lever (Qwen3.8-27B, MI250X)" loading="lazy"><details><summary>Data</summary><div class="tbl"><table><thead><tr><th>lever</th><th>throughput</th><th>KV capacity</th><th>wikitext ppl Δ</th><th>verdict</th></tr></thead><tbody><tr><td>fp8 per-token-head KV</td><td>1.02×</td><td>1.93×</td><td>+0.01%</td><td>works</td></tr><tr><td>int8 per-token-head KV</td><td>0.89×</td><td>1.93×</td><td>−0.01%</td><td>works</td></tr><tr><td>fp8 e4m3 KV</td><td>0.85×</td><td>1.96×</td><td>0.00%</td><td>works</td></tr><tr><td>turboquant k8v4</td><td>0.87×</td><td>2.55×</td><td>+0.05%</td><td>small accuracy cost</td></tr><tr><td>turboquant 4bit_nc</td><td>0.83×</td><td>3.70×</td><td>+0.05%</td><td>small accuracy cost</td></tr><tr><td>turboquant k3v4_nc</td><td>0.82×</td><td>4.16×</td><td>+0.05%</td><td>small accuracy cost</td></tr><tr><td>turboquant 3bit_nc</td><td>0.70×</td><td>4.79×</td><td>+0.08%</td><td>small accuracy cost</td></tr><tr><td>gpu-mem-util 0.95</td><td>0.98×</td><td>1.08×</td><td>0.00%</td><td>works</td></tr><tr><td>AITER</td><td>1.01×</td><td>1.00×</td><td>0.00%</td><td>works</td></tr><tr><td>FP8 block weights</td><td>0.13×</td><td>1.44×</td><td>+0.30%</td><td>not viable</td></tr><tr><td>MXFP4 weights</td><td>0.52×</td><td>1.67×</td><td>+10.5%</td><td>not viable</td></tr><tr><td>fp8 e5m2 KV</td><td>—</td><td>1.96×</td><td>×18.7 ppl</td><td>silently corrupt output</td></tr></tbody></table></div></details></section>
+<p class="note">On MI355X, turboquant cost ~4× throughput; on gfx90a it costs only 0.70–0.87×. fp8 e5m2 KV passed the smoke test’s confidence check while producing garbage, and was caught only by the keyword probe.</p>
+
+<h2 id="eval">Evaluation reliability</h2>
+<ul>
+  <li><strong>100-item gates are inside the noise.</strong> An unchanged Qwen3.8-27B moved 4 gsm8k questions across server restarts and 7 aime questions across repeats. One question is worth 1.3–2.6% relative, so a 1% tolerance fails any single lost question.</li>
+  <li><strong>Answer caps decide aime.</strong> At a 2048-token cap, 54% of Qwen3.8 aime answers were truncated (aime 0.42); at 16k the same model scores 0.69.</li>
+  <li><strong>Wikitext perplexity is the stable signal</strong> (±0.004% across servers) and separated lossy from lossless changes in every case.</li>
+  <li><strong>Harness bug found and fixed:</strong> lm-eval’s <code>"Question:"</code> stop sequence truncated Qwen3.6’s thinking, scoring gsm8k 0.00. It was fixed before any comparison.</li>
+  <li><strong>Host noise:</strong> NUMA auto-balancing on the host triggered ~10 s GPU queue evictions that stalled speculative-decoding runs. A per-container NUMA-local wrapper removed them, without inflating the baseline (682 vs 689 tok/s).</li>
+</ul>
+
+<h2 id="mi355x">MI355X runs (August 2026)</h2>
+<p>AMD MI355X (gfx950), vLLM 0.21.0 / SGLang 0.5.12, TP=1. Guardrail: 2% relative per-task tolerance on gsm8k, mmlu, hellaswag and wikitext.</p>
+<section class="fig"><h3><span class="fn">Fig. 4</span> Gains per model and objective</h3><p class="take">Combined = throughput + memory. Capacity objectives win through KV precision; throughput gains are small except in the combined run, where fp8 KV plus fp8 weights give 1.54× at c=512.</p><img src="plots/amo04_mi355x.png" alt="Gains per model and objective" loading="lazy"><details><summary>Data</summary><div class="tbl"><table><thead><tr><th>model</th><th>objective</th><th>winning config</th><th>throughput</th><th>KV capacity</th></tr></thead><tbody><tr><td>Qwen3-14B</td><td>throughput</td><td>SGLang + torch-compile</td><td>+0.6–4.6%</td><td>—</td></tr><tr><td>Qwen3-14B</td><td>KV capacity</td><td>fp8 weights + turboquant k8v4 KV</td><td>tie-break</td><td>2.39×</td></tr><tr><td>Qwen3-14B</td><td>memory + concurrency</td><td>4bit_nc KV + fp8 weights + mem-util 0.95</td><td>tie-break</td><td>3.35×</td></tr><tr><td>Qwen3-14B</td><td>throughput + memory</td><td>fp8 KV + fp8 weights + mem-util 0.95</td><td>1.54× @ c512</td><td>2.25×</td></tr><tr><td>GPT-OSS-120B</td><td>throughput + memory</td><td>fp8 e4m3 KV (throughput at HW ceiling)</td><td>flat</td><td>2.00×</td></tr></tbody></table></div></details></section>
+
+<h2 id="caveats">Caveats</h2>
+<ul>
+  <li>MI250X speedups are <strong>best within a fixed serving config</strong> (engine and TP pinned) at one benchmark point (c=64, 1k:1k), with a greedy client.</li>
+  <li>The Qwen3.8-27B CI run ended early: a sub-agent’s <code>pgrep -f</code> also matched its own shell and killed the orchestrator. Six queued directions and the final stack never ran; the result was finalized afterwards by the user agent.</li>
+  <li>Three Qwen3.6 non-spec winners (int8 experts, MoE launch bundle, int8 GDN state) have no accuracy verdict.</li>
+  <li>MI355X gsm8k baselines vary between 0.63 and 0.68 across runs of the same model, consistent with the eval noise above; gains there (e.g. +28.7% gsm8k) should not be read as quality improvements.</li>
+  <li>An earlier Qwen3.8-27B run with a 1% / 100-item gate reached 1.109×; it is superseded by the CI-gated run.</li>
+</ul>
+
+<h2 id="sources">Sources</h2>
+<p class="note">All numbers transcribed from <code>/home/arkamukh/amo</code>: <code>docs/amo-findings.md</code> (MI355X), <code>runs/mi250x_qwen3.8_report.md</code> (feasibility, noise study), <code>runs/throughput-qwen38-27b-ci/{report,status}.md</code>, <code>runs/throughput-qwen36-35b-a3b-ci/report.md</code>. Page generated by <code>website/amo/build.py</code>.</p>
+</main></body></html>
