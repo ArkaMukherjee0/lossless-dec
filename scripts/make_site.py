@@ -85,7 +85,7 @@ gap = [
     ("Layer skip (D&V/SWIFT)", "skip-set search", f"τ {tau('Layer skip 25% (k=4)')} (sim.)", "—", "—", "—", "—", "—"),
     ("Medusa", "train heads", f"{min(med.values()):.2f}–{max(med.values()):.2f}×", "—", "—", "—",
      f"{med.get('Gemma 4 26B-A4B', 0):.2f}× on MoE", "✓"),
-    ("Suffix decoding", "none", suf_bs1, "—", "—", lc64("Suffix"), "0.51× on Qwen MoE", "✓"),
+    ("Suffix decoding", "none", suf_bs1, "—", "—", lc64("Suffix"), "0.51× on Qwen MoE", "✗ corrupts output"),
     ("n-gram / prompt lookup", "none", f"{min(ngr.values()):.2f}–{max(ngr.values()):.2f}×", "—", "—", "—", "—",
      "✗ corrupts output"),
     ("EAGLE (Mistral Small 4)", "separate drafter", f"{ms['speedup']:.2f}× (TP=8)", "—", "—", "—", "—", "n/a"),
@@ -183,7 +183,7 @@ ol li, ul li {{ margin: 4px 0; }}
   <li><strong>Verification is the bottleneck on MI250.</strong> Checking 2–16 tokens costs a fixed ~1.6–2× a decoding step on dense models, and up to 3.5× on the Qwen MoE. Only drafters that get about 3 or more tokens accepted per step come out ahead.</li>
   <li><strong>Speedups shrink under realistic conditions:</strong> many concurrent requests, temperature 1, long context, and MoE targets. Acceptance barely changes with concurrency; the loss comes entirely from verify cost.</li>
   <li><strong>The optimal draft length depends on load.</strong> Long drafts win with few requests in flight and lose with many. No method adapts to this.</li>
-  <li><strong>“Lossless” holds only up to floating-point effects.</strong> Outputs diverge from plain decoding on 37–65% of prompts, but task accuracy is unchanged. Batch-invariant kernels remove the divergence entirely, at the cost of the whole speedup on MI250. vLLM’s n-gram method produces genuinely wrong output on the hybrid Qwen3.8.</li>
+  <li><strong>“Lossless” holds only up to floating-point effects.</strong> Outputs diverge from plain decoding on 37–65% of prompts, but task accuracy is unchanged. Batch-invariant kernels remove the divergence entirely, at the cost of the whole speedup on MI250. vLLM’s model-free proposers (n-gram, suffix) produce genuinely wrong output on both hybrid Qwen models.</li>
 </ol>
 
 <h2 id="setup">Setup</h2>
@@ -196,12 +196,21 @@ ol li, ul li {{ margin: 4px 0; }}
   <li><strong>Speedup</strong> = tokens/s ÷ plain-decoding tokens/s in the same engine and setup. <strong>τ</strong> = tokens produced per target forward pass.</li>
 </ul>
 
+<section class="fig" id="schA">
+  <h3><span class="fn">Schematic A</span> Experimental design</h3>
+  <img src="plots/s1_design.svg" alt="Experimental design: workloads and models run on 2-GCD or 8-GCD slots through vLLM; saved plain-decoding outputs feed offline analyses" loading="lazy">
+</section>
+<section class="fig" id="schB">
+  <h3><span class="fn">Schematic B</span> Coverage: method × setting</h3>
+  <img src="plots/s2_coverage.svg" alt="Coverage map of which methods were run in which settings, and on how many of the 4 main models" loading="lazy">
+</section>
+
 <h2 id="speed">Speed with one request at a time</h2>
 {fig(1, "fig01_speedup_bs1", "Speedup vs plain decoding (Spec-Bench, T=0)",
-     "MTP and DFlash reach about 1.9–2.1× on the dense models; the Qwen MoE gets much less. Suffix, n-gram and Medusa are at or below plain decoding.",
+     "MTP and DFlash reach about 1.9–2.1× on the dense models; the Qwen MoE gets much less. Suffix, n-gram and Medusa are at or below plain decoding. Hatched bars: wrong output.",
      table(H))}
 {fig(2, "fig10_categories", "Speedup by task category",
-     "Math is always the easiest category. Summarization and QA are the hardest for trained drafters. Suffix loses in every cell.",
+     "Math is always the easiest category. Summarization and QA are the hardest for trained drafters. Suffix loses in every cell. Hatched rows: wrong output.",
      table(cat_rows, cat_cols))}
 {fig(3, "fig04_draft_length", "Speedup vs draft length k",
      "Gains flatten at k≈3–7. k=1 is never a good choice. On Gemma MoE, DFlash gets worse past k=7.",
@@ -249,8 +258,8 @@ Mistral's official EAGLE drafter is slower than plain decoding ({ms['speedup']:.
 
 <h2 id="lossless">Losslessness</h2>
 {fig(13, "fig13_losslessness", "Output divergence from plain decoding (T=0)",
-     "Plain decoding reproduces exactly on 3 of 4 models, yet every speculative method diverges on 37–65% of prompts, almost always at near-tied tokens. With batch-invariant kernels, divergence drops to 0%.",
-     table(T["lossless"]) + "<p class='note'>*Qwen3.8 n-gram: pilot run, 30 prompts. It changes confident tokens (gaps up to 14 nats) and repeats earlier text: recurrent state isn't rolled back after rejected drafts.</p>")}
+     "(a) Every method diverges from plain decoding on many prompts, mostly at near-tied tokens; plain decoding reproduces exactly on 3 of 4 models. (b) Only n-gram and suffix on the hybrid Qwen models diverge where the model was confident (21–27% of prompts): wrong output. (c) Batch-invariant kernels remove all divergence.",
+     table(T["lossless"]) + "<p class='note'>Qwen3.8 n-gram: pilot run, 30 prompts. Qwen3.6 n-gram: full run on a second node, compared with plain decoding from the same node. n-gram and suffix re-emit earlier text at confident tokens (gaps up to 18.6 nats), consistent with recurrent state not being rolled back after rejected drafts.</p>")}
 <p><strong>Cost of exact losslessness (Gemma 4 31B, MTP):</strong> with batch-invariant kernels, plain decoding falls from {bi['off']['ar_tok_s']} to {bi['on']['ar_tok_s']} tok/s, and MTP from {bi['off']['mtp_tok_s']} to {bi['on']['mtp_tok_s']} tok/s, about the speed of plain decoding with standard kernels.</p>
 <p><strong>Task accuracy at T=1 (GSM8K, 1,319 problems × 3 seeds):</strong> every speculative method is within ±0.5 points of plain decoding.</p>
 {table(T["accuracy_t1"], fmt={"gsm8k_acc": lambda v: f"{v:.2f}%", "sd": lambda v: f"±{v:.2f}"})}
@@ -265,7 +274,7 @@ Mistral's official EAGLE drafter is slower than plain decoding ({ms['speedup']:.
   <li><strong>Draft length that adapts to load:</strong> long drafts when the GPU is memory-bound, short or none when compute-bound. The best k changes with concurrency (Fig. 5), and vLLM uses a fixed k.</li>
   <li><strong>MoE-aware verification:</strong> choose or order draft tokens to limit how many distinct experts one verify pass touches (Fig. 9), or verify expert by expert.</li>
   <li><strong>Long-context verification:</strong> verify cost grows with context faster than the savings. Sparse or KV-compressed verification (TriForce/MagicDec style) was not tested here.</li>
-  <li><strong>Hybrid-safe drafting and trees:</strong> recurrent-state rollback is fragile (n-gram corrupts output); tree verification over recurrent layers is unexplored.</li>
+  <li><strong>Hybrid-safe drafting and trees:</strong> recurrent-state rollback is fragile (n-gram and suffix corrupt output); tree verification over recurrent layers is unexplored.</li>
   <li><strong>Cheaper exact losslessness:</strong> fast batch-invariant kernels for gfx90a, and a skinny GEMM for 3–16 tokens that would lower verify cost for every method.</li>
 </ol>
 
@@ -274,7 +283,7 @@ Mistral's official EAGLE drafter is slower than plain decoding ({ms['speedup']:.
   <li><strong>Skinny-GEMM misroute:</strong> 3- and 5-token matrix multiplies go to <code>wvSplitK</code>, 2.4× / 5.7× slower. This made every method slower than plain decoding until patched (Fig. 7).</li>
   <li><strong>Default attention backend:</strong> <code>ROCM_ATTN</code> falls back to a slow path on gfx90a. Plain decoding at 32k: 6.8 vs 31.2 tok/s with <code>TRITON_ATTN</code>. Short prompts: ~0–12% faster with Triton, same method ranking.</li>
   <li><strong>DFlash + prefix caching:</strong> at 6–8k context, acceptance collapses to ~1.0 (vs 3–4.7 with caching off).</li>
-  <li><strong>n-gram on hybrid models:</strong> wrong output on Qwen3.8 (Medusa and MTP are fine on the same model).</li>
+  <li><strong>n-gram and suffix on hybrid models:</strong> wrong output on Qwen3.8 and Qwen3.6 (103–118 of 480 prompts diverge at confident tokens). MTP, DFlash and Medusa are fine on the same models.</li>
   <li><strong>Setup bugs patched in the image:</strong> Pixtral import (Mistral), a missing attribute in the Mistral EAGLE drafter, Medusa <code>vocab_size</code> on multimodal configs, no FP8 kernels for gfx90a, and the draft-model method crashing with Qwen3.5 drafts (not patched).</li>
 </ul>
 

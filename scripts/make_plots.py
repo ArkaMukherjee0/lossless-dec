@@ -29,6 +29,10 @@ CATS = ["math_reasoning", "mt_bench", "qa", "rag", "summarization", "translation
 CAT_LBL = {"math_reasoning": "math", "mt_bench": "chat", "qa": "QA", "rag": "RAG",
            "summarization": "summ.", "translation": "transl."}
 TABLES = {}
+# vLLM's model-free proposers corrupt output on the hybrid (Gated-DeltaNet) Qwen models:
+# >100/480 prompts diverge where plain decoding was confident (>1 nat); see fig13 / tables.json.
+WRONG_OUTPUT = {("Qwen3.8-27B", "Suffix"), ("Qwen3.6-35B-A3B", "Suffix"),
+                ("Qwen3.8-27B", "n-gram"), ("Qwen3.6-35B-A3B", "n-gram")}
 
 sns.set_theme(style="whitegrid", rc={
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
@@ -45,6 +49,18 @@ def load(p):
 
 def summ(p):
     return load(p)["summary"] if os.path.exists(p) else None
+
+
+def method_legend(ax, names, wrong=True, **kw):
+    from matplotlib.patches import Patch
+    handles = [Patch(facecolor=C.get(n, NEUTRAL), label=n) for n in names]
+    if wrong:
+        handles.append(Patch(facecolor=SURFACE, edgecolor=INK2, hatch="///", label="wrong output"))
+    ax.legend(handles=handles, **kw)
+
+
+COMPACT = {"Qwen3.8-27B": "Qwen3.8\n27B", "gemma-4-31B-it": "Gemma 4\n31B",
+           "Qwen3.6-35B-A3B": "Qwen3.6\n35B-A3B", "gemma-4-26B-A4B-it": "Gemma 4\n26B-A4B"}
 
 
 def save(fig, name):
@@ -71,25 +87,30 @@ def fig_headline():
     methods = [("MTP", None), ("DFlash", "dflash7"), ("Suffix", "suffix"), ("Medusa", "medusa4"), ("n-gram", "ngram4")]
     fig, ax = plt.subplots(figsize=(10, 4.2))
     w, rows = 0.16, []
+    # runs made later on another node; each is compared with plain decoding from that same run set
+    extra = {("Qwen3.6-35B-A3B", "n-gram"): "a_ngram_q35"}
     for i, (m, lbl) in enumerate(MODELS):
-        ar = summ(f"{R}/a/{m}/ar_t0.0_c1.json")["tok_per_s"]
         for j, (name, tag) in enumerate(methods):
-            s = summ(f"{R}/a/{m}/{tag or MTP_TAG[m]}_t0.0_c1.json")
+            d = f"{R}/{extra.get((m, name), 'a')}/{m}"
+            ar = summ(f"{d}/ar_t0.0_c1.json")["tok_per_s"]
+            s = summ(f"{d}/{tag or MTP_TAG[m]}_t0.0_c1.json")
             if not s:
                 continue
             sp = s["tok_per_s"] / ar
             x = i + (j - 2) * w
+            bad = (m, name) in WRONG_OUTPUT
             ax.bar(x, sp, w * 0.88, color=C[name], label=name if i == 0 or name in ("Medusa", "n-gram") else None,
-                   zorder=2)
+                   hatch="///" if bad else None, edgecolor=SURFACE if bad else None, zorder=2)
+            if bad:
+                ax.annotate("wrong\noutput", (x, sp), xytext=(0, 4), textcoords="offset points", ha="center",
+                            fontsize=7.5, color=INK2)
             rows.append({"model": SHORT[m], "method": name, "speedup": round(sp, 2),
                          "tau": round(s["tau"], 2) if s["tau"] else None, "tok_s": round(s["tok_per_s"], 1),
-                         "ar_tok_s": round(ar, 1)})
+                         "ar_tok_s": round(ar, 1), "note": "wrong output" if bad else ""})
     baseline(ax)
     ax.set_xticks(range(len(MODELS)), [l for _, l in MODELS])
     ax.set_ylabel("Speedup vs plain decoding")
-    h, l = ax.get_legend_handles_labels()
-    uniq = dict(zip(l, h))
-    ax.legend([uniq[k] for k in C if k in uniq], [k for k in C if k in uniq], ncol=5, loc="upper right")
+    method_legend(ax, [k for k in C], ncol=6, loc="upper right")
     ax.set_ylim(0, 2.45)
     save(fig, "fig01_speedup_bs1")
     TABLES["headline"] = rows
@@ -240,8 +261,13 @@ def fig_long_context():
                 p = pat.format(c=c)
                 if os.path.exists(p):
                     xs.append(c // 1024); ys.append(trace_stats(p)[0] / ar[c])
-            ax.plot(xs, ys, color=C[name], lw=2, marker="o", ms=5, label=name, zorder=3)
-            rows += [{"model": SHORT[m], "method": name, "context_k": x, "speedup": round(y, 2)} for x, y in zip(xs, ys)]
+            bad = (m, name) in WRONG_OUTPUT
+            ax.plot(xs, ys, color=C[name], lw=2, marker="o", ms=5, label=name, zorder=3, ls="--" if bad else "-")
+            if bad:
+                ax.annotate("wrong output", (xs[-1], ys[-1]), xytext=(0, -12), textcoords="offset points",
+                            ha="right", fontsize=7.5, color=INK2)
+            rows += [{"model": SHORT[m], "method": name, "context_k": x, "speedup": round(y, 2),
+                      "note": "wrong output" if bad else ""} for x, y in zip(xs, ys)]
         baseline(ax)
         ax.set_xscale("log", base=2)
         ax.set_xticks([8, 32, 64], ["8k", "32k", "64k"])
@@ -304,7 +330,13 @@ def fig_categories():
     sns.heatmap(data, ax=ax, cmap=cmap, center=1.0, vmin=0.4, vmax=3.2, annot=True, fmt=".2f",
                 annot_kws={"fontsize": 8}, linewidths=2, linecolor=SURFACE,
                 xticklabels=[CAT_LBL[c] for c in CATS], yticklabels=labels,
-                cbar_kws={"label": "Speedup vs plain decoding", "shrink": 0.8})
+                cbar_kws={"label": "Speedup vs plain decoding", "shrink": 0.8, "pad": 0.14})
+    for i, l in enumerate(labels):
+        m_short, name = l.split(" · ")
+        if any(SHORT[m] == m_short and (m, name) in WRONG_OUTPUT for m in SHORT):
+            ax.add_patch(plt.Rectangle((0, i), len(CATS), 1, fill=False, hatch="///", edgecolor=INK2,
+                                       linewidth=0, alpha=0.35, zorder=3))
+            ax.text(len(CATS) + 0.08, i + 0.5, "wrong output", va="center", fontsize=7.5, color=INK2)
     ax.tick_params(axis="y", length=0)
     ax.tick_params(axis="x", length=0)
     save(fig, "fig10_categories")
@@ -389,48 +421,53 @@ def divergence(ar_path, sp_path):
 
 
 def fig_lossless():
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(12, 3.8), gridspec_kw={"width_ratios": [3, 1.1]})
+    fig, (ax, axc, ax2) = plt.subplots(1, 3, figsize=(15, 3.9), gridspec_kw={"width_ratios": [3, 3, 1.1]})
     series = [("AR repeat", "arrepeat", NEUTRAL), ("MTP", None, C["MTP"]), ("DFlash", "dflash7", C["DFlash"]),
-              ("n-gram", "ngram4", C["n-gram"])]
-    w, rows = 0.2, []
+              ("Suffix", "suffix", C["Suffix"]), ("n-gram", "ngram4", C["n-gram"])]
+    # runs that live outside results/a (each compared with plain decoding from its own run set)
+    src = {("Qwen3.8-27B", "n-gram"): "pilot/bench", ("Qwen3.6-35B-A3B", "n-gram"): "a_ngram_q35"}
+    w, rows = 0.16, []
     for i, (m, lbl) in enumerate(MODELS):
         for j, (name, tag, col) in enumerate(series):
-            p = f"{R}/a/{m}/{tag or MTP_TAG[m]}_t0.0_c1.json"
+            d = f"{R}/{src.get((m, name), 'a')}/{m}"
+            p = f"{d}/{tag or MTP_TAG[m]}_t0.0_c1.json"
             if not os.path.exists(p):
                 continue
-            pct, conf, n = divergence(f"{R}/a/{m}/ar_t0.0_c1.json", p)
-            ax.bar(i + (j - 1.5) * w, pct, w * 0.88, color=col, zorder=2,
-                   label=name if i == 0 or name == "n-gram" else None)
+            pct, conf, n = divergence(f"{d}/ar_t0.0_c1.json", p)
+            conf_pct = 100 * conf / n
+            bad = (m, name) in WRONG_OUTPUT
+            x = i + (j - 2) * w
+            for a_, v in ((ax, pct), (axc, conf_pct)):
+                a_.bar(x, v, w * 0.88, color=col, zorder=2, hatch="///" if bad else None,
+                       edgecolor=SURFACE if bad else None, label=name if (m, name) == (MODELS[0][0], name) else None)
             if pct == 0:  # exact reproduction: make the zero-height bar visible
-                ax.text(i + (j - 1.5) * w, 1.5, "0%", ha="center", fontsize=8, color=INK2)
+                ax.text(x, 1.5, "0", ha="center", fontsize=7.5, color=INK2)
             rows.append({"model": SHORT[m], "method": name, "diverged_pct": round(pct, 1),
-                         "confident_gt_1nat": conf, "prompts": n})
-    # Qwen3.8 n-gram came from the pilot (it corrupts output); report from the pilot run
-    pct, conf, n = divergence(f"{R}/pilot/bench/Qwen3.8-27B/ar_t0.0_c1.json", f"{R}/pilot/bench/Qwen3.8-27B/ngram4_t0.0_c1.json")
-    ax.bar(0 + 1.5 * w, pct, w * 0.88, color=C["n-gram"], zorder=2, hatch="///", edgecolor=SURFACE)
-    ax.annotate("corrupts\noutput*", (0 + 1.5 * w, pct), xytext=(0, 4), textcoords="offset points",
-                ha="center", fontsize=7.5, color=INK2)
-    rows.append({"model": "Qwen3.8-27B", "method": "n-gram (pilot, 30 prompts)", "diverged_pct": round(pct, 1),
-                 "confident_gt_1nat": conf, "prompts": n})
-    ax.set_xticks(range(len(MODELS)), [l for _, l in MODELS])
-    ax.set_ylabel("Prompts diverging from plain decoding (%)")
-    ax.set_ylim(0, 100)
-    h, l = ax.get_legend_handles_labels()
-    u = dict(zip(l, h))
-    ax.legend([u[k] for k in ["AR repeat", "MTP", "DFlash", "n-gram"]], ["AR repeat (noise floor)", "MTP", "DFlash", "n-gram"],
-              ncol=4, loc="upper left")
+                         "confident_gt_1nat": conf, "confident_pct": round(conf_pct, 1), "prompts": n,
+                         "note": "wrong output" if bad else ""})
+    for a_, ylab, top in ((ax, "Prompts diverging (%)", 100), (axc, "Prompts diverging at confident tokens (%)", 40)):
+        a_.set_xticks(range(len(MODELS)), [COMPACT[m] for m, _ in MODELS])
+        a_.set_ylabel(ylab)
+        a_.set_ylim(0, top)
+    ax.set_title("(a) any divergence", fontsize=10)
+    axc.set_title("(b) divergence at confident tokens (gap > 1 nat)", fontsize=10)
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(facecolor=NEUTRAL, label="AR repeat (noise floor)")] +
+              [Patch(facecolor=C[n], label=n) for n in ("MTP", "DFlash", "Suffix", "n-gram")] +
+              [Patch(facecolor=SURFACE, edgecolor=INK2, hatch="///", label="wrong output")],
+              ncol=3, loc="upper left")
     # batch-invariant kernels, Gemma 4 31B, MTP k=4, 60 prompts
     vals = []
     for mode in ("off", "on"):
         d = f"{R}/bi_{mode}/gemma-4-31B-it"
         pct, _, n = divergence(f"{d}/ar_t0.0_c1.json", f"{d}/mtp4_t0.0_c1.json")
         vals.append((mode, pct, summ(f"{d}/ar_t0.0_c1.json")["tok_per_s"], summ(f"{d}/mtp4_t0.0_c1.json")["tok_per_s"]))
-    ax2.bar([0, 1], [v[1] for v in vals], 0.55, color=[C["MTP"], C["Suffix"]], zorder=2)
+    ax2.bar([0, 1], [v[1] for v in vals], 0.55, color=C["MTP"], zorder=2)
     for x, v in enumerate(vals):
         ax2.text(x, v[1] + 2, f"{v[1]:.0f}%", ha="center", fontsize=9, color=INK)
     ax2.set_xticks([0, 1], ["standard\nkernels", "batch-invariant\nkernels"])
     ax2.set_ylim(0, 100)
-    ax2.set_title("Gemma 4 31B · MTP", fontsize=10)
+    ax2.set_title("(c) Gemma 4 31B · MTP", fontsize=10)
     save(fig, "fig13_losslessness")
     TABLES["lossless"] = rows
     TABLES["batch_invariance"] = [{"kernels": v[0], "diverged_pct": round(v[1], 1), "ar_tok_s": round(v[2], 1),
