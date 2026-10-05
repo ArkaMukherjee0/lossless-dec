@@ -1,0 +1,1494 @@
+{
+ "headline": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "speedup": 1.96,
+   "tau": 3.1,
+   "tok_s": 61.3,
+   "ar_tok_s": 31.3
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "speedup": 2.09,
+   "tau": 4.15,
+   "tok_s": 65.3,
+   "ar_tok_s": 31.3
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Suffix",
+   "speedup": 0.79,
+   "tau": 1.51,
+   "tok_s": 24.6,
+   "ar_tok_s": 31.3
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Medusa",
+   "speedup": 1.05,
+   "tau": 1.92,
+   "tok_s": 32.8,
+   "ar_tok_s": 31.3
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "speedup": 1.93,
+   "tau": 3.41,
+   "tok_s": 59.0,
+   "ar_tok_s": 30.6
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "speedup": 1.79,
+   "tau": 3.4,
+   "tok_s": 54.9,
+   "ar_tok_s": 30.6
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "Suffix",
+   "speedup": 0.77,
+   "tau": 1.41,
+   "tok_s": 23.7,
+   "ar_tok_s": 30.6
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "n-gram",
+   "speedup": 0.68,
+   "tau": 2.2,
+   "tok_s": 20.9,
+   "ar_tok_s": 30.6
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "speedup": 1.43,
+   "tau": 3.06,
+   "tok_s": 111.7,
+   "ar_tok_s": 78.0
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "speedup": 1.15,
+   "tau": 3.67,
+   "tok_s": 89.8,
+   "ar_tok_s": 78.0
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "Suffix",
+   "speedup": 0.51,
+   "tau": 1.47,
+   "tok_s": 39.5,
+   "ar_tok_s": 78.0
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "speedup": 1.86,
+   "tau": 3.31,
+   "tok_s": 150.2,
+   "ar_tok_s": 80.7
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "speedup": 1.69,
+   "tau": 2.92,
+   "tok_s": 136.5,
+   "ar_tok_s": 80.7
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "Suffix",
+   "speedup": 0.62,
+   "tau": 1.42,
+   "tok_s": 50.1,
+   "ar_tok_s": 80.7
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "Medusa",
+   "speedup": 0.83,
+   "tau": 1.48,
+   "tok_s": 66.7,
+   "ar_tok_s": 80.7
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "n-gram",
+   "speedup": 0.7,
+   "tau": 2.22,
+   "tok_s": 56.2,
+   "ar_tok_s": 80.7
+  }
+ ],
+ "concurrency": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "concurrency": 4,
+   "speedup": 1.76
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "concurrency": 16,
+   "speedup": 1.67
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "concurrency": 64,
+   "speedup": 0.96
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "concurrency": 128,
+   "speedup": 0.7
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "concurrency": 4,
+   "speedup": 2.22
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "concurrency": 16,
+   "speedup": 1.87
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "concurrency": 64,
+   "speedup": 0.86
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "concurrency": 128,
+   "speedup": 0.62
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "concurrency": 4,
+   "speedup": 2.17
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "concurrency": 16,
+   "speedup": 2.2
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "concurrency": 64,
+   "speedup": 1.38
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "concurrency": 128,
+   "speedup": 1.13
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "concurrency": 4,
+   "speedup": 2.15
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "concurrency": 16,
+   "speedup": 1.86
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "concurrency": 64,
+   "speedup": 1.07
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "concurrency": 128,
+   "speedup": 0.87
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "concurrency": 4,
+   "speedup": 1.72
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "concurrency": 16,
+   "speedup": 1.47
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "concurrency": 64,
+   "speedup": 1.22
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "concurrency": 128,
+   "speedup": 0.89
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "concurrency": 4,
+   "speedup": 1.51
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "concurrency": 16,
+   "speedup": 1.2
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "concurrency": 64,
+   "speedup": 0.55
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "concurrency": 128,
+   "speedup": 0.37
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "concurrency": 4,
+   "speedup": 1.69
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "concurrency": 16,
+   "speedup": 1.59
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "concurrency": 64,
+   "speedup": 1.69
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "concurrency": 128,
+   "speedup": 1.6
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "concurrency": 4,
+   "speedup": 1.52
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "concurrency": 16,
+   "speedup": 1.35
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "concurrency": 64,
+   "speedup": 1.31
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "concurrency": 128,
+   "speedup": 1.09
+  }
+ ],
+ "draft_length": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "k": 1,
+   "speedup": 1.19,
+   "tau": 1.89,
+   "step_cost": 1.6
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "k": 2,
+   "speedup": 1.47,
+   "tau": 2.62,
+   "step_cost": 1.79
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "k": 3,
+   "speedup": 1.96,
+   "tau": 3.17,
+   "step_cost": 1.62
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "k": 4,
+   "speedup": 1.88,
+   "tau": 3.6,
+   "step_cost": 1.91
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "k": 6,
+   "speedup": 1.88,
+   "tau": 4.11,
+   "step_cost": 2.19
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "k": 3,
+   "speedup": 1.93,
+   "tau": 3.14,
+   "step_cost": 1.63
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "k": 5,
+   "speedup": 2.0,
+   "tau": 3.95,
+   "step_cost": 1.97
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "k": 7,
+   "speedup": 2.16,
+   "tau": 4.35,
+   "step_cost": 2.02
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "k": 1,
+   "speedup": 1.15,
+   "tau": 1.85,
+   "step_cost": 1.6
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "k": 2,
+   "speedup": 1.54,
+   "tau": 2.53,
+   "step_cost": 1.64
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "k": 3,
+   "speedup": 2.04,
+   "tau": 3.06,
+   "step_cost": 1.5
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "k": 4,
+   "speedup": 2.0,
+   "tau": 3.47,
+   "step_cost": 1.73
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "k": 6,
+   "speedup": 2.11,
+   "tau": 3.99,
+   "step_cost": 1.89
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "k": 3,
+   "speedup": 1.82,
+   "tau": 2.81,
+   "step_cost": 1.54
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "k": 7,
+   "speedup": 1.87,
+   "tau": 3.51,
+   "step_cost": 1.88
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "k": 11,
+   "speedup": 1.98,
+   "tau": 3.66,
+   "step_cost": 1.85
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "k": 15,
+   "speedup": 1.93,
+   "tau": 3.69,
+   "step_cost": 1.91
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "k": 1,
+   "speedup": 0.97,
+   "tau": 1.88,
+   "step_cost": 1.94
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "k": 2,
+   "speedup": 1.36,
+   "tau": 2.57,
+   "step_cost": 1.89
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "k": 3,
+   "speedup": 1.38,
+   "tau": 3.1,
+   "step_cost": 2.24
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "k": 4,
+   "speedup": 1.55,
+   "tau": 3.49,
+   "step_cost": 2.26
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "k": 6,
+   "speedup": 1.62,
+   "tau": 4.01,
+   "step_cost": 2.48
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "k": 3,
+   "speedup": 0.87,
+   "tau": 2.91,
+   "step_cost": 3.34
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "k": 7,
+   "speedup": 1.11,
+   "tau": 3.85,
+   "step_cost": 3.48
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "k": 11,
+   "speedup": 1.17,
+   "tau": 4.04,
+   "step_cost": 3.45
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "k": 15,
+   "speedup": 1.18,
+   "tau": 4.08,
+   "step_cost": 3.47
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "k": 1,
+   "speedup": 1.38,
+   "tau": 1.83,
+   "step_cost": 1.32
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "k": 2,
+   "speedup": 1.52,
+   "tau": 2.49,
+   "step_cost": 1.64
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "k": 3,
+   "speedup": 1.68,
+   "tau": 2.99,
+   "step_cost": 1.77
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "k": 4,
+   "speedup": 1.79,
+   "tau": 3.36,
+   "step_cost": 1.87
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "k": 6,
+   "speedup": 1.84,
+   "tau": 3.82,
+   "step_cost": 2.08
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "k": 3,
+   "speedup": 1.41,
+   "tau": 2.53,
+   "step_cost": 1.8
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "k": 7,
+   "speedup": 1.62,
+   "tau": 3.0,
+   "step_cost": 1.85
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "k": 11,
+   "speedup": 1.47,
+   "tau": 3.09,
+   "step_cost": 2.1
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "k": 15,
+   "speedup": 1.44,
+   "tau": 3.11,
+   "step_cost": 2.16
+  }
+ ],
+ "moe_union": [
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 1,
+   "experts_vs_1token": 1.0
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 2,
+   "experts_vs_1token": 1.63
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 3,
+   "experts_vs_1token": 2.17
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 4,
+   "experts_vs_1token": 2.66
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 5,
+   "experts_vs_1token": 3.11
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 6,
+   "experts_vs_1token": 3.53
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 8,
+   "experts_vs_1token": 4.3
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 12,
+   "experts_vs_1token": 5.62
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "window": 16,
+   "experts_vs_1token": 6.72
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 1,
+   "experts_vs_1token": 1.0
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 2,
+   "experts_vs_1token": 1.58
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 3,
+   "experts_vs_1token": 2.03
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 4,
+   "experts_vs_1token": 2.42
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 5,
+   "experts_vs_1token": 2.76
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 6,
+   "experts_vs_1token": 3.06
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 8,
+   "experts_vs_1token": 3.57
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 12,
+   "experts_vs_1token": 4.38
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "window": 16,
+   "experts_vs_1token": 4.98
+  }
+ ],
+ "long_context": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "context_k": 8,
+   "speedup": 1.57
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "context_k": 32,
+   "speedup": 0.98
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "context_k": 64,
+   "speedup": 0.69
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "context_k": 8,
+   "speedup": 1.37
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "context_k": 32,
+   "speedup": 0.85
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "context_k": 64,
+   "speedup": 0.56
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Suffix",
+   "context_k": 8,
+   "speedup": 0.62
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Suffix",
+   "context_k": 32,
+   "speedup": 0.48
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Suffix",
+   "context_k": 64,
+   "speedup": 0.37
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "context_k": 8,
+   "speedup": 1.67
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "context_k": 32,
+   "speedup": 1.25
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "context_k": 64,
+   "speedup": 0.88
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "context_k": 8,
+   "speedup": 1.44
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "context_k": 32,
+   "speedup": 1.05
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "context_k": 64,
+   "speedup": 0.71
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "Suffix",
+   "context_k": 8,
+   "speedup": 0.74
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "Suffix",
+   "context_k": 32,
+   "speedup": 0.68
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "Suffix",
+   "context_k": 64,
+   "speedup": 0.54
+  }
+ ],
+ "temperature": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "T0": 1.96,
+   "T1_mean": 1.69,
+   "T1_std": 0.02,
+   "seeds": 3
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "T0": 2.09,
+   "T1_mean": 1.7,
+   "T1_std": 0.04,
+   "seeds": 3
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "T0": 1.93,
+   "T1_mean": 1.88,
+   "T1_std": 0.03,
+   "seeds": 3
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "T0": 1.79,
+   "T1_mean": 1.74,
+   "T1_std": 0.02,
+   "seeds": 3
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "T0": 1.43,
+   "T1_mean": 1.24,
+   "T1_std": 0.01,
+   "seeds": 3
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "T0": 1.15,
+   "T1_mean": 0.98,
+   "T1_std": 0.01,
+   "seeds": 3
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "T0": 1.86,
+   "T1_mean": 1.72,
+   "T1_std": 0.01,
+   "seeds": 3
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "T0": 1.69,
+   "T1_mean": 1.55,
+   "T1_std": 0.01,
+   "seeds": 3
+  }
+ ],
+ "categories": [
+  {
+   "row": "Qwen3.8-27B \u00b7 MTP",
+   "math": 2.3,
+   "chat": 1.92,
+   "QA": 1.92,
+   "RAG": 1.92,
+   "summ.": 1.84,
+   "transl.": 1.76
+  },
+  {
+   "row": "Qwen3.8-27B \u00b7 DFlash",
+   "math": 3.17,
+   "chat": 1.97,
+   "QA": 1.88,
+   "RAG": 2.1,
+   "summ.": 1.9,
+   "transl.": 1.78
+  },
+  {
+   "row": "Qwen3.8-27B \u00b7 Suffix",
+   "math": 0.9,
+   "chat": 0.7,
+   "QA": 0.81,
+   "RAG": 0.91,
+   "summ.": 0.77,
+   "transl.": 0.65
+  },
+  {
+   "row": "Gemma 4 31B \u00b7 MTP",
+   "math": 2.52,
+   "chat": 1.89,
+   "QA": 1.73,
+   "RAG": 1.88,
+   "summ.": 1.69,
+   "transl.": 2.12
+  },
+  {
+   "row": "Gemma 4 31B \u00b7 DFlash",
+   "math": 2.8,
+   "chat": 1.76,
+   "QA": 1.49,
+   "RAG": 1.84,
+   "summ.": 1.47,
+   "transl.": 2.0
+  },
+  {
+   "row": "Gemma 4 31B \u00b7 Suffix",
+   "math": 0.92,
+   "chat": 0.72,
+   "QA": 0.7,
+   "RAG": 0.89,
+   "summ.": 0.77,
+   "transl.": 0.87
+  },
+  {
+   "row": "Qwen3.6-35B-A3B \u00b7 MTP",
+   "math": 1.72,
+   "chat": 1.42,
+   "QA": 1.36,
+   "RAG": 1.42,
+   "summ.": 1.31,
+   "transl.": 1.28
+  },
+  {
+   "row": "Qwen3.6-35B-A3B \u00b7 DFlash",
+   "math": 1.77,
+   "chat": 1.09,
+   "QA": 0.96,
+   "RAG": 1.33,
+   "summ.": 1.05,
+   "transl.": 0.88
+  },
+  {
+   "row": "Qwen3.6-35B-A3B \u00b7 Suffix",
+   "math": 0.6,
+   "chat": 0.45,
+   "QA": 0.5,
+   "RAG": 0.57,
+   "summ.": 0.49,
+   "transl.": 0.45
+  },
+  {
+   "row": "Gemma 4 26B-A4B \u00b7 MTP",
+   "math": 2.56,
+   "chat": 1.83,
+   "QA": 1.67,
+   "RAG": 1.82,
+   "summ.": 1.57,
+   "transl.": 2.08
+  },
+  {
+   "row": "Gemma 4 26B-A4B \u00b7 DFlash",
+   "math": 2.88,
+   "chat": 1.63,
+   "QA": 1.42,
+   "RAG": 1.77,
+   "summ.": 1.34,
+   "transl.": 1.97
+  },
+  {
+   "row": "Gemma 4 26B-A4B \u00b7 Suffix",
+   "math": 0.75,
+   "chat": 0.57,
+   "QA": 0.57,
+   "RAG": 0.68,
+   "summ.": 0.58,
+   "transl.": 0.72
+  }
+ ],
+ "acceptance": [
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "DFlash (k=7)",
+   "tokens_per_step": 4.15
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "MTP (k=4)",
+   "tokens_per_step": 3.6
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "Draft model (k=4)",
+   "tokens_per_step": 3.06
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "Layer skip 25% (k=4)",
+   "tokens_per_step": 3.01
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "Medusa (4 heads)",
+   "tokens_per_step": 1.92
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "Suffix (retrieval)",
+   "tokens_per_step": 1.4
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "drafter": "Prompt lookup",
+   "tokens_per_step": 1.36
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "DFlash (k=7)",
+   "tokens_per_step": 3.4
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "MTP (k=4)",
+   "tokens_per_step": 3.47
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "Draft model (k=4)",
+   "tokens_per_step": 2.76
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "Layer skip 25% (k=4)",
+   "tokens_per_step": 1.93
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "Medusa (4 heads)",
+   "tokens_per_step": null
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "Suffix (retrieval)",
+   "tokens_per_step": 1.34
+  },
+  {
+   "model": "Gemma 4 31B",
+   "drafter": "Prompt lookup",
+   "tokens_per_step": 1.26
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "DFlash (k=7)",
+   "tokens_per_step": 3.67
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "MTP (k=4)",
+   "tokens_per_step": 3.49
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "Draft model (k=4)",
+   "tokens_per_step": 3.02
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "Layer skip 25% (k=4)",
+   "tokens_per_step": 3.25
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "Medusa (4 heads)",
+   "tokens_per_step": null
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "Suffix (retrieval)",
+   "tokens_per_step": 1.4
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "drafter": "Prompt lookup",
+   "tokens_per_step": 1.36
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "DFlash (k=7)",
+   "tokens_per_step": 2.92
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "MTP (k=4)",
+   "tokens_per_step": 3.36
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "Draft model (k=4)",
+   "tokens_per_step": 2.8
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "Layer skip 25% (k=4)",
+   "tokens_per_step": 1.3
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "Medusa (4 heads)",
+   "tokens_per_step": 1.48
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "Suffix (retrieval)",
+   "tokens_per_step": 1.35
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "drafter": "Prompt lookup",
+   "tokens_per_step": 1.27
+  }
+ ],
+ "lossless": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "AR repeat",
+   "diverged_pct": 45.8,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "diverged_pct": 48.8,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "diverged_pct": 46.0,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "AR repeat",
+   "diverged_pct": 0.0,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "diverged_pct": 37.3,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "diverged_pct": 39.0,
+   "confident_gt_1nat": 1,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "n-gram",
+   "diverged_pct": 37.1,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "AR repeat",
+   "diverged_pct": 0.0,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "diverged_pct": 64.2,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "diverged_pct": 65.0,
+   "confident_gt_1nat": 2,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "AR repeat",
+   "diverged_pct": 0.0,
+   "confident_gt_1nat": 0,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "diverged_pct": 55.2,
+   "confident_gt_1nat": 4,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "diverged_pct": 55.2,
+   "confident_gt_1nat": 4,
+   "prompts": 480
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "n-gram",
+   "diverged_pct": 57.1,
+   "confident_gt_1nat": 7,
+   "prompts": 480
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "n-gram (pilot, 30 prompts)",
+   "diverged_pct": 70.0,
+   "confident_gt_1nat": 8,
+   "prompts": 30
+  }
+ ],
+ "batch_invariance": [
+  {
+   "kernels": "off",
+   "diverged_pct": 41.7,
+   "ar_tok_s": 30.4,
+   "mtp_tok_s": 58.0
+  },
+  {
+   "kernels": "on",
+   "diverged_pct": 0.0,
+   "ar_tok_s": 12.0,
+   "mtp_tok_s": 33.5
+  }
+ ],
+ "accuracy_t1": [
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "ar",
+   "gsm8k_acc": 95.6,
+   "sd": 0.2
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "dflash7",
+   "gsm8k_acc": 95.38,
+   "sd": 0.13
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "mtp3",
+   "gsm8k_acc": 95.17,
+   "sd": 0.42
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "ar",
+   "gsm8k_acc": 94.77,
+   "sd": 0.26
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "dflash7",
+   "gsm8k_acc": 94.64,
+   "sd": 0.22
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "mtp3",
+   "gsm8k_acc": 95.2,
+   "sd": 0.19
+  },
+  {
+   "model": "gemma-4-26B-A4B-it",
+   "method": "ar",
+   "gsm8k_acc": 96.31,
+   "sd": 0.12
+  },
+  {
+   "model": "gemma-4-26B-A4B-it",
+   "method": "dflash7",
+   "gsm8k_acc": 96.61,
+   "sd": 0.16
+  },
+  {
+   "model": "gemma-4-26B-A4B-it",
+   "method": "mtp4",
+   "gsm8k_acc": 96.49,
+   "sd": 0.23
+  },
+  {
+   "model": "gemma-4-31B-it",
+   "method": "ar",
+   "gsm8k_acc": 97.42,
+   "sd": 0.2
+  },
+  {
+   "model": "gemma-4-31B-it",
+   "method": "dflash7",
+   "gsm8k_acc": 97.32,
+   "sd": 0.16
+  },
+  {
+   "model": "gemma-4-31B-it",
+   "method": "mtp4",
+   "gsm8k_acc": 97.19,
+   "sd": 0.2
+  }
+ ],
+ "large_moe": [
+  {
+   "model": "Qwen3.8-Flash-Next (TP=8)",
+   "method": "MTP k=1",
+   "tok_s": 62.1,
+   "speedup": 1.71,
+   "tau": 1.86
+  },
+  {
+   "model": "Qwen3.8-Flash-Next (TP=8)",
+   "method": "MTP k=2",
+   "tok_s": 66.0,
+   "speedup": 1.82,
+   "tau": 2.54
+  },
+  {
+   "model": "Qwen3.8-Flash-Next (TP=8)",
+   "method": "MTP k=3",
+   "tok_s": 68.6,
+   "speedup": 1.89,
+   "tau": 3.04
+  },
+  {
+   "model": "Qwen3.8-Flash-Next (TP=8)",
+   "method": "MTP k=4",
+   "tok_s": 80.1,
+   "speedup": 2.21,
+   "tau": 3.45
+  },
+  {
+   "model": "Mistral Small 4 (TP=8)",
+   "method": "EAGLE k=3",
+   "tok_s": 48.5,
+   "speedup": 0.66,
+   "tau": 2.38
+  }
+ ],
+ "large_moe_ar": {
+  "Qwen3.8-Flash-Next": 36.3,
+  "Mistral Small 4": 73.1
+ },
+ "triton": [
+  {
+   "model": "Qwen3.8-27B",
+   "method": "AR",
+   "default_tok_s": 31.3,
+   "triton_tok_s": 34.4,
+   "speedup_default": 1.0,
+   "speedup_triton": 1.0
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "MTP",
+   "default_tok_s": 61.3,
+   "triton_tok_s": 68.9,
+   "speedup_default": 1.96,
+   "speedup_triton": 2.01
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "DFlash",
+   "default_tok_s": 65.3,
+   "triton_tok_s": 71.3,
+   "speedup_default": 2.09,
+   "speedup_triton": 2.07
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "method": "Suffix",
+   "default_tok_s": 24.6,
+   "triton_tok_s": 26.1,
+   "speedup_default": 0.79,
+   "speedup_triton": 0.76
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "AR",
+   "default_tok_s": 30.6,
+   "triton_tok_s": 29.9,
+   "speedup_default": 1.0,
+   "speedup_triton": 1.0
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "MTP",
+   "default_tok_s": 59.0,
+   "triton_tok_s": 59.6,
+   "speedup_default": 1.93,
+   "speedup_triton": 1.99
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "DFlash",
+   "default_tok_s": 54.9,
+   "triton_tok_s": 55.6,
+   "speedup_default": 1.79,
+   "speedup_triton": 1.86
+  },
+  {
+   "model": "Gemma 4 31B",
+   "method": "Suffix",
+   "default_tok_s": 23.7,
+   "triton_tok_s": 23.8,
+   "speedup_default": 0.77,
+   "speedup_triton": 0.79
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "AR",
+   "default_tok_s": 78.0,
+   "triton_tok_s": 87.6,
+   "speedup_default": 1.0,
+   "speedup_triton": 1.0
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "MTP",
+   "default_tok_s": 111.7,
+   "triton_tok_s": 120.2,
+   "speedup_default": 1.43,
+   "speedup_triton": 1.37
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "DFlash",
+   "default_tok_s": 89.8,
+   "triton_tok_s": 88.9,
+   "speedup_default": 1.15,
+   "speedup_triton": 1.01
+  },
+  {
+   "model": "Qwen3.6-35B-A3B",
+   "method": "Suffix",
+   "default_tok_s": 39.5,
+   "triton_tok_s": 42.4,
+   "speedup_default": 0.51,
+   "speedup_triton": 0.48
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "AR",
+   "default_tok_s": 80.7,
+   "triton_tok_s": 81.1,
+   "speedup_default": 1.0,
+   "speedup_triton": 1.0
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "MTP",
+   "default_tok_s": 150.2,
+   "triton_tok_s": 150.5,
+   "speedup_default": 1.86,
+   "speedup_triton": 1.86
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "DFlash",
+   "default_tok_s": 136.5,
+   "triton_tok_s": 135.5,
+   "speedup_default": 1.69,
+   "speedup_triton": 1.67
+  },
+  {
+   "model": "Gemma 4 26B-A4B",
+   "method": "Suffix",
+   "default_tok_s": 50.1,
+   "triton_tok_s": 49.9,
+   "speedup_default": 0.62,
+   "speedup_triton": 0.62
+  }
+ ]
+}

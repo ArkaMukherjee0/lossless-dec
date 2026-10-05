@@ -1,0 +1,82 @@
+{
+ "ngram4": {
+  "tau": 1.0609173337689919,
+  "draft_rate": 0.05043089364482928,
+  "mean_draft_len": 3.9617331443612067,
+  "per_category_tau": {
+   "math_reasoning": 1.0898834429169157,
+   "mt_bench": 1.0548506287056398,
+   "qa": 1.0268934043246767,
+   "rag": 1.132951523829004,
+   "summarization": 1.0711020328761793,
+   "translation": 1.0605117350432671
+  },
+  "totals": {
+   "tokens": 103902,
+   "steps": 97936,
+   "drafted_steps": 4939,
+   "draft_tokens": 19567,
+   "accepted": 5967
+  }
+ },
+ "pld8": {
+  "tau": 1.260747697571985,
+  "draft_rate": 0.5372938735393687,
+  "mean_draft_len": 7.794150858175248,
+  "per_category_tau": {
+   "math_reasoning": 1.4673574087113972,
+   "mt_bench": 1.2004693917465286,
+   "qa": 1.1372442839951866,
+   "rag": 1.4901802528921173,
+   "summarization": 1.3780503065949192,
+   "translation": 1.2650378731620378
+  },
+  "totals": {
+   "tokens": 103902,
+   "steps": 82413,
+   "drafted_steps": 44280,
+   "draft_tokens": 345125,
+   "accepted": 21501
+  }
+ },
+ "longest8": {
+  "tau": 1.2801172904910922,
+  "draft_rate": 0.5301850528546436,
+  "mean_draft_len": 7.553505449306346,
+  "per_category_tau": {
+   "math_reasoning": 1.5153750259713277,
+   "mt_bench": 1.2276818454563638,
+   "qa": 1.148159397400073,
+   "rag": 1.510911074740862,
+   "summarization": 1.3414545011572665,
+   "translation": 1.2900416508898145
+  },
+  "totals": {
+   "tokens": 103902,
+   "steps": 81166,
+   "drafted_steps": 43033,
+   "draft_tokens": 325050,
+   "accepted": 22743
+  }
+ },
+ "suffix": {
+  "tau": 1.343618259407733,
+  "draft_rate": 0.832251390146127,
+  "mean_draft_len": 1.8021535784207092,
+  "per_category_tau": {
+   "math_reasoning": 1.5824473855500107,
+   "mt_bench": 1.2490418857045955,
+   "qa": 1.2192620307057154,
+   "rag": 1.520032930845225,
+   "summarization": 1.324035108813274,
+   "translation": 1.5258867789322823
+  },
+  "totals": {
+   "tokens": 103902,
+   "steps": 77330,
+   "drafted_steps": 64358,
+   "draft_tokens": 115983,
+   "accepted": 26576
+  }
+ }
+}

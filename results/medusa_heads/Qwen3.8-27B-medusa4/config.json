@@ -1,0 +1,13 @@
+{
+ "model_type": "medusa",
+ "architectures": [
+  "MedusaModel"
+ ],
+ "hidden_size": 5120,
+ "vocab_size": 248320,
+ "num_heads": 4,
+ "num_hidden_layers": 1,
+ "original_lm_head": true,
+ "truncated_vocab_size": 248320,
+ "torch_dtype": "bfloat16"
+}
