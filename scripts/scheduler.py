@@ -14,7 +14,9 @@ import subprocess
 import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-QUEUE, STATE, LOGS = f"{ROOT}/jobs/queue.tsv", f"{ROOT}/jobs/state", "/var/tmp/arkamukh/logs/jobs"
+JOBS = os.environ.get("JOBS_DIR", f"{ROOT}/jobs")  # separate dirs keep concurrent schedulers apart
+QUEUE, STATE = f"{JOBS}/queue.tsv", f"{JOBS}/state"
+LOGS = os.environ.get("LOGS_DIR", "/var/tmp/arkamukh/logs/jobs")
 SLOTS = ["0,1", "2,3", "4,5", "6,7"]
 POLL_S = 20
 
@@ -87,8 +89,8 @@ def main():
             "failed": [i for i in all_ids if os.path.exists(f"{STATE}/{i}.failed")],
             "pending": [i for i in all_ids if i not in running and not finished(i)],
         }
-        json.dump(status, open(f"{ROOT}/jobs/status.json.tmp", "w"), indent=1)
-        os.replace(f"{ROOT}/jobs/status.json.tmp", f"{ROOT}/jobs/status.json")
+        json.dump(status, open(f"{JOBS}/status.json.tmp", "w"), indent=1)
+        os.replace(f"{JOBS}/status.json.tmp", f"{JOBS}/status.json")
         time.sleep(POLL_S)
 
 

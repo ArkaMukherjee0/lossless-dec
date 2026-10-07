@@ -3,7 +3,7 @@
 # Usage: concurrency_bench.sh <model> <tag> <spec-json|""> <c1,c2,...>
 set -euo pipefail
 MODEL=$1; TAG=$2; SPEC=$3; CONCS=$4; TP=${TP:-2}; EXTRA=${EXTRA:-}
-OUT=/workspace/results/d/${MODEL##*/}; mkdir -p "$OUT"
+OUT=/workspace/results/${EXP:-d}/${MODEL##*/}; mkdir -p "$OUT"
 PORT=8000
 
 vllm serve "$MODEL" --tensor-parallel-size $TP $EXTRA --port $PORT --max-model-len 8192 \

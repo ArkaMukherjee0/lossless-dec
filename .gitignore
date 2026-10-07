@@ -1,2 +1,8 @@
 .claude
 *.safetensors
+results/
+__pycache__/
+jobs/
+jobs_dkgrid/
+logs/
+website/

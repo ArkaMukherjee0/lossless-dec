@@ -144,27 +144,52 @@ def fig_concurrency():
 
 # 3 ── draft length × concurrency ────────────────────────────────────────────────────────────────
 def fig_k_by_conc():
+    """Same k grid on every model (results/dk_grid, one node); falls back to the older partial runs."""
     cs = [4, 16, 64, 128]
-    panels = [("Qwen3.8-27B", "MTP", ["mtp1", "mtp3", "mtp6"]),
-              ("gemma-4-26B-A4B-it", "MTP", ["mtp4", "mtp6"]),
-              ("gemma-4-26B-A4B-it", "DFlash", ["dflash7", "dflash15"])]
-    fig, axes = plt.subplots(1, 3, figsize=(11, 3.4), sharey=True)
-    for ax, (m, name, tags) in zip(axes, panels):
-        d = f"{R}/d/{m}"
+    grid = f"{R}/dk_grid"
+    if not os.path.isdir(grid):
+        return
+    fig, axes = plt.subplots(2, 4, figsize=(14, 6.2), sharex=True, sharey=True)
+    rows = []
+    for col, (m, lbl) in enumerate(MODELS):
+        d = f"{grid}/{m}"
+        if not all(os.path.exists(f"{d}/ar_c{c}.json") for c in cs):
+            continue
         ar = {c: load(f"{d}/ar_c{c}.json")["output_throughput"] for c in cs}
-        shades = sns.light_palette(C[name], n_colors=len(tags) + 2)[2:]
-        for tag, col in zip(tags, shades):
-            ys = [load(f"{d}/{tag}_c{c}.json")["output_throughput"] / ar[c] for c in cs]
-            k = tag.replace("mtp", "").replace("dflash", "")
-            ax.plot(cs, ys, color=col, lw=2, marker="o", ms=5, label=f"k={k}", zorder=3)
-        baseline(ax)
-        ax.set_xscale("log", base=2)
-        ax.set_xticks(cs, [str(c) for c in cs])
-        ax.set_title(f"{SHORT[m]} · {name}", fontsize=10)
-        ax.set_xlabel("Concurrent requests")
-        ax.legend(loc="lower left", title="draft length", title_fontsize=8)
-    axes[0].set_ylabel("Speedup vs plain decoding")
+        for row, (name, pre, ks) in enumerate([("MTP", "mtp", [1, 3, 6]),
+                                               ("DFlash", "dflash", [3, 7] if m == "Qwen3.8-27B" else [3, 7, 15])]):
+            ax = axes[row, col]
+            full = [1, 3, 6] if name == "MTP" else [3, 7, 15]  # colour follows k, not position
+            palette = sns.light_palette(C[name], n_colors=len(full) + 2)[2:]
+            drawn = 0
+            for k in ks:
+                col_ = palette[full.index(k)]
+                if not all(os.path.exists(f"{d}/{pre}{k}_c{c}.json") for c in cs):
+                    continue  # run not finished: draw only complete configurations
+                pts = [(c, load(f"{d}/{pre}{k}_c{c}.json")["output_throughput"] / ar[c]) for c in cs]
+                drawn += 1
+                xs, ys = zip(*pts)
+                ax.plot(xs, ys, color=col_, lw=2, marker="o", ms=4.5, label=f"k={k}", zorder=3)
+                rows += [{"model": SHORT[m], "method": name, "k": k, "concurrency": x, "speedup": round(y, 2)}
+                         for x, y in pts]
+            baseline(ax)
+            ax.set_xscale("log", base=2)
+            ax.set_xticks(cs, [str(c) for c in cs])
+            if row == 0:
+                ax.set_title(lbl.replace("\n", " "), fontsize=10)
+            if row == 1:
+                ax.set_xlabel("Concurrent requests")
+            if col == 0:
+                ax.set_ylabel(f"{name} speedup")
+            if not drawn:
+                ax.text(16, 1.5, "pending", ha="center", va="center", fontsize=9, color=NEUTRAL, style="italic")
+            if col == 0:  # full key for the row, independent of which runs have finished
+                ax.legend(handles=[plt.Line2D([], [], color=c_, lw=2, marker="o", ms=4.5, label=f"k={k}")
+                                   for k, c_ in zip([1, 3, 6] if name == "MTP" else [3, 7, 15],
+                                                    sns.light_palette(C[name], n_colors=5)[2:])],
+                          loc="lower left", fontsize=8)
     save(fig, "fig03_draftlen_x_concurrency")
+    TABLES["k_by_conc"] = rows
 
 
 # 4/5 ── draft-length sweep and verify cost ──────────────────────────────────────────────────────

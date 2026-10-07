@@ -221,9 +221,10 @@ ol li, ul li {{ margin: 4px 0; }}
      "Most configurations fall below plain decoding by 64–128 requests in flight. Gemma 4 26B-A4B with MTP is the only one that holds (1.60× at 128).",
      table(*pivot([dict(r, config=f"{r['model']} · {r['method']}") for r in conc],
                   "config", "concurrency", "speedup")))}
-{fig(5, "fig03_draftlen_x_concurrency", "Draft length × concurrency",
-     "Longer drafts win with 4 requests in flight and lose with 64+. The best k depends on load.",
-     "<p class='note'>Raw results: <code>results/d/</code>.</p>")}
+{fig(5, "fig03_draftlen_x_concurrency", "Draft length × concurrency (same k grid on every model)",
+     "MTP k = 1 / 3 / 6 and DFlash k = 3 / 7 / 15 (3 / 7 on Qwen3.8, the maximum for its drafter), each against plain decoding on the same node. "
+     f"<strong>Run in progress:</strong> {len({(r['model'], r['method'], r['k']) for r in T.get('k_by_conc', [])})} of 23 speculative configurations finished; panels fill in as runs complete.",
+     (table(T["k_by_conc"]) if T.get("k_by_conc") else "") + "<p class='note'>Raw results: <code>results/dk_grid/</code>.</p>")}
 {fig(6, "fig09_temperature", "Temperature 0 vs 1 (3 seeds at T=1)",
      "Sampling cuts acceptance. Qwen drafters lose the most, and DFlash on the Qwen MoE drops below plain decoding.",
      table(temp))}

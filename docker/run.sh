@@ -13,6 +13,6 @@ exec docker run --rm $TTY ${NAME:+--name "$NAME"} \
   --ipc=host --shm-size=64g --security-opt seccomp=unconfined \
   -e HIP_VISIBLE_DEVICES="${GPUS:-0,1,2,3,4,5,6,7}" \
   --user "$(id -u):$(id -g)" -e HOME=/models/home -e VLLM_CACHE_ROOT="/models/home/.cache/vllm-gcd${GPUS//,/_}" -e USER="$(id -un)" -e LOGNAME="$(id -un)" \
-  -e HF_TOKEN="${HF_TOKEN:-}" -e TARGET -e ATTN -e EAGER -e PREFIX_CACHE \
+  -e HF_TOKEN="${HF_TOKEN:-}" -e TARGET -e ATTN -e EAGER -e PREFIX_CACHE -e EXP \
   -v "$REPO":/workspace -v "$MODELS":/models \
   "$IMAGE" "${@:-bash}"
