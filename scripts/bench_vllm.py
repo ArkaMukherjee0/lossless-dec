@@ -53,6 +53,7 @@ def main():
     ap.add_argument("--max-num-batched-tokens", type=int, default=None)
     ap.add_argument("--exp", default="bench", help="results/<exp>/<model>/")
     ap.add_argument("--save-gaps", action="store_true", help="store top-2 logprob gap per output token")
+    ap.add_argument("--enforce-eager", action="store_true", help="no CUDA graphs (needed by scripts/draftlog)")
     args = ap.parse_args()
 
     spec = json.loads(args.spec) if args.spec else None
@@ -64,7 +65,7 @@ def main():
               **({"attention_config": {"backend": os.environ["ATTN"]}} if os.environ.get("ATTN") else {}),
               **{k: v for k, v in {"max_num_seqs": args.max_num_seqs,
                                    "max_num_batched_tokens": args.max_num_batched_tokens}.items() if v},
-              disable_log_stats=False, limit_mm_per_prompt={"image": 0, "video": 0}
+              enforce_eager=args.enforce_eager, disable_log_stats=False, limit_mm_per_prompt={"image": 0, "video": 0}
               if args.mistral or any(m in args.model for m in ("Qwen3.8", "gemma-4", "Qwen3.6")) else None)
     tok = llm.get_tokenizer()
     sp = SamplingParams(temperature=args.temperature, max_tokens=args.max_tokens, seed=args.seed,
