@@ -6,6 +6,7 @@
   GPUS= docker/run.sh python3 scripts/make_story_figs.py
 """
 import json
+import os
 
 import matplotlib
 matplotlib.use("Agg")
@@ -119,6 +120,17 @@ def story():
     fig.subplots_adjust(left=0.05, right=0.97, top=0.72, bottom=0.18)
     for ext in ("svg", "pdf"):
         fig.savefig(f"{OUT}/m0_story.{ext}")
+    # each panel on its own as a high-resolution PNG (lit/stash/)
+    os.makedirs(f"{OUT}/stash", exist_ok=True)
+    renderer = fig.canvas.get_renderer()
+    shared = fig.texts + fig.artists  # the between-panel arrows and captions
+    for ax, name in zip(axes, ["1_load", "2_compounding", "3_rejections", "4_siblings"]):
+        for a in list(axes) + shared:  # show only this panel, so the crop can't catch its neighbours
+            a.set_visible(a is ax)
+        box = ax.get_tightbbox(renderer).transformed(fig.dpi_scale_trans.inverted()).padded(0.08)
+        fig.savefig(f"{OUT}/stash/m0_story_{name}.png", bbox_inches=box, dpi=300)
+    for a in list(axes) + shared:
+        a.set_visible(True)
 
 
 def token_row(ax, x, y, toks, face="white", edge=style.GRID, color=style.INK, marks=None, outline=()):

@@ -1,0 +1,2685 @@
+[
+ {
+  "key": "bpd",
+  "name": "Blockwise parallel",
+  "venue": "NeurIPS '18",
+  "date": "2018-11",
+  "family": "origins",
+  "tag": "draft heads",
+  "arxiv": "1811.03115",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds k output heads so one forward pass guesses the next k tokens; the next pass scores them with the base model and keeps the longest prefix that matches its own greedy choices, cutting the number of sequential steps.",
+  "why": "The base model must be trained with the extra heads, and acceptance is an exact match to the greedy token, so it supports greedy decoding only and gives no distribution guarantee when sampling.",
+  "answered": [
+   [
+    "sd",
+    "Speculative decoding"
+   ]
+  ]
+ },
+ {
+  "key": "sd",
+  "name": "Speculative decoding",
+  "venue": "ICML '23 · SpS arXiv '23",
+  "date": "2022-11",
+  "family": "origins",
+  "tag": "draft model",
+  "arxiv": "2211.17192",
+  "on_path": true,
+  "proposed": false,
+  "intro": "A small draft model proposes k tokens and the target scores them all in one forward pass; a probabilistic accept/reject rule, with resampling from the residual on rejection, keeps the output exactly the target's distribution at any temperature.",
+  "why": "Needs a second model with the same vocabulary, drafts one fixed-length chain one token at a time, and discards everything after the first rejection. At large batch verification turns compute-bound, so the speedup shrinks.",
+  "answered": [
+   [
+    "dv",
+    "Draft & Verify"
+   ],
+   [
+    "medusa",
+    "Medusa"
+   ],
+   [
+    "rest",
+    "REST"
+   ],
+   [
+    "lookahead",
+    "Lookahead"
+   ],
+   [
+    "hetero",
+    "Hetero-vocab SD"
+   ],
+   [
+    "llma",
+    "LLMA"
+   ],
+   [
+    "pld",
+    "Prompt lookup"
+   ],
+   [
+    "suffix",
+    "SuffixDecoding"
+   ],
+   [
+    "specdecpp",
+    "SpecDec++"
+   ],
+   [
+    "pearl",
+    "PEARL"
+   ],
+   [
+    "smartspec",
+    "SmartSpec"
+   ],
+   [
+    "distillspec",
+    "DistillSpec"
+   ],
+   [
+    "osd",
+    "Online SD"
+   ],
+   [
+    "staged",
+    "Staged SD"
+   ],
+   [
+    "cascade",
+    "Cascade SD"
+   ],
+   [
+    "parallelspec",
+    "ParallelSpec"
+   ],
+   [
+    "specdiff",
+    "SpecDiff"
+   ],
+   [
+    "specinfer",
+    "SpecInfer"
+   ],
+   [
+    "spectr",
+    "SpecTr"
+   ],
+   [
+    "blockv",
+    "Block verif."
+   ],
+   [
+    "amusd",
+    "AMUSD"
+   ],
+   [
+    "dsi",
+    "DSI"
+   ],
+   [
+    "triforce",
+    "TriForce"
+   ]
+  ]
+ },
+ {
+  "key": "llma",
+  "name": "LLMA",
+  "venue": "arXiv '23",
+  "date": "2023-04",
+  "family": "what drafts",
+  "tag": "copy drafting",
+  "arxiv": "2304.04487",
+  "on_path": true,
+  "proposed": false,
+  "intro": "When the output is likely to repeat a reference text (retrieved documents, earlier turns), copies a span from that reference as the draft and checks all copied tokens in one target pass, keeping the matching prefix.",
+  "why": "Speedup exists only when the output overlaps a reference; open-ended generation has nothing to copy. Checks are exact matches against greedy decoding, so sampling is not covered.",
+  "answered": [
+   [
+    "rest",
+    "REST"
+   ],
+   [
+    "lookahead",
+    "Lookahead"
+   ]
+  ]
+ },
+ {
+  "key": "specinfer",
+  "name": "SpecInfer",
+  "venue": "ASPLOS '24",
+  "date": "2023-05",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2305.09781",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Builds a token tree from one or more small drafters and verifies every branch in a single target pass with a tree attention mask, so a rejection on one branch can leave another accepted; multi-step speculative sampling keeps sampling exact.",
+  "why": "The tree follows a fixed expansion setting, blind to budget, hardware and how predictable the context is. Verification also walks the tree token by token, rejecting some branches that a joint check would keep.",
+  "answered": [
+   [
+    "sequoia",
+    "Sequoia"
+   ],
+   [
+    "specexec",
+    "SpecExec"
+   ],
+   [
+    "traversal",
+    "Traversal verif."
+   ]
+  ]
+ },
+ {
+  "key": "staged",
+  "name": "Staged SD",
+  "venue": "ES-FoMo '23",
+  "date": "2023-08",
+  "family": "what drafts",
+  "tag": "hierarchical drafting",
+  "arxiv": "2308.04623",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Targets batch-1, on-device decoding: arranges draft candidates as a tree to raise the expected tokens per target pass, and speeds up the drafter itself with a second speculative stage that uses an even smaller model.",
+  "why": "The same drafter produces every position, though tokens deep in the draft are rarely accepted, so much drafting cost buys tokens that get thrown away. Evaluated with a 762M GPT-2 target.",
+  "answered": [
+   [
+    "cascade",
+    "Cascade SD"
+   ]
+  ]
+ },
+ {
+  "key": "dv",
+  "name": "Draft & Verify",
+  "venue": "ACL '24",
+  "date": "2023-09",
+  "family": "what drafts",
+  "tag": "self-speculation",
+  "arxiv": "2309.08168",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Self-speculation: the target drafts by running with some intermediate layers skipped, then verifies with all layers. No extra model or training; the skip set is found by Bayesian optimization, and drafting stops early when confidence drops.",
+  "why": "The skip set comes from a slow offline search and stays fixed per task, and an untrained layer-skipped model is a weak drafter, so acceptance is limited and speedups top out near 2x.",
+  "answered": [
+   [
+    "swift",
+    "SWIFT"
+   ],
+   [
+    "layerskip",
+    "LayerSkip"
+   ],
+   [
+    "kangaroo",
+    "Kangaroo"
+   ],
+   [
+    "cassandra",
+    "Cassandra"
+   ]
+  ]
+ },
+ {
+  "key": "distillspec",
+  "name": "DistillSpec",
+  "venue": "ICLR '24",
+  "date": "2023-10",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2310.08461",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Distils the drafter toward the target before deployment, training on sequences the drafter itself generates (on-policy) and picking the divergence to suit the task and decoding strategy, so drafts agree with the target more often.",
+  "why": "Distillation happens once, offline, on a fixed dataset, so acceptance falls when live queries drift from it. Its token-level divergence also does not directly maximize how many consecutive draft tokens are accepted.",
+  "answered": [
+   [
+    "osd",
+    "Online SD"
+   ],
+   [
+    "eal",
+    "EAL/WTV"
+   ]
+  ]
+ },
+ {
+  "key": "osd",
+  "name": "Online SD",
+  "venue": "ICML '24",
+  "date": "2023-10",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2310.07177",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps updating the drafter during serving: positions where the draft disagreed with the target are buffered, and the drafter is periodically distilled on them using spare compute, so it adapts to the live query distribution.",
+  "why": "Gains depend on the query stream being narrow or stable enough for a small drafter to learn, continual training needs spare serving capacity, and the small drafter's capacity gap to the target still caps acceptance.",
+  "answered": []
+ },
+ {
+  "key": "spectr",
+  "name": "SpecTr",
+  "venue": "NeurIPS '23",
+  "date": "2023-10",
+  "family": "draft shape & verification",
+  "tag": "multi-draft",
+  "arxiv": "2310.15141",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Samples k candidate drafts and picks among them with a selection rule derived from optimal transport, raising the chance that some draft token is accepted while keeping the output distribution exact.",
+  "why": "The optimal selection is a linear program exponential in k, so SpecTr uses an approximate rule guaranteed only within a factor (1-1/e) of optimal; drafting k sequences also multiplies drafter cost.",
+  "answered": [
+   [
+    "mdopt",
+    "Multi-draft opt."
+   ]
+  ]
+ },
+ {
+  "key": "rest",
+  "name": "REST",
+  "venue": "NAACL '24",
+  "date": "2023-11",
+  "family": "what drafts",
+  "tag": "retrieval drafting",
+  "arxiv": "2311.08252",
+  "on_path": true,
+  "proposed": false,
+  "intro": "Replaces the drafter with retrieval: matches the current suffix against a large text or code datastore through a suffix array, builds a tree from the continuations found, and verifies it in one target pass. No training needed.",
+  "why": "The datastore is static and large, so it helps mainly in its own domain and misses repetition specific to an app's traffic; lookup needs an exact suffix match, which often fails and leaves no draft.",
+  "answered": [
+   [
+    "suffix",
+    "SuffixDecoding"
+   ],
+   [
+    "sam",
+    "SAM Decoding"
+   ],
+   [
+    "logitspec",
+    "LogitSpec"
+   ]
+  ]
+ },
+ {
+  "key": "pld",
+  "name": "Prompt lookup",
+  "venue": "code '23",
+  "date": "2023-11",
+  "family": "what drafts",
+  "tag": "n-gram lookup",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "Drafts by string matching: finds the last few generated tokens elsewhere in the prompt and proposes the tokens that followed them there. No model needed, and effective when outputs quote the input, as in summarization, document QA and code editing.",
+  "why": "It searches only the current prompt, so it misses reuse across requests and past outputs, and it needs an exact n-gram match, which open-ended text rarely provides.",
+  "answered": [
+   [
+    "suffix",
+    "SuffixDecoding"
+   ],
+   [
+    "sam",
+    "SAM Decoding"
+   ],
+   [
+    "logitspec",
+    "LogitSpec"
+   ]
+  ]
+ },
+ {
+  "key": "cascade",
+  "name": "Cascade SD",
+  "venue": "NeurIPS '24",
+  "date": "2023-12",
+  "family": "what drafts",
+  "tag": "hierarchical drafting",
+  "arxiv": "2312.11462",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Two cascades of drafters. Vertically, each drafter is itself sped up by a smaller one, down to a cheap statistical model. Horizontally, early draft positions, the most likely to be accepted, get larger drafters and later positions smaller ones.",
+  "why": "Needs a ladder of drafters of different sizes hosted together, and how positions are split across levels is a hyperparameter tuned per model setup, so deployment cost grows with every level.",
+  "answered": []
+ },
+ {
+  "key": "medusa",
+  "name": "Medusa",
+  "venue": "ICML '24",
+  "date": "2024-01",
+  "family": "what drafts",
+  "tag": "draft heads",
+  "arxiv": "2401.10774",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds several small decoding heads on the target's last hidden state, head k predicting the token k+1 steps ahead; top candidates from each head form a tree verified in one pass with tree attention. No separate drafter model.",
+  "why": "Each head guesses its position blind to the tokens drafted before it, so later heads are often wrong; the tree shape is fixed offline, and the heads are bolted onto a model pretrained only for next-token prediction.",
+  "answered": [
+   [
+    "hydra",
+    "Hydra"
+   ],
+   [
+    "eagle",
+    "EAGLE"
+   ],
+   [
+    "redrafter",
+    "ReDrafter"
+   ],
+   [
+    "eagle2",
+    "EAGLE-2"
+   ],
+   [
+    "mtp",
+    "MTP"
+   ]
+  ]
+ },
+ {
+  "key": "eagle",
+  "name": "EAGLE",
+  "venue": "ICML '24",
+  "date": "2024-01",
+  "family": "what drafts",
+  "tag": "feature-level drafting",
+  "arxiv": "2401.15077",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A one-layer drafter autoregresses on the target's final hidden states, taking the current feature plus the next sampled token (which resolves sampling uncertainty), and decodes tokens through the target's LM head; candidates form a static tree.",
+  "why": "The tree has a fixed shape regardless of context, spending budget on unlikely branches, and drafting is still one sequential pass per depth, so draft latency grows with draft length.",
+  "answered": [
+   [
+    "eagle2",
+    "EAGLE-2"
+   ],
+   [
+    "parallelspec",
+    "ParallelSpec"
+   ]
+  ]
+ },
+ {
+  "key": "hydra",
+  "name": "Hydra",
+  "venue": "COLM '24",
+  "date": "2024-02",
+  "family": "what drafts",
+  "tag": "draft heads",
+  "arxiv": "2402.05109",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Replaces Medusa's independent heads with sequentially dependent ones: each head also sees the tokens drafted before it, which raises draft accuracy. Hydra++ adds distillation from the target and architecture tweaks.",
+  "why": "Each draft depth still needs its own head, and the candidate tree is a fixed shape tuned offline, so draft length and branching cannot adapt to how predictable the context is.",
+  "answered": []
+ },
+ {
+  "key": "lookahead",
+  "name": "Lookahead",
+  "venue": "ICML '24",
+  "date": "2024-02",
+  "family": "what drafts",
+  "tag": "Jacobi decoding",
+  "arxiv": "2402.02057",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Runs Jacobi-style parallel guessing of several future positions inside each forward pass, collects the n-grams this produces into a pool, and verifies pool entries that start with the current token in the same pass. No drafter or datastore.",
+  "why": "Each step spends many extra FLOPs on the lookahead branch, so it pays off only when compute sits idle, as at small batch; drafts need an exact n-gram match in the pool, which often fails.",
+  "answered": [
+   [
+    "logitspec",
+    "LogitSpec"
+   ]
+  ]
+ },
+ {
+  "key": "sequoia",
+  "name": "Sequoia",
+  "venue": "NeurIPS '24",
+  "date": "2024-02",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2402.12374",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Chooses the draft tree shape by dynamic programming to maximize expected accepted tokens for a given budget, picks tree size and depth per hardware, and verifies with sampling without replacement so it holds up across temperatures.",
+  "why": "Tree sizes are tuned for GPU-resident targets, where verification cost grows with tree size. For offloaded targets, a pass over thousands of tokens costs about the same as one, so far larger trees would pay off.",
+  "answered": [
+   [
+    "specexec",
+    "SpecExec"
+   ]
+  ]
+ },
+ {
+  "key": "redrafter",
+  "name": "ReDrafter",
+  "venue": "arXiv '24",
+  "date": "2024-03",
+  "family": "what drafts",
+  "tag": "draft heads",
+  "arxiv": "2403.09919",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A small RNN draft head conditioned on the target's hidden states drafts with beam search; dynamic tree attention merges prefixes shared across beams before verification, and the head is trained by distillation from the target.",
+  "why": "Drafting is still one sequential RNN step per depth, and beam width and length are fixed settings, so draft cost does not adapt to the context; the head must be retrained for each target.",
+  "answered": []
+ },
+ {
+  "key": "blockv",
+  "name": "Block verif.",
+  "venue": "ICLR '25",
+  "date": "2024-03",
+  "family": "draft shape & verification",
+  "tag": "verification rule",
+  "arxiv": "2403.10444",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Verifies the draft as a block: whether to accept a prefix is decided with probabilities computed over the whole block. Provably optimal for a single draft, never worse than token-by-token verification, and still exactly lossless.",
+  "why": "It covers a single draft chain only, with no trees or multiple drafts, and drafters trained with token-level losses are not tuned to its rule; the measured gain is modest, about 5 to 8% wall-clock.",
+  "answered": [
+   [
+    "bvloss",
+    "BV loss"
+   ],
+   [
+    "traversal",
+    "Traversal verif."
+   ],
+   [
+    "hsd",
+    "HSD"
+   ]
+  ]
+ },
+ {
+  "key": "layerskip",
+  "name": "LayerSkip",
+  "venue": "ACL '24",
+  "date": "2024-04",
+  "family": "what drafts",
+  "tag": "self-speculation",
+  "arxiv": "2404.16710",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains the model with layer dropout (higher for later layers) and an early-exit loss through a shared LM head, so early layers become usable predictors; at inference it drafts by exiting early and verifies with the remaining layers, reusing their activations and cache.",
+  "why": "The model itself must be pretrained or fine-tuned with this recipe, which changes the weights being served; off-the-shelf checkpoints give poor early exits and cannot use it as is.",
+  "answered": []
+ },
+ {
+  "key": "kangaroo",
+  "name": "Kangaroo",
+  "venue": "NeurIPS '24",
+  "date": "2024-04",
+  "family": "what drafts",
+  "tag": "self-speculation",
+  "arxiv": "2404.18911",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Self-speculation from a fixed shallow exit: the target's first few layers plus a small trained adapter form the drafter, and drafting halts as soon as the draft's confidence in the next token falls below a threshold.",
+  "why": "Each draft token still runs a block of the target's own layers, so drafting is not cheap, and the exit depth is fixed for all inputs; with single-chain verification the reported speedup tops out near 1.7x.",
+  "answered": []
+ },
+ {
+  "key": "mtp",
+  "name": "MTP",
+  "venue": "ICML '24 · DSv3",
+  "date": "2024-04",
+  "family": "what drafts",
+  "tag": "multi-token prediction",
+  "arxiv": "2404.19737",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Pretrains the model with extra output heads that predict several future tokens from a shared trunk; besides better sample efficiency, the heads serve as a built-in drafter for self-speculative decoding. DeepSeek-V3 uses a sequential variant.",
+  "why": "The heads must be trained in from pretraining, so existing checkpoints cannot adopt it cheaply; the paper also finds the gains mainly for larger models and code, with small models sometimes hurt.",
+  "answered": []
+ },
+ {
+  "key": "triforce",
+  "name": "TriForce",
+  "venue": "COLM '24",
+  "date": "2024-04",
+  "family": "systems & serving",
+  "tag": "long context",
+  "arxiv": "2404.11912",
+  "on_path": false,
+  "proposed": false,
+  "intro": "For long contexts, a three-level hierarchy: the target itself, attending to a retrieved sparse subset of its KV cache, drafts for the full model, and a tiny model with a short sliding cache drafts for that sparse drafter.",
+  "why": "Designed for batch 1. Its middle drafter runs the full target weights, so drafting stays heavy, and the extra sparse cache costs memory while giving only moderate acceptance.",
+  "answered": [
+   [
+    "magicdec",
+    "MagicDec"
+   ],
+   [
+    "quantspec",
+    "QuantSpec"
+   ],
+   [
+    "longspec",
+    "LongSpec"
+   ],
+   [
+    "specextend",
+    "SpecExtend"
+   ]
+  ]
+ },
+ {
+  "key": "specdecpp",
+  "name": "SpecDec++",
+  "venue": "COLM '25",
+  "date": "2024-05",
+  "family": "draft shape & verification",
+  "tag": "draft length",
+  "arxiv": "2405.19715",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Sets draft length on the fly: a trained head on the drafter predicts each draft token's acceptance chance, and drafting stops once the predicted chance that some token gets rejected passes a threshold, the form the paper proves optimal.",
+  "why": "The acceptance head must be trained for each drafter and target pair, the method handles a single chain only, and it was evaluated on one Llama-2-chat model pair.",
+  "answered": []
+ },
+ {
+  "key": "dsi",
+  "name": "DSI",
+  "venue": "ICLR '25",
+  "date": "2024-05",
+  "family": "systems & serving",
+  "tag": "async / multi-device",
+  "arxiv": "2405.14105",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Speculation parallelism: drafters keep running ahead while several target instances on separate GPUs verify earlier drafts concurrently, so no one waits for a verification to finish; provably no slower than SD or plain decoding, with any drafter.",
+  "why": "It trades hardware for latency: overlapping verifications need several target instances across GPUs, and the paper's speedups are measured in simulation.",
+  "answered": []
+ },
+ {
+  "key": "eagle2",
+  "name": "EAGLE-2",
+  "venue": "EMNLP '24",
+  "date": "2024-06",
+  "family": "what drafts",
+  "tag": "dynamic trees",
+  "arxiv": "2406.16858",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Makes EAGLE's draft tree dynamic: the drafter's own confidence stands in for acceptance probability, so the tree grows its most promising branches and keeps only the top-scoring candidates for verification, adapting shape to each context.",
+  "why": "The drafter is trained on the target's true features but at inference feeds on its own predictions, so errors compound with depth (exposure bias); its feature-regression loss also limits what more training data can buy.",
+  "answered": [
+   [
+    "eagle3",
+    "EAGLE-3"
+   ],
+   [
+    "hass",
+    "HASS"
+   ],
+   [
+    "griffin",
+    "GRIFFIN"
+   ]
+  ]
+ },
+ {
+  "key": "specexec",
+  "name": "SpecExec",
+  "venue": "NeurIPS '24",
+  "date": "2024-06",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2406.02532",
+  "on_path": false,
+  "proposed": false,
+  "intro": "For targets offloaded to CPU RAM on consumer GPUs, where one pass over thousands of tokens costs about the same as one: builds a huge draft tree from the drafter's most probable continuations and verifies it in a single target pass.",
+  "why": "The gain depends on verification being nearly free in tree size, which holds only when weight transfer dominates, as with offloading; on GPU-resident targets such large trees waste compute.",
+  "answered": []
+ },
+ {
+  "key": "smartspec",
+  "name": "SmartSpec",
+  "venue": "arXiv '24",
+  "date": "2024-06",
+  "family": "systems & serving",
+  "tag": "serving under load",
+  "arxiv": "2406.14066",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Controls speculation in a serving system (vLLM): estimates goodput, accepted tokens per unit time, from predicted acceptance and a batch latency model, and each step sets the draft length, down to zero, that maximizes it.",
+  "why": "At large batch it mostly switches speculation off, because verification turns compute-bound and extra tokens cost real time, so the speedup still vanishes under load; it also optimizes throughput with no notion of latency SLOs.",
+  "answered": [
+   [
+    "magicdec",
+    "MagicDec"
+   ],
+   [
+    "adaspec",
+    "AdaSpec"
+   ]
+  ]
+ },
+ {
+  "key": "hass",
+  "name": "HASS",
+  "venue": "ICLR '25",
+  "date": "2024-08",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2408.15766",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains an EAGLE-style drafter under inference-like conditions: harmonized context alignment feeds it its own features from earlier draft steps during training, and harmonized objective distillation focuses the loss on the target's top-ranked tokens.",
+  "why": "Training still includes positions where the drafter's inputs have drifted far from the target's, and these badly misaligned tokens distort optimization, so part of the train/inference gap remains.",
+  "answered": [
+   [
+    "griffin",
+    "GRIFFIN"
+   ]
+  ]
+ },
+ {
+  "key": "specdiff",
+  "name": "SpecDiff",
+  "venue": "NAACL '25",
+  "date": "2024-08",
+  "family": "what drafts",
+  "tag": "parallel drafting",
+  "arxiv": "2408.05636",
+  "on_path": true,
+  "proposed": false,
+  "intro": "Uses a discrete diffusion language model as the drafter: it produces the whole draft block in a few parallel denoising steps, so drafting cost no longer grows with draft length, and standard verification keeps the output exact.",
+  "why": "The diffusion drafter is a large standalone model blind to the target's internal state, and it drafts positions largely independently, so acceptance decays along the block; its token-level training ignores accepted length.",
+  "answered": [
+   [
+    "dflash",
+    "DFlash"
+   ],
+   [
+    "diffuspec",
+    "DiffuSpec"
+   ],
+   [
+    "specdiff2",
+    "SpecDiff-2"
+   ]
+  ]
+ },
+ {
+  "key": "pearl",
+  "name": "PEARL",
+  "venue": "ICLR '25",
+  "date": "2024-08",
+  "family": "systems & serving",
+  "tag": "async drafting",
+  "arxiv": "2408.11850",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Overlaps drafting and verification: pre-verify checks the first draft token while the rest are still being drafted, and post-verify keeps drafting while the target verifies, which also makes the draft length adaptive.",
+  "why": "Post-verify drafts assume the current draft is accepted; after a rejection they are discarded and drafting restarts from the corrected token while the target waits, so drafting is back on the critical path.",
+  "answered": [
+   [
+    "ssd",
+    "SSD"
+   ]
+  ]
+ },
+ {
+  "key": "magicdec",
+  "name": "MagicDec",
+  "venue": "ICLR '25",
+  "date": "2024-08",
+  "family": "systems & serving",
+  "tag": "serving under load",
+  "arxiv": "2408.11049",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Shows that for moderate to long contexts SD speeds up even large batches, because KV-cache reads, which grow with batch and length, dominate; drafts with a sparse, StreamingLLM-style KV cache whose cost stays flat, chosen by a performance model.",
+  "why": "The self-drafter still runs the full target weights over a fixed sparse window, so drafting stays heavy, the extra cache costs memory, and acceptance drops when needed context falls outside the window, as in long reasoning traces.",
+  "answered": [
+   [
+    "cassandra",
+    "Cassandra"
+   ],
+   [
+    "quantspec",
+    "QuantSpec"
+   ],
+   [
+    "sparsespec",
+    "SparseSpec"
+   ],
+   [
+    "longspec",
+    "LongSpec"
+   ],
+   [
+    "specextend",
+    "SpecExtend"
+   ]
+  ]
+ },
+ {
+  "key": "swift",
+  "name": "SWIFT",
+  "venue": "ICLR '25",
+  "date": "2024-10",
+  "family": "what drafts",
+  "tag": "self-speculation",
+  "arxiv": "2410.06916",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Plug-and-play self-speculation that chooses which of the target's layers to skip on the fly, searching for a good skip set from the current input during decoding, with no training and no offline search.",
+  "why": "Layer skipping is coarse: a draft pass still reads the weights of every kept layer, which dominates cost at batch 1, and a model with layers removed drafts poorly, so speedups stay around 1.3 to 1.6x.",
+  "answered": [
+   [
+    "cassandra",
+    "Cassandra"
+   ]
+  ]
+ },
+ {
+  "key": "parallelspec",
+  "name": "ParallelSpec",
+  "venue": "arXiv '24",
+  "date": "2024-10",
+  "family": "what drafts",
+  "tag": "parallel drafting",
+  "arxiv": "2410.05589",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains a drafter that predicts k future tokens in one forward pass by appending k mask tokens, replacing autoregressive drafting inside frameworks such as Medusa and EAGLE, so draft cost no longer grows with draft length.",
+  "why": "The parallel drafter is aligned to a single target and must be retrained for every new target model, which multiplies training cost across model families.",
+  "answered": [
+   [
+    "pard",
+    "PARD"
+   ]
+  ]
+ },
+ {
+  "key": "mdopt",
+  "name": "Multi-draft opt.",
+  "venue": "ICLR '25",
+  "date": "2024-10",
+  "family": "draft shape & verification",
+  "tag": "multi-draft",
+  "arxiv": "2410.18234",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Analyses the optimal token-level rule for choosing among several independent drafts: it decomposes into importance sampling that picks one candidate token, followed by ordinary single-draft speculative sampling, and derives practical weighted importance-sampling schemes from this.",
+  "why": "Closed-form optimal acceptance is derived only for two identical drafters; beyond that the proposed schemes are approximations, and the analysis covers token-level selection only, leaving open how multi-step draft trees should branch.",
+  "answered": []
+ },
+ {
+  "key": "amusd",
+  "name": "AMUSD",
+  "venue": "ISCAS '25",
+  "date": "2024-10",
+  "family": "systems & serving",
+  "tag": "async / multi-device",
+  "arxiv": "2410.17375",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Runs the draft and target models asynchronously on separate GPUs: the drafter keeps generating while the target verifies, and on a rejection both roll back to the last verified token.",
+  "why": "After each rejection, everything drafted past the error is discarded and drafting restarts on the critical path; it also needs a second device for the drafter.",
+  "answered": [
+   [
+    "ssd",
+    "SSD"
+   ]
+  ]
+ },
+ {
+  "key": "suffix",
+  "name": "SuffixDecoding",
+  "venue": "NeurIPS '25",
+  "date": "2024-11",
+  "family": "what drafts",
+  "tag": "retrieval drafting",
+  "arxiv": "2411.04975",
+  "on_path": true,
+  "proposed": false,
+  "intro": "Model-free drafting from suffix trees over the prompt and past outputs, with draft length set by how long the matched pattern is; a hybrid mode falls back to EAGLE-3 when the suffix match scores poorly. Strong on repetitive agentic workloads.",
+  "why": "It relies on repetition, so on open-ended, high-entropy text matches are rare and gains fade. In RL rollouts and multi-sample generation, samples of one prompt share content, yet each is drafted alone; results are mostly at batch 1.",
+  "answered": [
+   [
+    "das",
+    "DAS"
+   ],
+   [
+    "rhymerl",
+    "RhymeRL"
+   ],
+   [
+    "multisample",
+    "Multi-sample SD"
+   ],
+   [
+    "stand",
+    "STAND"
+   ],
+   [
+    "seer",
+    "Seer"
+   ],
+   [
+    "srt",
+    "SRT"
+   ]
+  ]
+ },
+ {
+  "key": "sam",
+  "name": "SAM Decoding",
+  "venue": "ACL '25",
+  "date": "2024-11",
+  "family": "what drafts",
+  "tag": "retrieval drafting",
+  "arxiv": "2411.10666",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Finds the longest exact suffix match with a suffix automaton built over both a static text corpus and the current prompt plus output, at amortized O(1) cost per step; when the match is short it hands off to another drafter such as EAGLE-2.",
+  "why": "Drafts still need exact suffix matches, so on text with little repetition it falls back to the auxiliary drafter, and its gain on top of EAGLE-2 is small (about 3 to 11%); the static corpus stays domain-bound.",
+  "answered": []
+ },
+ {
+  "key": "hetero",
+  "name": "Hetero-vocab SD",
+  "venue": "ICML '25",
+  "date": "2025-01",
+  "family": "what drafts",
+  "tag": "cross-vocab drafting",
+  "arxiv": "2502.05202",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Lets any off-the-shelf model draft for a target with a different tokenizer. Drafts are decoded to text and re-tokenized for exact-match checks (SLEM), verified by string-level rejection sampling (SLRS), or restricted to shared tokens (TLI), all lossless without retraining.",
+  "why": "Mismatched token boundaries cost acceptance: exact matching accepts less than rejection sampling at T>0, string-level rejection sampling gets expensive fast for vocabularies with long tokens, and TLI loses all draft mass outside the vocabulary overlap.",
+  "answered": []
+ },
+ {
+  "key": "c_2501_12162",
+  "name": "AdaServe",
+  "venue": "EuroSys 2026",
+  "date": "2025-01",
+  "family": "draft shape & verification",
+  "tag": "serving under load",
+  "arxiv": "2501.12162",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Serves requests with different per-token latency SLOs by splitting a hardware-profiled token budget each iteration: every request first gets the most probable draft-tree nodes it needs to meet its SLO, and the leftover budget goes to the globally most promising nodes.",
+  "why": "The verification budget is fixed per iteration, so each request's share shrinks as load rises and per-request acceptance falls with RPS. Evaluated only with small same-family drafters on FlexFlow Serve.",
+  "answered": []
+ },
+ {
+  "key": "griffin",
+  "name": "GRIFFIN",
+  "venue": "NeurIPS '25",
+  "date": "2025-02",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2502.11018",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains an EAGLE-style drafter with multi-step unrolling but masks the loss on positions decoding would never reach, where an earlier ground-truth token falls outside the drafter's top-k, and feeds token embeddings back in to correct drift in its self-generated features.",
+  "why": "Still drafts one token per serial pass, and its multi-pass training costs more than EAGLE's. The fix stays inside the EAGLE-2/HASS feature-drafter design, and the gain is modest (about 8% longer acceptance).",
+  "answered": []
+ },
+ {
+  "key": "quantspec",
+  "name": "QuantSpec",
+  "venue": "ICML '25",
+  "date": "2025-02",
+  "family": "systems & serving",
+  "tag": "long-context self-speculation",
+  "arxiv": "2502.10424",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Self-speculation for long contexts: the draft is the target itself with 4-bit weights and a 4-bit KV cache. The cache is stored as upper and lower 4-bit halves, so the draft reads one half and the target rebuilds INT8 from both, with no second cache.",
+  "why": "Lossless only relative to a target that itself runs on an INT8 KV cache, not the FP16 model. The draft is still the full-depth model, so each draft token costs a full 4-bit pass, and gains need KV loading to dominate.",
+  "answered": []
+ },
+ {
+  "key": "longspec",
+  "name": "LongSpec",
+  "venue": "ACL '26",
+  "date": "2025-02",
+  "family": "systems & serving",
+  "tag": "long context",
+  "arxiv": "2502.17421",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A one-block drafter for long contexts with constant memory: sliding-window self-attention for local text plus cache-free cross-attention to the target's KV cache. Anchor-offset position indices let short-context training generalize to long inputs, and Hybrid Tree Attention keeps verification on fast prefix kernels.",
+  "why": "Needs a trained drafter per target. Its cross-attention sees only target KV committed at the last verification, so later draft positions condition on stale context, and drafting remains one serial pass per token.",
+  "answered": []
+ },
+ {
+  "key": "c_2502_05947",
+  "name": "Medusa dynamic tree attention",
+  "venue": "arXiv",
+  "date": "2025-02",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2502.05947",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Replaces Medusa's fixed candidate tree with one rebuilt every step: a priority queue picks the top candidates under the product of the heads' top-m marginals, which yields a prefix-closed tree that follows the heads' current confidence.",
+  "why": "Scoring by a product of per-head marginals treats positions as independent, so joint continuations are misjudged. The unoptimized version ran about 10% slower than Medusa in wall-clock, and it was tested only on Vicuna-7B with MT-Bench.",
+  "answered": []
+ },
+ {
+  "key": "eagle3",
+  "name": "EAGLE-3",
+  "venue": "NeurIPS '25",
+  "date": "2025-03",
+  "family": "what drafts",
+  "tag": "draft heads",
+  "arxiv": "2503.01840",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Drops EAGLE's feature regression: the drafter predicts tokens directly from fused low, mid and high-layer target features, and 'training-time test' trains it on its own multi-step outputs. Without the feature loss, acceptance keeps rising as drafter training data grows.",
+  "why": "Drafting is still autoregressive, one serial pass per draft token, and token-level training does not directly maximize accepted length. Acceptance collapses past the trained draft horizon, and speedups shrink at large batch (about 1.01x in vLLM at batch 56).",
+  "answered": [
+   [
+    "peagle",
+    "P-EAGLE"
+   ],
+   [
+    "dart",
+    "DART"
+   ],
+   [
+    "dflash",
+    "DFlash"
+   ],
+   [
+    "lk",
+    "LK losses"
+   ],
+   [
+    "gto",
+    "GTO"
+   ],
+   [
+    "vat",
+    "VAT"
+   ],
+   [
+    "kvshot",
+    "KVShot"
+   ],
+   [
+    "attndrift",
+    "Attention Drift"
+   ],
+   [
+    "echo",
+    "ECHO"
+   ],
+   [
+    "respec",
+    "ReSpec"
+   ],
+   [
+    "tlt",
+    "TLT"
+   ]
+  ]
+ },
+ {
+  "key": "multisample",
+  "name": "Multi-sample SD",
+  "venue": "EMNLP Findings '25",
+  "date": "2025-03",
+  "family": "what drafts",
+  "tag": "sibling drafting",
+  "arxiv": "2503.05330",
+  "on_path": false,
+  "proposed": false,
+  "intro": "For self-consistency and Best-of-N, drafts come from the other parallel samples of the same prompt: fuzzy suffix matches across paths fill a draft pool, merged into a weighted DAG whose highest-consensus path is proposed. No draft model or datastore is needed.",
+  "why": "Reports acceptance but no batched wall-clock speedup, since it was never combined with batch-oriented SD. DAG aggregation grows costly with many paths, acceptance drops at high temperature as paths diverge, and only GSM8K and MATH were tested.",
+  "answered": []
+ },
+ {
+  "key": "adaspec",
+  "name": "AdaSpec",
+  "venue": "SoCC '25",
+  "date": "2025-03",
+  "family": "systems & serving",
+  "tag": "serving under load",
+  "arxiv": "2503.05096",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adapts speculation to live load and SLOs: the drafter stops once draft confidence predicts falling efficiency, and the verifier spends each batch's verification budget on the drafts most likely to be accepted, which gives per-request lengths under a TPOT constraint.",
+  "why": "Its decisions hinge on draft-model confidence as a proxy for acceptance and on a latency model whose coefficients are fitted per platform, parallelism and model pair. Evaluated only with small separate chain drafters (68M to 1B).",
+  "answered": []
+ },
+ {
+  "key": "pard",
+  "name": "PARD",
+  "venue": "ICLR '26",
+  "date": "2025-04",
+  "family": "what drafts",
+  "tag": "parallel drafting",
+  "arxiv": "2504.18583",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Turns a small standalone LM into a target-independent parallel drafter: appended mask tokens let it predict K future tokens in one pass, so one drafter serves a whole model family. Conditional drop-token training keeps fewer positions at deeper depths, cutting adaptation cost about 3x.",
+  "why": "It reads no target hidden states and its masked positions ignore each other, so acceptance decays at deeper positions. CE training does not target accepted length, and speedup falls steeply with batch (3.63x at batch 1, 1.33x at 16).",
+  "answered": [
+   [
+    "dflash",
+    "DFlash"
+   ],
+   [
+    "pard2",
+    "PARD-2"
+   ]
+  ]
+ },
+ {
+  "key": "traversal",
+  "name": "Traversal verif.",
+  "venue": "NeurIPS '25",
+  "date": "2025-05",
+  "family": "draft shape & verification",
+  "tag": "verification rule",
+  "arxiv": "2505.12398",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Verifies a sampled draft tree leaf-to-root, judging each whole path by its sequence-level probability and falling back to siblings or the parent only after rejection. It keeps candidates that root-first token checks discard, stays lossless, and is optimal for a single chain.",
+  "why": "No gain at greedy decoding, where lossless verifiers coincide, and visiting every node adds verification overhead. Losslessness requires children sampled from the drafter, which excludes deterministic top-k trees, and measured acceptance gains are a few percent.",
+  "answered": []
+ },
+ {
+  "key": "specextend",
+  "name": "SpecExtend",
+  "venue": "ACL Findings '26",
+  "date": "2025-05",
+  "family": "systems & serving",
+  "tag": "long context",
+  "arxiv": "2505.20776",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A training-free add-on for long inputs: FlashAttention and Hybrid Tree Attention speed prefill and verification, and Cross-model Retrieval uses the target's attention scores to choose which context chunks the small drafter keeps in its KV cache, improving draft speed and accuracy.",
+  "why": "The target still attends over its full KV cache at every verification, so per-token speed keeps falling as inputs grow. By its authors' account it stays below drafters trained for long inputs such as LongSpec.",
+  "answered": []
+ },
+ {
+  "key": "c_2505_19645",
+  "name": "MoESD",
+  "venue": "NeurIPS 2025 (spotlight per arXiv comment)",
+  "date": "2025-05",
+  "family": "systems & serving",
+  "tag": "MoE cost model",
+  "arxiv": "2505.19645",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Shows SD can pay off for MoE targets at moderate batch: once the batch already activates every expert, verifying extra draft tokens adds little expert-weight traffic, so speedup rises then falls with batch. Introduces 'target efficiency' and a fitted roofline model to predict it.",
+  "why": "Assumes KV-cache traffic is small next to parameter traffic, so long-context, KV-dominated regimes are out of scope. Validated only with up to 4 draft tokens, batches up to about 100 and 4 GPUs, without large expert-parallel deployments.",
+  "answered": []
+ },
+ {
+  "key": "c_2505_07858",
+  "name": "Scylla (Scaling Laws for SD)",
+  "venue": "arXiv",
+  "date": "2025-05",
+  "family": "what drafts",
+  "tag": "drafter scaling",
+  "arxiv": "2505.07858",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Fits scaling laws for drafters: acceptance grows log-linearly with drafter pretraining tokens and drafter depth, and the best tree top-k depends on batch size. Applies them in Scylla, an EAGLE-style drafter pretrained on 10B tokens with extra decoder layers.",
+  "why": "The laws come from dense Transformers only, and pretraining gains saturate beyond roughly 50B tokens. Deeper drafters add draft compute, acceptance versus batch size was not measured, and the code was not released.",
+  "answered": []
+ },
+ {
+  "key": "c_2505_14969",
+  "name": "STree",
+  "venue": "NeurIPS 2025",
+  "date": "2025-05",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2505.14969",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Brings tree verification to Mamba-2 and hybrid models: state-transition decays are accumulated along a tree mask, so a packed token tree is verified in one tree-scan pass without recomputing shared prefixes, and activation replay rebuilds the state of the accepted path.",
+  "why": "The tree scan adds overhead that makes it slower at short inputs, and it was shown only up to 8B (MambaInLlama-8B with a distilled 2-layer SSM drafter) with static trees.",
+  "answered": []
+ },
+ {
+  "key": "stand",
+  "name": "STAND",
+  "venue": "EMNLP '25",
+  "date": "2025-06",
+  "family": "what drafts",
+  "tag": "model-free n-grams",
+  "arxiv": "2506.04708",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A model-free drafter for test-time scaling: an n-gram table over the reasoning traces generated so far keeps per-context token probabilities, so drafts are sampled stochastically with Gumbel-Top-K into a static tree tuned on data. It exploits how often reasoning paths repeat patterns.",
+  "why": "As an n-gram lookup it can only propose continuations already seen in the traces. Gains shrink in batch decoding (30% latency cut versus 58% single-trajectory), and all timings use HuggingFace with a Python n-gram module, not vLLM or SGLang.",
+  "answered": []
+ },
+ {
+  "key": "c_2506_11309",
+  "name": "SwiftSpec",
+  "venue": "ASPLOS 2026",
+  "date": "2025-06",
+  "family": "systems & serving",
+  "tag": "async / multi-device",
+  "arxiv": "2506.11309",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Takes drafting off the critical path: draft and target run concurrently on separate tensor-parallel GPU groups. The draft keeps growing a likely token tree, re-rooted after each verification with KV reuse, while the target verifies an 8-token subtree; fused kernels cut small-batch TP latency.",
+  "why": "Hard to combine with EAGLE-style drafters, which need target features that a drafter running ahead does not have yet. Its int4 latency kernels do not suit high-throughput serving, and results cover single requests with 4-bit AWQ targets.",
+  "answered": []
+ },
+ {
+  "key": "logitspec",
+  "name": "LogitSpec",
+  "venue": "ACL Findings '26",
+  "date": "2025-07",
+  "family": "what drafts",
+  "tag": "retrieval drafting",
+  "arxiv": "2507.01449",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Uses the last logit twice: besides the next token, its top-ranked entries often contain the token after it. Those candidates join the next token in a two-token query against prompt n-grams, which finds correct references more often than single-suffix retrieval. Training-free.",
+  "why": "It retrieves only from the prompt, so short prompts give little to copy, and by its own account its end-to-end speedup trails draft-model methods. Main results are greedy at batch size 1.",
+  "answered": []
+ },
+ {
+  "key": "rhymerl",
+  "name": "RhymeRL",
+  "venue": "arXiv '25",
+  "date": "2025-08",
+  "family": "what drafts",
+  "tag": "RL rollouts",
+  "arxiv": "2508.18588",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Speeds RL rollouts by drafting from the same prompt's responses in earlier epochs (HistoSpec): suffix trees over past rollouts, built asynchronously, supply drafts, and an AIMD rule sets draft length. HistoPipe also uses past lengths to balance rollout workers.",
+  "why": "Drafts are verbatim copies of history, so they need the prompt to recur across epochs and help only where the policy still repeats itself. Sibling responses being generated in the same step contribute nothing.",
+  "answered": []
+ },
+ {
+  "key": "gto",
+  "name": "GTO",
+  "venue": "ICLR '26",
+  "date": "2025-09",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2509.22134",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains the drafter on the quantity decoding uses: Draft Tree Reward, the expected acceptance length of the decoding-time draft tree under the target, computed without sampling and optimized with group-standardized advantages and a PPO-style surrogate along the longest accepted path.",
+  "why": "Needs substantial extra training compute (hundreds of A100 GPU-hours for 8B to 70B targets), and it was evaluated only at batch size 1 with trees at most 8 deep.",
+  "answered": []
+ },
+ {
+  "key": "diffuspec",
+  "name": "DiffuSpec",
+  "venue": "ACL Findings '26",
+  "date": "2025-09",
+  "family": "what drafts",
+  "tag": "diffusion drafting",
+  "arxiv": "2510.02358",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Uses a pretrained diffusion LM (Dream-7B) as a training-free drafter that proposes a whole block in one pass. A causal-consistency search picks a left-to-right path through the per-position candidates, scored by diffusion log-prob plus a 3-gram proxy, and draft length adapts each round.",
+  "why": "The 7B diffusion drafter is memory-heavy and lacks KV reuse and fused kernels, and the 3-gram proxy only weakly enforces left-to-right coherence. Evaluated only at greedy decoding, batch 1, with one 32B target.",
+  "answered": []
+ },
+ {
+  "key": "respec",
+  "name": "ReSpec",
+  "venue": "MLSys '26",
+  "date": "2025-10",
+  "family": "what drafts",
+  "tag": "RL rollouts",
+  "arxiv": "2510.26475",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adapts EAGLE-3 to RL rollouts: an offline-profiled scheduler changes draft steps, branching and token counts, or turns SD off, as the active batch shrinks, while the drafter is continuously distilled from the changing actor with reward-weighted KD, overlapped with generation.",
+  "why": "Tested only on math GRPO with Qwen2.5 3B to 14B. Its claim that plain EAGLE-3 lowers RL reward conflicts with lossless verification and is left unexplained, which suggests its pipeline was not exactly lossless.",
+  "answered": []
+ },
+ {
+  "key": "c_2510_22876",
+  "name": "Correctness Forensics (EqSpec/EXSpec)",
+  "venue": "Findings of EMNLP 2026 (per arXiv comment)",
+  "date": "2025-10",
+  "family": "systems & serving",
+  "tag": "batched SD correctness",
+  "arxiv": "2510.22876",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Shows that published batched-SD implementations silently change outputs, and states two invariants needed for equivalence with contiguous KV layouts: rectangular alignment and position-ID/KV contiguity. EqSpec enforces them without custom kernels; EXSpec batches same-length sequences to skip realignment.",
+  "why": "Covers only contiguous-KV setups, not the paged caches of vLLM or SGLang. Realignment overhead grows superlinearly with batch, limiting gains to moderate batch, and exact match reaches only 90.8-97.3% because of floating-point nondeterminism.",
+  "answered": []
+ },
+ {
+  "key": "tlt",
+  "name": "TLT",
+  "venue": "ASPLOS '26",
+  "date": "2025-11",
+  "family": "what drafts",
+  "tag": "RL rollouts",
+  "arxiv": "2511.16665",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps a drafter current during RL by retraining a one-layer EAGLE drafter on GPUs idled by long-tail rollouts. A bandit picks draft depth and verify width from the running-request count over pre-captured CUDA graphs, with a model-free n-gram drafter for early steps.",
+  "why": "SD switches on only once fewer than about 32 requests remain, so the bulk of each rollout gets no speedup. The single-layer drafter is a compromise: EAGLE-3-style training was too costly to fit inside rollout bubbles.",
+  "answered": []
+ },
+ {
+  "key": "das",
+  "name": "DAS",
+  "venue": "MLSys '26",
+  "date": "2025-11",
+  "family": "what drafts",
+  "tag": "RL rollouts",
+  "arxiv": "2511.13841",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Training-free drafting for RL rollouts: a per-problem suffix tree over a sliding window of recent rollouts tracks policy drift, and a latency-model budget gives long, straggling requests large draft budgets and turns speculation off for short ones.",
+  "why": "Each sample drafts only from past rollouts, so what its siblings are generating in the same step goes unused. Budgets rely on a heuristic 3-class length predictor, and results cover only 7-8B models.",
+  "answered": [
+   [
+    "seer",
+    "Seer"
+   ]
+  ]
+ },
+ {
+  "key": "seer",
+  "name": "Seer",
+  "venue": "OSDI '26",
+  "date": "2025-11",
+  "family": "what drafts",
+  "tag": "sibling drafting",
+  "arxiv": "2511.14617",
+  "on_path": true,
+  "proposed": false,
+  "intro": "An RL rollout system whose grouped SD keeps one compressed suffix tree per prompt group, fed live by all in-flight samples of that prompt, so each sample drafts from its siblings' progress. Draft length adapts, alongside divided rollout and length-aware scheduling.",
+  "why": "Drafts are verbatim copies of sibling text with no learned drafter, so acceptance stays around 2-3 tokens and stops wherever siblings phrase things differently. Group context adds only about 0.22 tokens over a plain suffix tree.",
+  "answered": [
+   [
+    "groupaware",
+    "Group-aware drafting"
+   ]
+  ]
+ },
+ {
+  "key": "specdiff2",
+  "name": "SpecDiff-2",
+  "venue": "MLSys '26",
+  "date": "2025-11",
+  "family": "what drafts",
+  "tag": "diffusion drafting",
+  "arxiv": "2511.00606",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Fine-tunes a 7B diffusion drafter with streak distillation, which maximizes a surrogate of the expected accepted streak on target-sampled paths. At decode time it samples K drafts from one pass, scores them all with the target in one tree pass, and verifies the best.",
+  "why": "7B drafters are too slow for 13-14B targets, diffusion drafting lacks KV caching and tuned kernels, and the analysis of its best-of-K acceptance rule is left open. Batch size is never reported.",
+  "answered": []
+ },
+ {
+  "key": "c_2511_15898",
+  "name": "Global Resolution",
+  "venue": "ICLR 2026",
+  "date": "2025-11",
+  "family": "systems & serving",
+  "tag": "verification rule",
+  "arxiv": "2511.15898",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Solves optimal multi-draft verification: it shows the main formulations equal a relaxed optimal-transport LP and, via max-flow and polymatroid structure, reduces it to a convex problem in at most vocabulary-size variables, giving near-optimal acceptance for n i.i.d. drafts.",
+  "why": "Applies only to i.i.d. drafts from one drafter at a single step. The CPU solver can fail and takes up to 100 ms per token, and its tunable approximation leaves a small per-token deviation, so it is not exactly lossless.",
+  "answered": []
+ },
+ {
+  "key": "c_2511_17826",
+  "name": "TBIK",
+  "venue": "ICML 2026",
+  "date": "2025-11",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2511.17826",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Tree-Based Invariant Kernels: matmul and all-reduce follow one fixed binary-tree reduction order across intra- and inter-GPU levels, so results are bitwise identical for any tensor-parallel size from 1 to 8. Integrated into vLLM and FSDP.",
+  "why": "The fixed reduction order costs speed (the tree matmul reaches about 63% of cuBLAS BF16 throughput), quantized dtypes are unsupported, and only dense 7-32B models were tested.",
+  "answered": []
+ },
+ {
+  "key": "sparsespec",
+  "name": "SparseSpec",
+  "venue": "MLSys '26",
+  "date": "2025-12",
+  "family": "systems & serving",
+  "tag": "sparse self-speculation",
+  "arxiv": "2512.01278",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Self-speculation for long reasoning traces: the draft is the same model with sparse attention (PillarAttn) over tokens picked from attention scores already computed in the previous verification. A unified scheduler, delayed verification and dynamic KV management keep the GPU busy.",
+  "why": "Only attention is sparsified, so each draft token still reads all the weights. Gains rely on KV loading dominating; with short contexts, large batches make decoding compute-bound and the benefit fades.",
+  "answered": []
+ },
+ {
+  "key": "c_2512_23858",
+  "name": "Yggdrasil",
+  "venue": "NeurIPS 2025",
+  "date": "2025-12",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2512.23858",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Builds equal-growth trees with a fixed number of leaves per draft step, so shapes stay static for CUDA graphs and TorchInductor, while an MLP-predicted depth and greedy width maximize profiled end-to-end speedup, which accounts for verification latency. Adds DP width pruning and ahead-of-time draft scheduling.",
+  "why": "Assumes one interactive request owns the GPU, which does not carry over to batched serving. The depth predictor must be trained per dataset and model pair, and tests used only Llama-2 7B/13B with 68M/160M drafters.",
+  "answered": []
+ },
+ {
+  "key": "c_2512_22420",
+  "name": "Nightjar",
+  "venue": "Journal of Systems Architecture 2026 (vol. 178)",
+  "date": "2025-12",
+  "family": "draft shape & verification",
+  "tag": "serving under load",
+  "arxiv": "2512.22420",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A contextual bandit keyed on current batch size picks the speculative length each step, including zero to switch SD off, and accounts for the KV-rebuild cost of switching. While SD is off under memory pressure, the draft model moves to CPU to free KV memory.",
+  "why": "Switching costs come from an offline-profiled, deployment-specific lookup table. It handles only chain drafts from small separate drafters, tested in vLLM on a single 4090/A100 plus one 2-GPU 32B run.",
+  "answered": []
+ },
+ {
+  "key": "c_2601_11580",
+  "name": "SD: Performance or Illusion?",
+  "venue": "MLSys 2026 (oral; Best Paper Honorable Mention per co-author page)",
+  "date": "2025-12",
+  "family": "systems & serving",
+  "tag": "serving measurement",
+  "arxiv": "2601.11580",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A systematic vLLM study of n-gram, EAGLE/EAGLE-3, draft-model and MTP speculation at batch 1-128: verification dominates step time, and acceptance varies within and across requests. Oracle simulations bound the gains from verifying only accepted tokens and from choosing the method per position.",
+  "why": "A measurement study at temperature 0 with mostly 3-token chains on H100. Its oracle bounds assume perfect acceptance prediction, so they show headroom without a method that reaches it.",
+  "answered": []
+ },
+ {
+  "key": "dart",
+  "name": "DART",
+  "venue": "arXiv '26",
+  "date": "2026-01",
+  "family": "what drafts",
+  "tag": "parallel drafting",
+  "arxiv": "2601.19278",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A one-layer drafter on fused target features appends d-1 mask tokens and emits d next-token distributions in a single pass, removing serial drafting. It builds the draft tree by beam search over per-position top-k, scored by draft log-prob plus an n-gram continuity term.",
+  "why": "Its masked positions never see the tokens drafted before them, and its acceptance length (about 3.6-4.1) does not beat EAGLE-3's. Designed for a short horizon (d=8), and speedup decays to 1.45x at batch 64.",
+  "answered": []
+ },
+ {
+  "key": "srt",
+  "name": "SRT",
+  "venue": "workshop '26",
+  "date": "2026-01",
+  "family": "what drafts",
+  "tag": "RL rollouts",
+  "arxiv": "2601.09083",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Model-free speculative rollouts for RL: a per-prompt tree cache of earlier continuations serves as the draft. Trees are updated online from ongoing rollouts, and idle GPU bubbles run ahead on prompts due soon, so their cache is warm when they arrive.",
+  "why": "Drafts are verbatim copies of cached text, so acceptance depends on rollouts repeating. The workshop evaluation uses only Qwen2.5-1.5B, and the effects of online updates and run-ahead are shown in simulation.",
+  "answered": []
+ },
+ {
+  "key": "hsd",
+  "name": "HSD",
+  "venue": "ICLR '26",
+  "date": "2026-01",
+  "family": "draft shape & verification",
+  "tag": "verification rule",
+  "arxiv": "2601.05724",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A lossless sequence-level verifier: it scans the draft backward for the longest prefix acceptable under joint and capped-prefix probability ratios, then resamples once from a branch-level residual. This recovers the target distribution without intractable joint probabilities and plugs into multi-draft and EAGLE-3.",
+  "why": "Gains are modest (+3-12% block efficiency) in a batch-1 implementation. With EAGLE-3's deterministic top-k drafting the verification degenerates, so EAGLE-3H gains come mostly from implementation speed.",
+  "answered": []
+ },
+ {
+  "key": "c_2601_07353",
+  "name": "TALON",
+  "venue": "arXiv",
+  "date": "2026-01",
+  "family": "draft shape & verification",
+  "tag": "token trees",
+  "arxiv": "2601.07353",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Grows EAGLE-3 trees layer by layer under a global node budget, keeping at each depth only candidates whose cumulative path probability is within a factor mu of that depth's best. Confident contexts get deep, narrow trees and uncertain ones shallow, wide trees.",
+  "why": "Evaluated only at batch size 1. At large batch the GPU saturates and per-request dynamic trees complicate memory management, and mu and the node budget may need retuning per setting.",
+  "answered": []
+ },
+ {
+  "key": "c_2601_17768",
+  "name": "LLM-42",
+  "venue": "SOSP 2026",
+  "date": "2026-01",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2601.17768",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Makes decoding deterministic only for requests that ask: tokens are decoded fast with ordinary nondeterministic batching, then a fixed-shape verifier replays token windows, commits matching tokens and rolls back mismatches. Small windows from many requests are verified together.",
+  "why": "Replay is recomputation, so overhead grows with window size (6.8% at 32 tokens, 46% at 256). It lacks prefix-cache sharing, does not support speculative decoding, and was tested only on Llama-3.1-8B in SGLang.",
+  "answered": []
+ },
+ {
+  "key": "peagle",
+  "name": "P-EAGLE",
+  "venue": "arXiv '26",
+  "date": "2026-02",
+  "family": "what drafts",
+  "tag": "parallel drafting",
+  "arxiv": "2602.01469",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Makes an EAGLE-style drafter emit all k draft tokens in one forward pass: positions after the first get a learned shared hidden state and a learned mask-token embedding in place of not-yet-drafted tokens. Training tricks make this parallel prediction feasible at contexts up to 20K.",
+  "why": "Gains over EAGLE-3 are modest and shrink at concurrency 4 for large or MoE targets, because it only removes drafting time and verification then dominates. Draft positions do not see each other's tokens, so acceptance only matches autoregressive EAGLE-3.",
+  "answered": []
+ },
+ {
+  "key": "lk",
+  "name": "LK losses",
+  "venue": "ICML '26",
+  "date": "2026-02",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2602.23881",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains drafters with losses aimed at per-position acceptance, which equals one minus the total-variation distance to the target. A hybrid weights KL early and shifts toward the TV term as a position's running acceptance rises; it drops into EAGLE-3, Medusa and MTP heads.",
+  "why": "The losses are derived for chain drafts with sequential acceptance, so trees and block verification are left out. Gains are small for already-strong drafters at greedy decoding (DeepSeek-V3 MTP +0.8%), where acceptance hinges only on matching the target's argmax.",
+  "answered": []
+ },
+ {
+  "key": "dflash",
+  "name": "DFlash",
+  "venue": "ICML '26",
+  "date": "2026-02",
+  "family": "what drafts",
+  "tag": "block diffusion drafter",
+  "arxiv": "2602.06036",
+  "on_path": true,
+  "proposed": false,
+  "intro": "A small block-diffusion drafter fills a whole masked block of 16 tokens in one forward pass, reading the target's fused multi-layer hidden states as extra keys and values in every layer. Drafting cost no longer grows with draft length, so long drafts become cheap.",
+  "why": "Block positions are predicted in parallel without seeing each other's sampled tokens, so later positions drift from the drafted prefix and acceptance decays along the block. At high concurrency, verifying long blocks makes the target compute-bound and the speedup shrinks.",
+  "answered": [
+   [
+    "dspark",
+    "DSpark"
+   ],
+   [
+    "domino",
+    "Domino"
+   ],
+   [
+    "xpress",
+    "xPress"
+   ],
+   [
+    "dspine",
+    "DSpine"
+   ],
+   [
+    "jetspec",
+    "JetSpec"
+   ],
+   [
+    "dflash2",
+    "DFlash 2"
+   ],
+   [
+    "lilicorr",
+    "LiLiCorr"
+   ],
+   [
+    "dblast",
+    "DBLAST"
+   ],
+   [
+    "angelspec",
+    "AngelSpec"
+   ],
+   [
+    "weaver",
+    "Weaver"
+   ],
+   [
+    "adaflash",
+    "AdaFlash"
+   ],
+   [
+    "dcut",
+    "D-cut"
+   ],
+   [
+    "dscale",
+    "DScale"
+   ],
+   [
+    "bvloss",
+    "BV loss"
+   ],
+   [
+    "vat",
+    "VAT"
+   ],
+   [
+    "pard2",
+    "PARD-2"
+   ],
+   [
+    "ddtree",
+    "DDTree"
+   ],
+   [
+    "d2sd",
+    "D²SD"
+   ],
+   [
+    "carryover",
+    "Carryover Drafting"
+   ],
+   [
+    "groupaware",
+    "Group-aware drafting"
+   ],
+   [
+    "dflare",
+    "DFlare"
+   ],
+   [
+    "dbloom",
+    "DBloom"
+   ],
+   [
+    "draftopd",
+    "Draft-OPD"
+   ],
+   [
+    "tts",
+    "TTS"
+   ]
+  ]
+ },
+ {
+  "key": "echo",
+  "name": "ECHO",
+  "venue": "ICML '26",
+  "date": "2026-03",
+  "family": "what drafts",
+  "tag": "serving under load",
+  "arxiv": "2604.09603",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Treats all EAGLE-3 draft trees in a batch as one super-tree under a global cap on verification tokens. Requests that look unconfident at calibrated depths are cut short, their budget deepens confident requests, and width is added only when no request can deepen.",
+  "why": "Evaluated with greedy decoding and EAGLE-style drafters only, and its depth thresholds need a calibration warm-up. High-load gains are measured against EAGLE-3's default trees, which overspend verification at high batch, so whether it beats plain chains under load is untested.",
+  "answered": []
+ },
+ {
+  "key": "ssd",
+  "name": "SSD",
+  "venue": "ICLR '26",
+  "date": "2026-03",
+  "family": "systems & serving",
+  "tag": "async / multi-device",
+  "arxiv": "2603.03251",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Runs the drafter on separate hardware and, while the target verifies, pre-drafts continuations for the most likely outcomes (number accepted plus bonus token). On a hit the next draft is ready at once; a draft-side sampling tweak makes the bonus token easier to guess.",
+  "why": "Needs a dedicated draft GPU and targets small batches (main results at batch 16 or less, greedy); in throughput-bound workloads the target is compute-bound and speculation stops paying. Fanning out over many outcomes needs custom-mask attention, which limits profitable lookahead.",
+  "answered": []
+ },
+ {
+  "key": "kvshot",
+  "name": "KVShot",
+  "venue": "arXiv '26",
+  "date": "2026-04",
+  "family": "what drafts",
+  "tag": "drafter conditioning",
+  "arxiv": "2604.26412",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A diagnostic study of which target context an EAGLE-3-style drafter should reuse: the last hidden state, the target's KV cache, or both. Argues the hidden state is a query-biased summary that drops what later draft steps need, and shows target-KV reuse raises late-step acceptance.",
+  "why": "End-to-end gain is marginal (mean accepted length 5.04 vs 5.01) for 5-10% more drafting latency, because a shallow drafter cannot form good queries into the target's KV and its KV projections get sparse gradients. Qwen3-8B only, with no wall-clock speedup.",
+  "answered": []
+ },
+ {
+  "key": "ddtree",
+  "name": "DDTree",
+  "venue": "arXiv '26",
+  "date": "2026-04",
+  "family": "what drafts",
+  "tag": "token trees",
+  "arxiv": "2604.12989",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Turns one DFlash pass into a draft tree: it keeps the B most probable prefixes under the per-position marginals (found with a best-first heap) and verifies them in one target pass with an ancestor-only mask. Runner-up tokens that DFlash discarded now get verified.",
+  "why": "Each node is scored by its position's marginal probability, independent of its parent, so the tree mis-ranks paths and attaches tokens that only fit a different prefix. The node budget is fixed per setting, ignoring round difficulty, hardware and load; tested at batch 1.",
+  "answered": [
+   [
+    "jetspec",
+    "JetSpec"
+   ],
+   [
+    "pctree",
+    "PCTree"
+   ],
+   [
+    "dominotree",
+    "DominoTree"
+   ],
+   [
+    "dartree",
+    "DARTree"
+   ],
+   [
+    "treespark",
+    "TreeSpark"
+   ],
+   [
+    "treeflash",
+    "TreeFlash"
+   ],
+   [
+    "weaver",
+    "Weaver"
+   ],
+   [
+    "taps",
+    "TAPS"
+   ],
+   [
+    "c_2608_20375",
+    "GRAFT"
+   ],
+   [
+    "presto",
+    "PRESTO"
+   ],
+   [
+    "cast",
+    "CAST"
+   ],
+   [
+    "bastion",
+    "BASTION"
+   ],
+   [
+    "caddtree",
+    "CaDDTree"
+   ]
+  ]
+ },
+ {
+  "key": "c_2604_26779",
+  "name": "NeMo-RL speculative rollouts",
+  "venue": "arXiv",
+  "date": "2026-04",
+  "family": "systems & serving",
+  "tag": "RL rollouts",
+  "arxiv": "2604.26779",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Plugs lossless speculative decoding (EAGLE-3, native MTP or a draft model) into NeMo-RL's vLLM rollout engine for sync and async RL, so rollouts stay exactly on-policy. The drafter adapts online by reusing hidden states the policy's training forward already computes.",
+  "why": "Speedup is capped by the non-generation stages of each RL step, an Amdahl bound. Real runs are only at 8B on 32 GB200s with math GRPO; the 235B and roughly 2.5x end-to-end figures come from a simulator.",
+  "answered": []
+ },
+ {
+  "key": "c_2604_19877",
+  "name": "Super Apriel",
+  "venue": "arXiv",
+  "date": "2026-04",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2604.19877",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A 15B supernet trains four token-mixer types per layer (full attention, sliding window, two linear-attention variants), switchable per request. A cheap placement of the same checkpoint, such as all linear attention, drafts for the all-attention placement, so no separate draft model is trained or loaded.",
+  "why": "Speculative speedups are estimated from acceptance on teacher traces, not measured end-to-end. The fast placements regress on long-range retrieval (RULER, needle tests), since linear and sliding-window mixers keep only a compressed or truncated view of the context.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_05219",
+  "name": "Sparse Prefix Caching",
+  "venue": "arXiv",
+  "date": "2026-04",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid-model caching",
+  "arxiv": "2605.05219",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Recurrent and hybrid models need a stored state per cached prefix position, which is far too large. This places a few exact state checkpoints to minimize expected recompute given how deep requests' shared prefixes go (an exact dynamic program); a hit resumes from the deepest checkpoint.",
+  "why": "Pays off only when many requests share a long but not identical prefix; append-only chat gains nothing, because caching each conversation's final state already covers the next turn. Production state extraction, restore and eviction are left to future work.",
+  "answered": []
+ },
+ {
+  "key": "cassandra",
+  "name": "Cassandra",
+  "venue": "ISCA '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "self-speculation",
+  "arxiv": "2605.26558",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Builds a training-free self-draft for low-batch edge inference by pruning and truncating mantissas of the model's own weights and KV cache at fine granularity, so drafting reads far fewer bytes. A small hardware encoder-decoder unpacks this format, and full-precision verification keeps outputs exact.",
+  "why": "Designed for low-batch decoding, where weight and KV reads dominate; at larger batches the target becomes compute-bound and a byte-saving draft buys little. Cheap format conversion relies on a proposed hardware module that current GPUs and NPUs lack.",
+  "answered": []
+ },
+ {
+  "key": "attndrift",
+  "name": "Attention Drift",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "drafter architecture",
+  "arxiv": "2605.09992",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Explains why EAGLE-3 drafters and MTP heads break down past their training-time-test depth: hidden-state magnitude grows with chain depth, pulling attention from the prompt onto the drafter's own recent tokens. Post-norm on drafter states plus RMSNorm on captured target features keeps deep steps stable.",
+  "why": "Stability alone does not buy acceptance: post-norm with short TTT trails pre-norm with 8-step TTT in accepted length (5.05 vs 7.12), as TTT still trains the drafter on its own outputs. The fix is untested on MTP heads, where drift was also seen.",
+  "answered": []
+ },
+ {
+  "key": "domino",
+  "name": "Domino",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "intra-block dependency",
+  "arxiv": "2605.29707",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds to a DFlash backbone a small GRU that reads the draft tokens already sampled in the block and adds a low-rank correction to each later position's logits. This cheap sequential loop lets positions depend on earlier draft choices while the heavy backbone still runs once.",
+  "why": "Still verifies a single draft path, so the per-position alternatives the backbone proposes are discarded on a miss. Tested on Qwen3-4B/8B at concurrency up to 32, and headline gains are against public DFlash checkpoints trained on different data, which confounds the comparison.",
+  "answered": [
+   [
+    "dominotree",
+    "DominoTree"
+   ],
+   [
+    "dartree",
+    "DARTree"
+   ]
+  ]
+ },
+ {
+  "key": "taps",
+  "name": "TAPS",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2606.00487",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains a light edge scorer, distilled from recorded target verification outcomes, that estimates the chance a child token is accepted given its parent; multiplying along a path gives its reach probability. It then greedily picks a prefix-closed subtree that maximizes reach per depth-weighted cost under a budget.",
+  "why": "Greedy decoding only, in a single-request prototype outside vLLM and SGLang. It only reorders candidates from the drafter's top-K pool, so a target token missing from that pool can never be drafted.",
+  "answered": []
+ },
+ {
+  "key": "bastion",
+  "name": "BASTION",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "tree budgeting",
+  "arxiv": "2605.29727",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Grows a best-first tree from DFlash marginals and stops at the first node where estimated speedup falls, combining a path-sum acceptance estimate with a roofline-calibrated cost per verify cycle. It proves the speedup curve is unimodal, so tree size adapts per query without tuning.",
+  "why": "Evaluated only at batch size 1, while larger batches change the verification-cost profile that its offline roofline calibration assumes stable. Node scores still come from unconditioned DFlash marginals, so path mis-ranking remains.",
+  "answered": []
+ },
+ {
+  "key": "pard2",
+  "name": "PARD-2",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2605.08632",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Weights each future position's loss by the product of the target's confidences along the ground-truth prefix, a proxy for whether verification reaches that position, so training focuses where accepted length is decided. Stochastic gating of target features lets one drafter run with or without target conditioning.",
+  "why": "All acceptance results are greedy chain decoding with trees disabled, on targets up to 32B. Its deep-position gains over PARD are confounded by a longer training horizon (16 vs 8 tokens), so the loss's own contribution is unclear.",
+  "answered": []
+ },
+ {
+  "key": "draftopd",
+  "name": "Draft-OPD",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2605.29343",
+  "on_path": false,
+  "proposed": false,
+  "intro": "On-policy distillation for block drafters: speculative rollouts give stable continuations, then drafting is replayed from every block anchor so the target scores the states the drafter itself induces. Accepted tokens get forward KL and rejected ones a decayed reverse KL, breaking the plateau of offline training.",
+  "why": "Tested only on Qwen3 targets with DFlash-style drafters, with training rollouts capped at 4096 tokens versus 8192 at evaluation. The first rejection moves only slightly later in the block, so the parallel drafter's late-position weakness largely remains.",
+  "answered": []
+ },
+ {
+  "key": "tts",
+  "name": "TTS",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "what drafts",
+  "tag": "online drafter adaptation",
+  "arxiv": "2605.09329",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Shows drafter acceptance collapses as long reasoning outputs grow, then adapts the drafter per request during decoding: one gradient step every few rounds, using the target logits that verification already computes as a free teacher (position-weighted KL with a drift regularizer).",
+  "why": "Training inside the decode loop uses unfused PyTorch gradient kernels that clash with SGLang CUDA graphs, and batching is not evaluated, so per-request drafter updates at scale are untested. The drafter resets between requests, discarding what it learned.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_15051",
+  "name": "SD latency model (Little's Law)",
+  "venue": "arXiv",
+  "date": "2026-05",
+  "family": "systems & serving",
+  "tag": "serving under load",
+  "arxiv": "2605.15051",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A queueing model of serving latency, C1/(1 - RPS*C2), with batch size inferred by Little's Law. Speculation enters through prefill, verify and draft costs amortized by expected accepted tokens, plus an MoE expert-coverage term; it predicts speedup grows with load only at very high acceptance.",
+  "why": "Covers only mean latency in the stable pre-saturation regime, with coefficients fit per system (vLLM on A100/H100). Acceptance is synthetic and assumed i.i.d., so prompt- and position-dependent acceptance and the extra cost terms of trees or adaptive drafting are not modeled.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_19049",
+  "name": "KVBuffer",
+  "venue": "arXiv",
+  "date": "2026-05",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2605.19049",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Buffers recent keys and values of linear-attention layers so decoding runs chunkwise with deferred, batched state updates. Draft tokens are verified in the parallel chunkwise form and the recurrent state is updated only from accepted tokens, so no temporary state per draft is stored.",
+  "why": "Shown only on Qwen3-Next-80B-A3B with a 4-token MTP chain on L40S GPUs in SGLang. Chunkwise decode can be slower than recurrent decode at batch 1, and nothing switches between the two forms automatically.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_01106",
+  "name": "Component-aware self-speculation",
+  "venue": "arXiv",
+  "date": "2026-05",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid self-speculation",
+  "arxiv": "2605.01106",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Uses a hybrid model's own SSM or linear-attention layers as a zero-parameter drafter, zeroing or skipping its attention layers via hooks. The perplexity increase under attention ablation predicts acceptance, so one can tell in advance which hybrids will draft well.",
+  "why": "The research Python implementation runs slower than plain decoding (0.009-0.50x), models are 3B or smaller, and only chains are verified. Sequential hybrids such as Qwen3.5 reach acceptance near 0.04, since their SSM layers do not form a usable model once attention is removed.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_30218",
+  "name": "MarginGate",
+  "venue": "arXiv",
+  "date": "2026-05",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2605.30218",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Targets batch-invariant greedy outputs: token flips caused by batch composition are rare and show up as a small gap between the top-two logits. It sends only low-margin steps to a per-token verifier (from LLM-42) and repairs a mismatch by replacing that step's K/V column.",
+  "why": "Covers greedy BF16 dense models only; sampling, beam search and speculative decoding need other policies. Where many steps are near-ties, as in DSR1-Distill-Qwen-7B, the gate fires on about half the steps and most of the savings disappear.",
+  "answered": []
+ },
+ {
+  "key": "c_2605_20104",
+  "name": "Graft",
+  "venue": "arXiv '26",
+  "date": "2026-05",
+  "family": "draft shape & verification",
+  "tag": "retrieval-grafted trees",
+  "arxiv": "2605.20104",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Prunes EAGLE-3 draft trees at a few calibrated confidence checkpoints and fills the freed slots with continuations retrieved from a GPU-resident, online-updated token transition table, keeping the verification budget fixed. Retrieval restores the coverage pruning loses, training-free and at little extra cost.",
+  "why": "Built around autoregressive EAGLE-3 trees; the DFlash extension is preliminary. High-batch serving is only a Qwen3-8B check up to batch 16 with a fixed tree shape and unoptimized retrieval kernels, so gains under load are unproven.",
+  "answered": []
+ },
+ {
+  "key": "jetspec",
+  "name": "JetSpec",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "intra-block dependency",
+  "arxiv": "2606.18394",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A DFlash-style drafter with a block-causal mask, so each draft position attends to earlier draft positions as well as the prefix, trained by forward-KL distillation. It builds best-first trees by cumulative log-probability up to 256 nodes and adds a paged tree-attention kernel for vLLM.",
+  "why": "Large trees pay only at low load: budget 128 is best at batch 1 but worst at batch 16, because tree tokens make verification compute-bound, and the budget is not scheduled dynamically. The vLLM path is greedy-only, and at budget 16 it only matches DFlash.",
+  "answered": []
+ },
+ {
+  "key": "treeflash",
+  "name": "TreeFlash",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2606.03819",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds a small MLP that updates each DFlash position's hidden state with the preceding token's embedding, giving parent-aware scores for tree nodes. It builds a top-M tree from marginals, scores all its (token, position) pairs in one parallel pass, then selects the final tree.",
+  "why": "Conditioning reaches only the immediately preceding token, and non-leaf nodes must come from the marginal top-M tree, so correct tokens outside it are unreachable. Experiments are single-batch with SDPA on Qwen only, leaving large dynamic trees under batched serving untested.",
+  "answered": []
+ },
+ {
+  "key": "graft2",
+  "name": "GRAFT",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2608.20375",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds a target-distilled parent-child compatibility score, learned from DDTree verification traces, to DFlash log-probs when building trees, so tokens attach to parents they fit. Each round's tree budget maximizes a fitted gain-versus-cost utility driven by draft confidence and acceptance history.",
+  "why": "Drafting, tree building and verification still run one after another each round, leaving pipeline bubbles. Results are batch 1 on one A100, the scorer is trained per target model, and temperature and block size are not reported.",
+  "answered": []
+ },
+ {
+  "key": "presto",
+  "name": "PRESTO",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2607.22634",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Training-free tree building for diffusion drafters: each candidate is rescored with a weighted 3-gram prefix model so a child depends on its parent's tokens, then beam or best-first search grows trees of 128-1024 nodes. It also brings tree drafting to self-speculative diffusion LMs.",
+  "why": "A 3-gram model sees only the last two tokens, so it cannot repair longer-range inconsistencies within a block. Evaluation is mostly single-request PyTorch with budgets kept at 512 or less to stay memory-bound; larger batches and production engines are untested.",
+  "answered": []
+ },
+ {
+  "key": "caddtree",
+  "name": "CaDDTree",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "tree budgeting",
+  "arxiv": "2606.01813",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Replaces DDTree's fixed node budget with a per-round throughput objective that uses explicit drafting cost and a profiled, context-length-dependent verification cost. It proves this throughput surrogate is unimodal, so DDTree's heap can simply stop at the peak.",
+  "why": "Nodes are still scored by factorized DFlash marginals, so the tree keeps mis-ranking paths whose tokens do not fit their parent. Tested in a single-sequence harness on A800s with Qwen3-4B/8B only, so batched verification costs are not modeled.",
+  "answered": []
+ },
+ {
+  "key": "d2sd",
+  "name": "D²SD",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "rejection-point branching",
+  "arxiv": "2606.04446",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Uses DFlash's per-position confidences to estimate where the first rejection will likely fall and picks the top-K boundaries. A second diffusion drafter re-drafts the suffix from each boundary in one batched pass, and all K+1 shared-prefix candidates are verified together with cascade attention.",
+  "why": "No batch>1 or serving-engine results, so the extra branches' verification cost under load is unknown; a third cascade level raises acceptance but lowers speed. Gains at temperature 1 are small, and the acceptance rule for multiple branches under sampling is not specified.",
+  "answered": []
+ },
+ {
+  "key": "dflare",
+  "name": "DFlare",
+  "venue": "arXiv '26",
+  "date": "2026-06",
+  "family": "what drafts",
+  "tag": "drafter conditioning",
+  "arxiv": "2606.02091",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Replaces DFlash's single fused target feature with a learned mixture over 9 target layers for each draft layer, with separate K/V projections for the target context, so deeper drafters keep improving. Also scales drafter training data from 800K to 2.4M samples.",
+  "why": "Training is expensive (32 GPUs for about 100-160 hours per drafter), and extra depth barely moves speedup as added layers cost drafting time. The block horizon stays fixed by training, so acceptance collapses when drafting past it.",
+  "answered": [
+   [
+    "dbloom",
+    "DBloom"
+   ]
+  ]
+ },
+ {
+  "key": "c_ReplaySSM",
+  "name": "ReplaySSM",
+  "venue": "blog (tridao.me / dao-lab.ai) + vLLM RFC #49232",
+  "date": "2026-06",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "For SSM and linear-attention layers, keeps a checkpoint state plus a ring buffer of recent inputs and computes outputs from both, flushing into the state every L steps. Draft tokens just enter the buffer, verification becomes matrix multiplies, and rollback after a rejection is a pointer move.",
+  "why": "Matches the baseline only up to floating-point error, since outputs are computed in a different order than step-by-step recurrence. Speculation makes flushes more frequent and costlier, and only chain MTP with a 4-token window is shown, without trees.",
+  "answered": []
+ },
+ {
+  "key": "c_2606_15621",
+  "name": "Re-feeding Is Not Replaying",
+  "venue": "arXiv",
+  "date": "2026-06",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2606.15621",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Audits counterfactual token-credit estimation on stock vLLM with three passes: resume from the decode-time KV cache, an identical replica, and re-feeding the prefix as a prompt. Re-feeding shifts credit at low-margin tokens 14-28 points above the replica floor; batch-invariant kernels make all passes identical.",
+  "why": "A small measurement study: GSM8K credit only, three models, under $10 of compute. Even identical replica passes disagree on 9-23% of estimates, because single-sample continuations are noisy, so it diagnoses the problem without supplying a reliable estimator.",
+  "answered": []
+ },
+ {
+  "key": "dspark",
+  "name": "DSpark",
+  "venue": "arXiv '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "intra-block dependency",
+  "arxiv": "2607.05147",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A DFlash backbone plus a cheap sequential head (a low-rank Markov bias from the previous token, or a small RNN) that conditions each position on earlier draft tokens. A calibrated confidence head lets a hardware-aware scheduler pick each request's verify length to maximize accepted tokens per time.",
+  "why": "The cheap heads add only a shallow correction, so acceptance still decays along the block, and only one draft path is verified. The full block is drafted up front, so draft cost is wasted on low-acceptance queries, and target work on rejected positions is discarded.",
+  "answered": [
+   [
+    "xpress",
+    "xPress"
+   ],
+   [
+    "bpb",
+    "Beyond Parallel Blindness"
+   ],
+   [
+    "pctree",
+    "PCTree"
+   ],
+   [
+    "treespark",
+    "TreeSpark"
+   ],
+   [
+    "carryover",
+    "Carryover Drafting"
+   ],
+   [
+    "edr",
+    "EDR"
+   ]
+  ]
+ },
+ {
+  "key": "angelspec",
+  "name": "AngelSpec",
+  "venue": "arXiv '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "domain-specialized drafters",
+  "arxiv": "2607.25852",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Domain-specialized drafters: for chat, a shared-parameter MTP head trained with training-time test and an expected-accepted-length (TV) loss; for code and math, DFly, a DFlash-style drafter with richer target conditioning and an autoregressive correction head. Serving adds cross-request verify pruning (D-cut).",
+  "why": "Live-traffic acceptance (about 2.5 tokens) is far below benchmark values, suggesting offline-trained drafters fit benchmarks better than real queries. DFly is tested only at block 8 and concurrency up to 64, and the D-cut path supports only piecewise CUDA graphs.",
+  "answered": []
+ },
+ {
+  "key": "dominotree",
+  "name": "DominoTree",
+  "venue": "arXiv '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2607.08642",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Builds DDTree-style best-first trees but scores each node with Domino's GRU correction recomputed along its actual root-to-node path, so scores depend on the parent chain; candidates are limited to a marginal top-M set. A sync-free, depth-synchronous builder runs as an SGLang plugin.",
+  "why": "On 16 GB cards the tree-verify buffer caps admission at 8-12 requests, so past that load a plain chain gives more goodput. It uses one fixed budget of 16 nodes, and the Domino drafter, trained to 3K tokens, limits long context.",
+  "answered": []
+ },
+ {
+  "key": "weaver",
+  "name": "Weaver",
+  "venue": "arXiv '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "path-aware trees",
+  "arxiv": "2607.06763",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A 57M-parameter autoregressive adapter rescores DFlash's top-K tokens at each position conditioned on the tokens already drafted, avoiding a full-vocabulary projection, and grows best-first trees checked by traversal verification. It also adds a rollback-free tree-verify kernel for Gated DeltaNet layers.",
+  "why": "The serving path handles one request at a time, and tree depth is capped by DFlash's 16-token block. Trees are ranked by draft probability, only a proxy for acceptance, and a single target (Qwen3.6-27B on one B200) is tested.",
+  "answered": []
+ },
+ {
+  "key": "adaflash",
+  "name": "AdaFlash",
+  "venue": "COLM-W '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "online drafter adaptation",
+  "arxiv": "2607.19223",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps distilling a DFlash drafter online during serving, using target logits already computed in verification (clipped reverse KL plus top-1 cross-entropy). A separate small length head predicts each round's acceptance and truncates the 15-token block, active only above concurrency 16 to save verify compute.",
+  "why": "On the hybrid Qwen3.5-9B, gains narrow or reverse at concurrency 32 and above because SGLang's variable-length verification is immature. Results are mostly greedy, and adaptation to shifting traffic is shown only in an appendix.",
+  "answered": []
+ },
+ {
+  "key": "dcut",
+  "name": "D-cut",
+  "venue": "arXiv '26",
+  "date": "2026-07",
+  "family": "what drafts",
+  "tag": "serving under load",
+  "arxiv": "2607.14647",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Ranks every draft position in the batch by estimated survival probability (the product of drafter confidences up to it) and verifies only a global top-K, so weak suffixes are pruned across requests. K is chosen to maximize estimated accepted tokens per profiled step latency.",
+  "why": "The verify shape changes every step, which breaks CPU-GPU overlap and full CUDA-graph capture, so it runs with piecewise graphs only. Built on DFlash alone with greedy draft proposals, and tested only up to concurrency 64.",
+  "answered": []
+ },
+ {
+  "key": "c_2607_21535",
+  "name": "Windowed-MTP",
+  "venue": "arXiv",
+  "date": "2026-07",
+  "family": "systems & serving",
+  "tag": "long context",
+  "arxiv": "2607.21535",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Gives a model's built-in MTP draft head a sliding attention window plus a few sink tokens, so at 1M context each draft step reads a constant-size KV slice instead of the whole cache. The full-attention target still verifies, so accepted tokens are unchanged.",
+  "why": "The saving is only as large as the draft's share of step cost, so it matters mainly at extreme context with deep drafts. Results are batch-1 greedy on long-prompt/short-answer inputs, and bf16 batched verification makes it lossless only in exact arithmetic.",
+  "answered": []
+ },
+ {
+  "key": "c_DSpark_adaptive_verification_(",
+  "name": "DSpark adaptive verification (vLLM PR #47808)",
+  "venue": "PR",
+  "date": "2026-07",
+  "family": "systems & serving",
+  "tag": "serving under load",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "A Triton kernel in vLLM ranks each request's draft slots by estimated survival probability (running product of smoothed per-position confidences) and verifies the prefix that maximizes expected accepted tokens per millisecond, using step costs profiled at startup, so speculation shrinks as the GPU saturates.",
+  "why": "Evidence is thin: one model (DeepSeek-V4-Flash-DSpark) on one B300 node with an internal prompt set, and the no-spec baseline ran on a shared node. Output logprobs are unsupported, and the varlen full-CUDA-graph gain exists only on SM100 GPUs.",
+  "answered": []
+ },
+ {
+  "key": "c_2607_16673",
+  "name": "SpecLA",
+  "venue": "arXiv",
+  "date": "2026-07",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2607.16673",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A speculative decoding runtime for linear-attention (GDN) targets: topology-aware kernels verify chains and trees while following the recurrent state along each branch, compact factors saved during verification rebuild only the accepted state, and an EAGLE-style drafter's tree is pruned by path confidence.",
+  "why": "Shown only on a small pure-GDN 1.3B model on one H100, greedy, with at most 128 new tokens. Speedup tops out at 1.70x and is about 1.06x on HumanEval, so its value for large hybrid targets under batching is untested.",
+  "answered": []
+ },
+ {
+  "key": "xpress",
+  "name": "xPress",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": "2608.02438",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Adds a low-rank causal refiner to DFlash that biases each position's logits using earlier positions' states and tokens. The dependency is resolved with a few parallel Jacobi iterations that provably reach the sequential greedy answer, restoring block coherence without a token-by-token loop.",
+  "why": "The Jacobi iteration count is fixed per run, so easy blocks pay for iterations they do not need. It is tested on one target/drafter pair (Qwen3-8B, DFlash) with greedy decoding at batch 32 or less, and sampling (T=1) handling is left unclear.",
+  "answered": []
+ },
+ {
+  "key": "dflash2",
+  "name": "DFlash 2",
+  "venue": "blog '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "Upgrades DFlash in two ways: two-tap causal convolutions around each sublayer let every position read its predecessor within the same parallel pass, and a pair selector rescores the top-16 candidates per slot by adjacent-token compatibility before walking one path.",
+  "why": "There is no paper or training recipe, and all numbers are the vendor's own SGLang tests. Gains fade under load: at concurrency 32 speedup drops to about 1.0-1.45x, because verification turns compute-bound and extra accepted tokens buy little.",
+  "answered": []
+ },
+ {
+  "key": "lilicorr",
+  "name": "LiLiCorr",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": "2608.20530",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps DFlash's top-8 candidates per slot and runs a 2-layer bidirectional transformer over the whole candidate lattice, giving each candidate in/out vectors. Adjacent-slot cosine scores define transitions, and a greedy walk picks one coherent path; it is co-trained with the drafter.",
+  "why": "It can only reorder what the drafter already proposed, so acceptance is capped by whether the right token is in each slot's top-K. It also couples only adjacent slots, so longer-range inconsistencies pass through unchecked.",
+  "answered": []
+ },
+ {
+  "key": "dblast",
+  "name": "DBLAST",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": "2608.05448",
+  "on_path": false,
+  "proposed": false,
+  "intro": "At high temperature, independently drafted positions mix tokens from different plausible continuations. DBLAST adds a K-way latent mode to a DFlash drafter so all positions follow one shared mode, still in one pass, and trains it with an accepted-length surrogate.",
+  "why": "Only accepted length is reported, with no end-to-end speedup, so the serving cost of the K-branch expander is unknown. The training surrogate is neither unbiased nor a bound, and soft-mixture training differs from greedy-branch inference in an uncharacterized way.",
+  "answered": []
+ },
+ {
+  "key": "bpb",
+  "name": "Beyond Parallel Blindness",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": "2608.27339",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Splits block-drafter rejection into an information floor (unavoidable without seeing earlier realised tokens) and a model gap. Finding that one realised predecessor removes most of the floor, it replaces DSpark's context-free predecessor correction with a prefix-attention head that also reads committed context.",
+  "why": "The practical gain is small, about 4% more accepted length than DSpark: the head keeps DSpark's one-predecessor conditioning, so it can only shave model gap. Floors are estimated mainly at block size 7, with estimators the authors flag as biased.",
+  "answered": []
+ },
+ {
+  "key": "pctree",
+  "name": "PCTree",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "token trees",
+  "arxiv": "2608.02123",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Turns DSpark's single draft chain into a tree without retraining: frontier parents are batched through DSpark's existing Markov head so each parent gets its own top-k children, and the most probable paths under a node budget are verified in one target pass.",
+  "why": "Trees can only be as good as DSpark's pretrained draft distribution, layer-wise top-k pruning is a heuristic, and large k or budgets add real cost. Tested greedy, batch 1, on one H20 with fixed k=4 and N=32.",
+  "answered": []
+ },
+ {
+  "key": "dartree",
+  "name": "DARTree",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "token trees",
+  "arxiv": "2608.13524",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Grows a fixed-width supertree depth by depth, applying a pretrained causal correction head (Domino's GRU or DSpark's Markov head) to every branch at a depth in one batch, then prunes to the global top-B paths. Trees thus keep path-specific correction without sequential per-node work.",
+  "why": "It requires a drafter that already has a causal correction head, and large trees cost verification compute, so gains vanish under load: a 64-node tree gives about 1.06x over autoregressive decoding at concurrency 32.",
+  "answered": []
+ },
+ {
+  "key": "treespark",
+  "name": "TreeSpark",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "adaptive token trees",
+  "arxiv": "2609.22098",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Reads parent-conditioned child probabilities from DSpark's Markov head, calibrates them into edge-acceptance estimates, and grows the tree best-first until path survival falls below a price set per round from batch size and temperature. Sampling siblings without replacement keeps it lossless at T>0.",
+  "why": "The Markov head conditions only on the immediate parent, so deep in the tree its estimates drift back toward marginals, and block depth 7 caps acceptance per round. Speed was measured in a single-request Python harness; batched serving goodput is unmeasured.",
+  "answered": []
+ },
+ {
+  "key": "dbloom",
+  "name": "DBloom",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "draft horizon",
+  "arxiv": "2608.30427",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Shows that strong block drafters often accept the entire block, stranding speedup at the trained horizon (a spike in the acceptance histogram's top bin), and that widening the block at inference hurts. DBloom post-trains 16-token drafters to 24 with a curriculum emphasizing new positions.",
+  "why": "Evidence is narrow: two drafters on Qwen3-4B/8B plus one Gemma target, ablations on one model, and only block 24. Serving concurrency is not reported, so whether longer blocks still pay once verification is compute-bound is open.",
+  "answered": []
+ },
+ {
+  "key": "vat",
+  "name": "VAT",
+  "venue": "arXiv '26",
+  "date": "2026-08",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2608.30135",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Simulates verification during drafter training: a jointly trained head predicts whether each draft position survives sequential verification, and per-position loss weights stay at full strength up to the sample's actual first rejection before decaying. Plugs into EAGLE-3 and DFlash without changing inference.",
+  "why": "Tested only up to 8B targets, and some sampling (T=1) settings regress, e.g. DFlash on LLaMA GSM8K. Running the verification simulation inside training also raises DFlash training memory by about a third (23.8 to 31.5 GB).",
+  "answered": []
+ },
+ {
+  "key": "c_2608_01651",
+  "name": "Bole",
+  "venue": "arXiv",
+  "date": "2026-08",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2608.01651",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Solves gated-delta-rule tree verification in closed form (an ancestor-masked system with a depth-bounded nilpotent inverse), so one kernel verifies every tree node in parallel. It stores token-level factors and rebuilds only the sampled path's state, avoiding per-node state copies.",
+  "why": "The batch-wide node budget must be profiled offline for each model and hardware configuration, and end-to-end results stop at batch 8. Acceptance barely moves (about 0.1 token over baselines); the gains come from cheaper verification and memory.",
+  "answered": []
+ },
+ {
+  "key": "c_2608_20961",
+  "name": "TreeWY",
+  "venue": "arXiv",
+  "date": "2026-08",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2608.20961",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Applies a tree-structured WY transform to the gated delta rule so one triangular solve yields every draft node's output, and keeps a small pseudo-value matrix to reconstruct only the accepted recurrent state at commit, removing per-position GDN state snapshots.",
+  "why": "Wider trees now fit in memory but do not yet raise throughput, because tree verify cannot be CUDA-graph captured and depth is capped at 3. Where memory is not binding it runs 1-3% slower; tested only on Qwen3.5 with greedy MTP on B200.",
+  "answered": []
+ },
+ {
+  "key": "c_2608_30310",
+  "name": "Tail-Replay",
+  "venue": "ML for Systems workshop @ NeurIPS 2026",
+  "date": "2026-08",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid prefix caching",
+  "arxiv": "2608.30310",
+  "on_path": false,
+  "proposed": false,
+  "intro": "For prefix caching in GDN hybrids, keeps the exact full-attention KV but no recurrent checkpoints. On a hit it rebuilds each linear-attention state by replaying only a short recent suffix, relying on gated decay, so prefixes are reusable at any token.",
+  "why": "The rebuilt state is approximate (about 93-100% of full-prefill quality), because decay attenuates older inputs without erasing them, so outputs differ from exact prefill. Tested only on GDN hybrids on H100, with TTFT measured per request and no serving-throughput study.",
+  "answered": []
+ },
+ {
+  "key": "c_2608_14376",
+  "name": "CoRun",
+  "venue": "arXiv",
+  "date": "2026-08",
+  "family": "hybrid models & exact numerics",
+  "tag": "deterministic inference",
+  "arxiv": "2608.14376",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Gets deterministic inference without batch-invariant kernels by exploiting that standard kernels are position-invariant: prefill runs in isolation, and decode is always padded to one fixed max-concurrency shape replayed as a single CUDA graph, with RNG state bound to each request.",
+  "why": "Max concurrency must be fixed at launch, so light or bursty load wastes compute on padding. It suits offline workloads where every request needs determinism; when deterministic traffic is sparse, verify-and-rollback schemes like LLM-42 are cheaper.",
+  "answered": []
+ },
+ {
+  "key": "eal",
+  "name": "EAL/WTV",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2609.24150",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Trains standalone drafters on losses equal to expected accepted length in a window, via cumulative products over prefixes: EAL scores the target's argmax for greedy, WTV uses 1 minus total variation of temperature-scaled distributions for sampling, optionally followed by GRPO on simulated acceptance.",
+  "why": "Gains are small: under greedy decoding EAL barely beats KL (5.088 vs 5.057 tokens), and a plain CE baseline narrows WTV's sampling margin to about 0.16 tokens. Only standalone small-LM drafters at batch 1 with windows up to 7 were tested.",
+  "answered": []
+ },
+ {
+  "key": "dspine",
+  "name": "DSpine",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "block-draft coherence",
+  "arxiv": "2609.36173",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Moves causal conditioning into the drafter's backbone: at every layer, a gated injection writes position t-1's predicted feature into position t, so the left-to-right chain unfolds over network depth while all positions still update in parallel.",
+  "why": "Speedup shrinks under load: on Qwen3-8B it falls to about 1.6-1.8x over autoregressive decoding at concurrency 32, as the verify pass becomes the bottleneck. Evaluated only on Qwen3-4B/8B with thinking off and block 16.",
+  "answered": []
+ },
+ {
+  "key": "cast",
+  "name": "CAST",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "adaptive token trees",
+  "arxiv": "2610.00321",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Packs the top path-probability prefixes from an unchanged DFlash block into a tree, adding candidates while their probability mass beats a measured verify-time exchange rate, so width adapts to the GPU and kernel without sweeps. A batch-shared budget allocates nodes across requests.",
+  "why": "Candidates are scored by per-position marginals that ignore the parent, so deep branches rest on poorly calibrated scores and the tree is optimal only within that belief. Main runs are batch 1 with decode-only timing, so serving throughput is unclaimed.",
+  "answered": []
+ },
+ {
+  "key": "carryover",
+  "name": "Carryover Drafting",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "rejected-state reuse",
+  "arxiv": "2609.14717",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Verification already computes target hidden states at rejected draft positions, and these still predict upcoming tokens. Carryover hands them to the next drafting round as temporary read-only KV context, tagged by one learned embedding, and trains with parallel draft-verify-draft passes.",
+  "why": "Untested with confidence-scheduled verification or tree decoding, which change which rejected states exist; states are kept for a single round and the verify length is fixed. Training costs extra compute, and results cover one 15-token block size on two targets.",
+  "answered": []
+ },
+ {
+  "key": "bvloss",
+  "name": "BV loss",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2609.34832",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Derives the drafter loss from the block-verification acceptance rule (cumulative draft/target probability ratios), so training directly maximizes expected accepted length per block; at block size 1 it reduces to a TV loss. Gains carry over to token-wise and greedy verification.",
+  "why": "Defined only for parallel block drafters: autoregressive drafters and tree verification are left open, since the loss assumes one drafted block checked by block verification. Results are single-seed, batch 1, 256-token generations with thinking off.",
+  "answered": []
+ },
+ {
+  "key": "dscale",
+  "name": "DScale",
+  "venue": "arXiv '26",
+  "date": "2026-09",
+  "family": "what drafts",
+  "tag": "serving under load",
+  "arxiv": "2609.37532",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps DFlash's drafter and full 15-token drafts, but a 112K-parameter acceptance predictor packs score-ranked per-request prefixes into half the usual verify capacity, with path-aware attention tiles and fixed-address CUDA-graph workspaces for ragged lengths, so busy batches waste less verify compute.",
+  "why": "Tied to DFlash's 16-slot blocks and evaluated narrowly: one A100-40GB at TP1, Qwen3-4B/8B, math and code, concurrency 8-32, mostly greedy. The predictor is trained per target, so each new model or block width needs its own.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_23900",
+  "name": "LumoTree (v1: GDN Tree-Scan)",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2609.23900",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A serving design for tree speculation on recurrent hybrids: a shared tree descriptor drives path-parallel GDN verification with reused state tiles, then the accepted path is replayed through native fused updates while conv history and attention KV are remapped consistently.",
+  "why": "Results cover a single active sequence on one DGX Spark (Qwen3.8-27B NVFP4), so batched serving is untested. Equality with plain decoding, bitwise or even strict greedy, is not established, so its losslessness is unverified numerically.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_33051",
+  "name": "SketchSSM",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid models",
+  "arxiv": "2609.33051",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Keeps exact buffered recurrent-state updates (as in ReplaySSM) but approximates per-step state reads: at each flush it precomputes the state's outputs for a fixed offline query basis, and each decode step rebuilds its read from query-dependent coefficients, cutting state traffic about 10x.",
+  "why": "Reads are lossy, so outputs no longer match the model exactly, and the sketch rank must be calibrated offline. It is evaluated for plain decoding at large batch (128-512 on B300) and has not been combined with speculative verification.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_24197",
+  "name": "H-Spec",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "drafter KV reuse",
+  "arxiv": "2609.24197",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A hybrid Mamba-attention block drafter with no KV cache of its own: attention layers reuse the target's KV in place and Mamba layers start from the target's last hidden state as an O(1) summary, so drafter memory and KV writes do not grow with concurrency.",
+  "why": "In-place KV reuse requires the drafter's K/V dimensions to match the target's, constraining drafter design, and drafting is slower at low concurrency or short inputs. Tested on 4-8B Transformer targets with chains of at most 7 tokens.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_33477",
+  "name": "SuffixReplay",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "hybrid prefix caching",
+  "arxiv": "2609.33477",
+  "on_path": false,
+  "proposed": false,
+  "intro": "A systems version of suffix replay for hybrid prefix caching: it stores sparse anchors of linear-layer input hiddens, rebuilds a matched prefix's recurrent state by replaying a bounded recent suffix, and pipelines this in SGLang, allowing reuse at any 64-token page without state checkpoints.",
+  "why": "It relies on the recurrence forgetting old inputs, so it does not apply to non-decaying recurrences and the rebuilt state is approximate. The replay budget is calibrated offline per model, and replay can raise TTFT when many hits land in one scheduler step.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_15504",
+  "name": "Losslessness under finite precision",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2609.15504",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Audits whether a 'lossless' self-speculative AR-diffusion decoder (Orthrus, 1.7B) reproduces its frozen AR reference token for token: about 45% of BF16 generations match exactly, 87% in FP16 and all in FP32, and match probability tracks response-conditional perplexity.",
+  "why": "It shows divergence without locating the operation that causes it, and covers one small model (Qwen3-1.7B-based Orthrus) at batch 1 with eager attention on one consumer GPU, so it says little about batched serving or other drafters.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_38981",
+  "name": "Vosti",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "deterministic inference",
+  "arxiv": "2609.38981",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Formally specifies deterministic inference (bitwise-identical logits across batching, chunked prefill, prefill vs decode, and prefix reuse), shows vLLM's and SGLang's deterministic modes fail it under some variations, and builds an engine proved in Verus plus a Triton analyzer proving kernel outputs bitwise-equal.",
+  "why": "Kernels are chosen independently of engine state, so it forgoes load-tuned execution and runs slower than default vLLM/SGLang. It covers single-GPU dense models only (no MoE, no linear attention), and its guarantee is determinism alone, saying nothing about correctness.",
+  "answered": []
+ },
+ {
+  "key": "c_2609_25624",
+  "name": "Cross-arch fused-upcast GEMM",
+  "venue": "arXiv",
+  "date": "2026-09",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": "2609.25624",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Makes linear layers bitwise identical across Ampere, Ada and Hopper: fixed-configuration Triton GEMMs load BF16 weights, upcast to FP32 in registers and accumulate with IEEE FMA in a reduction order fixed by shape alone, avoiding tensor cores and autotuning.",
+  "why": "Covers linear layers only, with the lm_head left in BF16 for untied models, so other operations can still diverge across GPUs. Cross-vendor portability is open, and it was tested on 3-8B models under greedy decoding.",
+  "answered": []
+ },
+ {
+  "key": "edr",
+  "name": "EDR",
+  "venue": "arXiv '26",
+  "date": "2026-10",
+  "family": "what drafts",
+  "tag": "drafter training",
+  "arxiv": "2610.10411",
+  "on_path": false,
+  "proposed": false,
+  "intro": "Block-local losses ignore that one round's acceptance decides where the next round starts. EDR models decoding as a Markov reward process, giving an objective exactly equal to expected decoding rounds, an unbiased TD-style gradient from target rollouts, and an exact offline evaluator.",
+  "why": "Measured gains are small (at most about +0.13 accepted tokens over released drafters, +0.04 over end-to-end objectives) and training costs more than block-local losses. Block size is fixed at 7, and there are no serving runs.",
+  "answered": []
+ },
+ {
+  "key": "c_Lossless,_Yet_Not_Identical",
+  "name": "Lossless, Yet Not Identical",
+  "venue": "ICLR '27 submission",
+  "date": "",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "Diagnoses why lossless speculative decoding still changes greedy outputs: at each first divergence it compares incremental decoding, full-prefix decoding and the speculative verify pass, and attributes about a third of events (166 of 555 on Qwen3) to the verifier itself.",
+  "why": "Its fix, re-running selected steps in a canonical execution, adds compute instead of making kernels invariant, and all divergences vanish in FP32, so the problem is BF16 reduction order rather than the algorithm.",
+  "answered": []
+ },
+ {
+  "key": "c_FlexBI",
+  "name": "FlexBI",
+  "venue": "ICLR '27 submission",
+  "date": "",
+  "family": "hybrid models & exact numerics",
+  "tag": "exact numerics",
+  "arxiv": null,
+  "on_path": false,
+  "proposed": false,
+  "intro": "Cheaper batch invariance: lets a kernel change how it tiles outputs as long as each output's reduction order stays fixed, and shares KV page loads across queries without changing any query's arithmetic.",
+  "why": "Still slower than non-invariant kernels (25–33% faster than batch-invariant modes, not free), because fixing the reduction order rules out the fastest split-K and attention configurations.",
+  "answered": []
+ },
+ {
+  "key": "groupaware",
+  "name": "Group-aware drafting",
+  "venue": "proposed (ours)",
+  "date": "2026-10",
+  "family": "what drafts",
+  "tag": "sibling drafting",
+  "arxiv": null,
+  "on_path": true,
+  "proposed": true,
+  "intro": "We propose a DFlash-style block drafter that also cross-attends to a per-group memory of sibling samples' tokens and target hidden states. It targets content the target is sure of that DFlash misses, and learns to adapt sibling text where Seer copies it verbatim.",
+  "why": "It can only help when requests are correlated, as in groups sampled at T>0; real siblings are often still mid-generation, leaving less text to read than the finished-sibling case. It stays unproven until a trained drafter beats a model-free sibling baseline.",
+  "answered": []
+ }
+]
