@@ -1,0 +1,228 @@
+38
+===== peagle | P-EAGLE | arXiv '26 | 2026-02 | 2602.01469 | proposed= False
+solves: [["EAGLE-3", "drafting is autoregressive too: k serial passes per draft"]]
+skill: mask tokens: k drafts in 1 pass
+later_fixes: {}
+catalogue: {"contribution": "Turns EAGLE into a one-pass multi-token drafter: positions after the first use a learnable shared hidden state plus a learned mask-token embedding (unfrozen embeddings, 4 layers). Makes long-context (up to 20K) parallel-prediction training feasible via precomputed sliceable attention masks and within-sequence partitioning for gradient accumulation under COD.", "limitation": "Scope (experiments): gains over EAGLE-3 are modest (1.0-1.36x) and shrink at concurrency 4 for large/MoE targets as verification dominates; evaluated only up to C=4, K\u22647, chain drafting on one H200. No intra-block dependency modeling; acceptance only matches AR EAGLE-3."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== lk | LK losses | ICML '26 | 2026-02 | 2602.23881 | proposed= False
+solves: [["EAGLE-3", "token-level CE/KL training does not maximise accepted length"]]
+skill: adaptive KL-to-TV acceptance loss
+later_fixes: {}
+catalogue: {"contribution": "Losses that target per-position acceptance alpha = 1 - TV directly: -log(alpha), and a KL/TV hybrid whose weight exp(-eta*alpha) is set per draft position from running acceptance (KL early, TV later). Drop-in for EAGLE-3, MLP speculator, Medusa and DeepSeek MTP.", "limitation": "Stated: only chain sampling with sequential acceptance; trees, block verification and direct tau optimization left to future work. Gains small for strong drafters at T=0 (DeepSeek-V3 MTP +0.8% mean)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== dflash | DFlash | ICML '26 | 2026-02 | 2602.06036 | proposed= False
+solves: [["SpecDiff", "standalone diffusion LM: large, blind to the target's state"], ["PARD", "standalone diffusion LM: large, blind to the target's state"], ["EAGLE-3", "drafting is autoregressive too: k serial passes per draft"]]
+skill: block diffusion on target features
+later_fixes: {"positions drafted independently: suffix acceptance decays": ["DSpark", "Domino", "xPress", "DSpine", "JetSpec", "DFlash 2", "LiLiCorr", "DBLAST", "AngelSpec", "Weaver"], "large batches: verification turns compute-bound, speedup vanishes": ["DSpark", "AdaFlash", "D-cut", "DScale"], "token-level CE/KL training does not maximise accepted length": ["DBLAST", "AngelSpec", "BV loss", "VAT", "PARD-2"], "verifies one draft path; other per- position candidates thrown away": ["DDTree", "D\u00b2SD"], "target work on rejected positions is thrown away": ["D\u00b2SD", "Carryover"], "misses content the target is sure of (> 80% of DFlash misses; our M1)": ["Group-aware drafting"], "one fused target feature drops what later draft positions need": ["DFlare"], "trained block / TTT horizon caps length; past it acceptance collapses": ["DBloom"], "trained on target features, drafts on its own (exposure bias)": ["Draft-OPD"], "offline distillation misses the live query distribution": ["AdaFlash", "TTS"]}
+catalogue: {"contribution": "Lightweight 5-layer block-diffusion drafter that fills a 16-token masked block in one forward pass, conditioned on fused multi-layer target hidden states injected as extra K/V into every draft layer. Trained on target-generated responses with randomly anchored blocks and exponentially decaying per-position loss weights; shares the frozen target embedding/LM head.", "limitation": "Scope (experiments): speedup shrinks with concurrency (Qwen3-4B Math500 4.8x at c=1 to 2.9x at c=32) and the paper notes large blocks raise verification cost when compute-bound, leaving adaptive block-size scheduling to future work. Base drafter degrades beyond its 4K training context without long-context fine-tuning."}
+EXTRA {'family': 'what drafts', 'on_path': True}
+===== echo | ECHO | ICML '26 | 2026-03 | 2604.09603 | proposed= False
+solves: [["EAGLE-3", "fixed tree budget ignores round difficulty, hardware and load"]]
+skill: batch super-tree budget
+later_fixes: {}
+catalogue: {"contribution": "Treats all requests' EAGLE-3 trees in a batch as one super-tree under a global verification-token cap, gating depth only at calibrated high-AUC 'sweet-spot' depths. Budget from truncated low-confidence requests deepens confident ones, and width is added only when no request can deepen; implemented in SGLang with CUDA graphs.", "limitation": "Scope (no limitations section): greedy decoding only, EAGLE-style drafters, and a warm-up to calibrate per-depth thresholds. High-load gains are measured against EAGLE-3 default trees, not against chains."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== ssd | SSD | ICLR '26 | 2026-03 | 2603.03251 | proposed= False
+solves: [["AMUSD", "after a rejection, drafting is back on the critical path"], ["PEARL", "after a rejection, drafting is back on the critical path"]]
+skill: pre-speculate likely outcomes
+later_fixes: {}
+catalogue: {"contribution": "The draft runs on separate hardware and, while a verification is in flight, pre-speculates for the most likely outcomes (accepted count plus bonus token) using a geometric fan-out cache over positions, so it can return a ready speculation on a hit. Saguaro sampling down-weights the cached top-F draft tokens to make the residual (bonus token) predictable, and a fallback switches to a fast speculator above a critical batch size.", "limitation": "Stated: SD is generally ineffective for throughput-bound workloads (large-scale RL, offline generation), and custom-mask attention limits profitable lookahead. Scope: batch <=16, greedy main results, custom engine plus one extra draft GPU."}
+EXTRA {'family': 'systems & serving', 'on_path': False}
+===== kvshot | KVShot | arXiv '26 | 2026-04 | 2604.26412 | proposed= False
+solves: [["EAGLE-3", "one fused target feature drops what later draft positions need"]]
+skill: target KV reuse in the drafter
+later_fixes: {}
+catalogue: {"contribution": "Diagnostic framework comparing hidden-only, target-KV-only and hybrid context reuse in EAGLE-3-style drafters. Argues the target's last hidden state is a query-biased compression that drops information later steps need; target-KV reuse raises late-step acceptance.", "limitation": "Stated: end-to-end gain marginal (HF MAT 5.04 vs 5.01) with 5-10% extra drafting latency; shallow drafters can't estimate target queries and draft-side KV projections get sparse gradients. Qwen3-8B only, no wall-clock speedup."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== ddtree | DDTree | arXiv '26 | 2026-04 | 2604.12989 | proposed= False
+solves: [["DFlash", "verifies one draft path; other per- position candidates thrown away"]]
+skill: best-first tree over marginals
+later_fixes: {"marginal-scored trees mis-rank paths; children ignore their parent": ["JetSpec", "PCTree", "DominoTree", "DARTree", "TreeSpark", "TreeFlash", "Weaver", "TAPS", "GRAFT", "PRESTO"], "fixed tree budget ignores round difficulty, hardware and load": ["TreeSpark", "GRAFT", "CAST", "BASTION", "CaDDTree"]}
+catalogue: {"contribution": "Builds a draft tree from one DFlash pass by taking the B highest-probability prefixes under the factorized per-position marginals (provably optimal for that surrogate), found with a best-first heap. The tree is verified in one target pass with an ancestor-only mask by walking the target's own greedy/sampled token.", "limitation": "Scope (no limitations section): single-stream HF Transformers harness at batch 1 with SDPA tree attention on Qwen3-4B/8B/Coder-30B-A3B. Node scores are unconditioned marginals, and the budget is picked per cell from 16-1024 (speedup peaks at 256-512 on H200)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== c_2604_26779 | NeMo-RL speculative rollouts | arXiv | 2026-04 | 2604.26779 | proposed= False
+solves: [["", "Rollout generation bottlenecks RL; existing speedups perturb the on-policy distribution"]]
+skill: verifier-exact SD inside RL loop
+later_fixes: {}
+catalogue: {"contribution": "Integrates lossless SD (EAGLE-3, native MTP or draft models) into NeMo-RL's vLLM rollout backend for sync and async RL, computing log-probs and loss against the verifier policy. Online drafter adaptation reuses the policy forward's cached hidden states through a detached path, and a GB200 simulator projects gains to 235B scale.", "limitation": "Scope: real runs only at 8B (Qwen3-8B), 32 GB200s, math GRPO; the 235B / ~2.5x end-to-end results are simulator projections. Speedup is capped by non-generation stages (Amdahl bound)."}
+EXTRA {'family': 'systems & serving', 'on_path': False}
+===== c_2604_19877 | Super Apriel | arXiv | 2026-04 | 2604.19877 | proposed= False
+solves: [["", "Separate draft models must be trained and loaded; hybrid presets lose quality"]]
+skill: Shared-weight supernet placement drafting
+later_fixes: {}
+catalogue: {"contribution": "A 15B supernet with four trained mixers per layer (FA/SWA/KDA/GDN), switchable per request. The all-FA placement can verify drafts from a cheap placement (e.g., all-GDN) of the same checkpoint; the draft placement is chosen via an offline acceptance estimator plus surrogate search.", "limitation": "Stated: fast presets regress on long-range retrieval (RULER/NIAH); single teacher (Apriel 1.6). Scope: SD speedups are estimated from teacher-trace acceptance (gamma=8), not measured end-to-end."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== c_2605_05219 | Sparse Prefix Caching | arXiv | 2026-04 | 2605.05219 | proposed= False
+solves: [["", "Dense per-token recurrent-state caching is unnecessary and prohibitively large"]]
+skill: Optimal sparse checkpoint placement (DP)
+later_fixes: {}
+catalogue: {"contribution": "Treats exact recurrent-state checkpoint placement under an overlap-depth distribution as a one-sided weighted k-median, solved exactly by an O(NM) dynamic program. A hit resumes from the deepest checkpoint and recomputes the suffix exactly.", "limitation": "Stated: useful only when many requests share a substantial but not identical prefix (no gain for append-only chat); production state extraction/restore and admission/eviction left to future work."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== cassandra | Cassandra | ISCA '26 | 2026-05 | 2605.26558 | proposed= False
+solves: [["Draft & Verify", "layer skipping is coarse; at batch 1 weight reads dominate"], ["SWIFT", "layer skipping is coarse; at batch 1 weight reads dominate"], ["MagicDec", "layer skipping is coarse; at batch 1 weight reads dominate"]]
+skill: pruned, low-bit self-draft (HW)
+later_fixes: {}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== attndrift | Attention Drift | arXiv '26 | 2026-05 | 2605.09992 | proposed= False
+solves: [["EAGLE-3", "trained block / TTT horizon caps length; past it acceptance collapses"]]
+skill: post-norm drafter past TTT depth
+later_fixes: {}
+catalogue: {"contribution": "Shows EAGLE-3 drafters and MTP heads shift attention from the prompt to their own recent tokens because hidden-state magnitude grows monotonically with chain depth. Post-norm on drafter states plus RMSNorm on captured target features keeps deep steps stable beyond the TTT depth.", "limitation": "Stated: focus on EAGLE-3 (MTP drift observed, fix untested there) and models <120B. Post-norm with short TTT trails pre-norm TTT-8 in overall accepted length (5.05 vs 7.12)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== domino | Domino | arXiv '26 | 2026-05 | 2605.29707 | proposed= False
+solves: [["DFlash", "positions drafted independently: suffix acceptance decays"]]
+skill: GRU causal logit correction
+later_fixes: {"verifies one draft path; other per- position candidates thrown away": ["DominoTree", "DARTree"]}
+catalogue: {"contribution": "Adds to a DFlash backbone a 'Domino head': a GRU (d=1024) over embeddings of previously sampled draft tokens plus a low-rank (r=256) logit-space residual correction, run as a fused cheap sequential loop. Trained teacher-forced with a base-anchored curriculum that anneals loss weight from backbone logits to corrected logits to prevent backbone collapse.", "limitation": "Paper-stated: targets inference rather than training cost, implementation mainly adapted to SGLang, and speedup varies across hardware. Scope: Qwen3-4B/8B only, concurrency \u226432, and headline tables compare against public DFlash checkpoints trained on different data."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== taps | TAPS | arXiv '26 | 2026-05 | 2606.00487 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"]]
+skill: distilled edge scorer, reachability
+later_fixes: {}
+catalogue: {"contribution": "Trains a lightweight edge scorer (parent/child token, depth, draft log-prob, entropy) by distilling recorded target verification outcomes into sibling-normalized conditional acceptance, then multiplies along paths into reach probabilities. It greedily selects a prefix-closed subtree by utility reach/(lambda1 + lambda2*depth) under a budget and threshold.", "limitation": "Own: greedy T=0 only; a single-request prototype not integrated into vLLM/SGLang; it cannot recover target tokens missing from the drafter's top-K pool."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== bastion | BASTION | arXiv '26 | 2026-05 | 2605.29727 | proposed= False
+solves: [["DDTree", "fixed tree budget ignores round difficulty, hardware and load"]]
+skill: roofline speedup-peak stopping
+later_fixes: {}
+catalogue: {"contribution": "Grows a best-first prefix tree from DFlash marginals using a path-sum acceptance surrogate and stops at the first node where estimated speedup (surrogate x AR latency / roofline-calibrated cycle cost) decreases, which it proves unimodal. Tree size is query-dependent with no per-setting tuning.", "limitation": "Own: evaluation only at batch size 1 (larger batches change the verification-cost profile), and the offline latency calibration assumes a stable runtime profile."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== pard2 | PARD-2 | arXiv '26 | 2026-05 | 2605.08632 | proposed= False
+solves: [["PARD", "token-level CE/KL training does not maximise accepted length"], ["DFlash", "token-level CE/KL training does not maximise accepted length"]]
+skill: prefix-survival-weighted loss
+later_fixes: {}
+catalogue: {"contribution": "Confidence-Adaptive Token (CAT) loss weights each future-token CE+KD term by the cumulative product of target confidences along the ground-truth prefix, a proxy for the probability that position is reached in verification. Stochastic gating of fused target hidden features lets one standalone PARD-style drafter run in target-dependent or target-independent mode.", "limitation": "Scope (experiments): all acceptance results are greedy (T=0) chain decoding with tree disabled, on Llama3.1-8B/Qwen3 \u226432B with A100s; no limitations section. The deep-position comparison vs PARD confounds CAT with a longer training horizon (K=16 vs PARD's 8)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== draftopd | Draft-OPD | arXiv '26 | 2026-05 | 2605.29343 | proposed= False
+solves: [["DFlash", "trained on target features, drafts on its own (exposure bias)"]]
+skill: anchor-replayed on-policy distillation
+later_fixes: {}
+catalogue: {"contribution": "On-policy distillation for drafters: target-assisted SD rollouts give stable continuations, then drafting is replayed from every block anchor so the target scores draft-induced states (forward KL on accepted, decayed reverse KL on rejected tokens). Breaks the SFT plateau.", "limitation": "Stated: only Qwen3 targets and DFlash-style drafters; thinking-mode rollouts capped at 4096 tokens vs 8192 at eval. First-rejection mass shifts only slightly toward later positions."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== tts | TTS | arXiv '26 | 2026-05 | 2605.09329 | proposed= False
+solves: [["DFlash", "offline distillation misses the live query distribution"]]
+skill: per-request online drafter updates
+later_fixes: {}
+catalogue: {"contribution": "Shows speculator acceptance collapses with output length on long reasoning traces, then adapts the drafter per request online with one gradient step per (strided) round, using the verifier's logits as a free teacher (position-weighted KL plus drift regularizer).", "limitation": "Stated: unfused PyTorch gradient kernels, fixed update stride, SGLang CUDA-graph/autograd integration issues. Batching not evaluated; drafter reset between requests."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== c_2605_15051 | SD latency model (Little's Law) | arXiv | 2026-05 | 2605.15051 | proposed= False
+solves: [["", "How SD speedup behaves under realistic load with emergent batch size"]]
+skill: queueing-based SD latency decomposition
+later_fixes: {}
+catalogue: {"contribution": "Models request latency as C1/(1-RPS*C2), with batch inferred via Little's Law. SD enters through prefill/verify/draft costs amortized by E=(1-a^(k+1))/(1-a), plus an expert-coverage term for MoE. Speedup grows with load only if C2,SD/C2,dense<1, which happens only at very high acceptance, and larger k raises C2.", "limitation": "Stated: covers the stable pre-saturation regime and mean latency only; coefficients are system-specific (vLLM 0.13, A100/H100); adaptive drafting/trees may add cost terms. Scope: acceptance is synthetic (vLLM rejection sampler overridden) and assumed i.i.d."}
+EXTRA {'family': 'systems & serving', 'on_path': False}
+===== c_2605_19049 | KVBuffer | arXiv | 2026-05 | 2605.19049 | proposed= False
+solves: [["", "Per-draft temporary recurrent states multiply memory/IO and cap hybrid SD concurrency"]]
+skill: KV buffering, chunkwise parallel verification
+later_fixes: {}
+catalogue: {"contribution": "Buffers recent keys/values of linear-attention layers so decode runs chunkwise with deferred, batched state updates, and SD drafts are verified in parallel chunkwise form, with the state updated only from accepted tokens' KVs (no per-draft temporary states).", "limitation": "Scope: only Qwen3-Next-80B-A3B (MTP chain, 4 draft tokens end-to-end) on 4x L40S in SGLang. Stated: no dynamic routing between computation forms; chunkwise decode can be slower than recurrent at batch 1."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== c_2605_01106 | Component-aware self-speculation | arXiv | 2026-05 | 2605.01106 | proposed= False
+solves: [["", "Self-speculation had ignored hybrid models' internal component heterogeneity"]]
+skill: SSM-only subgraph as drafter
+later_fixes: {}
+catalogue: {"contribution": "Uses a hybrid model's own SSM/linear-attention subgraph as a zero-parameter drafter, with attention zeroed or skipped via hooks. Shows the perplexity ratio under attention ablation predicts acceptance.", "limitation": "Stated: the research Python implementation is slower than AR (0.009-0.50x wall clock); models <=3B; chain verification only. Sequential hybrids (Qwen3.5) reach only alpha~0.04."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== c_2605_30218 | MarginGate | arXiv | 2026-05 | 2605.30218 | proposed= False
+solves: [["", "Always-on per-token verification pays cost on mostly stable steps"]]
+skill: Logit-margin-gated verification
+later_fixes: {}
+catalogue: {"contribution": "Shows batch-induced greedy token flips are sparse (0.3-1.3% of steps) and flagged by low top-1/top-2 logit margin, not by K/V drift. Verifies only low-margin steps (calibrated threshold) and repairs a mismatch by replacing the current K/V column.", "limitation": "Stated: greedy BF16 dense models only; sampling, beam search and speculative decoding need other policies; the prototype repairs via rollback re-decode. The trigger becomes dense (49.5%) on DSR1-Distill-Qwen-7B."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== jetspec | JetSpec | arXiv '26 | 2026-06 | 2606.18394 | proposed= False
+solves: [["DFlash", "positions drafted independently: suffix acceptance decays"], ["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"]]
+skill: block-causal head + best-first tree
+later_fixes: {}
+catalogue: {"contribution": "DFlash-style head (KV-injected target features) with a block-causal mask so each draft position attends only to the prefix and earlier draft positions, trained by forward-KL distillation. Builds best-first trees (top-W per depth, cumulative log-prob scoring) up to 256 nodes and integrates tree verification into vLLM with a custom paged tree-attention kernel.", "limitation": "Scope (paper's serving data): large tree budgets pay only at low load (budget 128 best at bs=1 but worst at bs=16, where budget 32 wins), with dynamic budget scheduling left to future work. vLLM path is greedy-only, and at budget 16 JetSpec merely matches DFlash."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== treeflash | TreeFlash | arXiv '26 | 2026-06 | 2606.03819 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"]]
+skill: previous-token MLP inside trees
+later_fixes: {}
+catalogue: {"contribution": "Adds a SwiGLU 'AR-approximator' that updates each DFlash position's hidden state with the embedding of the preceding token, giving bigram-conditioned per-node distributions. Keeps O(1) drafting via two stages: build a top-M-ary tree from DFlash marginals, evaluate the approximator on its M\u00b7\u03b3 unique (token, position) pairs in parallel, then select an OPT-Tree; trained with forward KL from a DFlash initialization.", "limitation": "Paper-stated: all experiments single-batch with SDPA (large dynamic trees may conflict with multi-batch serving), initialized from DFlash, teacher-forced exposure bias, Qwen-only. Non-leaf tree nodes must lie inside the top-M tree."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== graft2 | GRAFT | arXiv '26 | 2026-06 | 2605.20104 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"], ["DDTree", "fixed tree budget ignores round difficulty, hardware and load"]]
+skill: target-distilled edges + round budget
+later_fixes: {}
+catalogue: {"contribution": "Prunes EAGLE-3 trees at a few calibrated confidence checkpoints and grafts retrieved continuations into the released slots, keeping the total verification budget fixed. Retrieval reads a GPU-resident, online-updated token transition matrix through stage-specific templates.", "limitation": "Own: the SGLang high-batch version does not yet optimize retrieval kernels or scheduling. Scope: high-batch is only a Qwen3-8B sanity check up to BS=16 with a fixed tree shape, and the DFlash extension is preliminary."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== presto | PRESTO | arXiv '26 | 2026-06 | 2607.22634 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"]]
+skill: n-gram prefix rescoring, priority tree
+later_fixes: {}
+catalogue: {"contribution": "Training-free tree drafting for diffusion drafters: each candidate is rescored as log q_d(t) + \u03bb\u00b7log \u03c1_d(t|prefix) with a 3-gram prefix model (\u03bb\u22480.2), then expanded by beam search with global retention or best-first search to budgets of 128-1024 nodes. Also extends tree drafting to self-speculative dLLMs (Nemotron-Labs-Diffusion, linear and quadratic modes).", "limitation": "Paper-stated: the n-gram prefix signal is only short-range, and evaluation is mostly single-request in PyTorch with larger batches/production engines untested. Scope: tree budgets kept \u2264512 to stay memory-bound."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== caddtree | CaDDTree | arXiv '26 | 2026-06 | 2606.01813 | proposed= False
+solves: [["DDTree", "fixed tree budget ignores round difficulty, hardware and load"]]
+skill: throughput-optimal budget stop
+later_fixes: {}
+catalogue: {"contribution": "Replaces DDTree's fixed node budget with a per-round throughput objective using explicit drafting cost and a profiled, context-length-dependent convex verification cost. It proves surrogate throughput is unimodal, which gives a greedy stop inside DDTree's heap.", "limitation": "Scope (no limitations section): single-sequence harness on A800 GPUs, Qwen3-4B/8B only, block 16. It still scores nodes with factorized DFlash marginals (no path conditioning)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== d2sd | D²SD | arXiv '26 | 2026-06 | 2606.04446 | proposed= False
+solves: [["DFlash", "verifies one draft path; other per- position candidates thrown away"], ["DFlash", "target work on rejected positions is thrown away"]]
+skill: second drafter re-anchored at rejects
+later_fixes: {}
+catalogue: {"contribution": "Uses DFlash's calibrated per-position confidences to form a posterior over the rejection boundary, r(i)=\u03a0_{k\u2264i}c_k\u00b7(1-c_{i+1}), and picks the top-K boundaries. A second variable-prefix diffusion drafter (trained with a geometric prefix-length prior and anchor-relative loss decay) re-anchors at each boundary and redrafts the suffix in one batched pass; the K+1 shared-prefix candidates are verified with cascade attention.", "limitation": "Scope (no limitations section): no batch>1 or serving-engine results, and a third cascade level raises \u03c4 8% but cuts speed 4%. Sampling (T=1) gains are small on GPT-OSS-20B and the multi-branch T=1 acceptance rule is not specified."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== dflare | DFlare | arXiv '26 | 2026-06 | 2606.02091 | proposed= False
+solves: [["DFlash", "one fused target feature drops what later draft positions need"]]
+skill: layer-wise target fusion, scaling
+later_fixes: {"trained block / TTT horizon caps length; past it acceptance collapses": ["DBloom"]}
+catalogue: {"contribution": "Replaces DFlash's single fused target feature with per-draft-layer softmax mixtures over 9 target layers (separate K/V projections for target context), so deeper drafters keep improving; scales training data from 800K to 2.4M samples.", "limitation": "Stated: high training cost (32 GPUs, ~100-160 h per drafter) and data beyond 2.4M unexplored. Depth tested only to 7 layers; extra depth barely moves speedup."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== c_2608_20375 | GRAFT | arXiv | 2026-06 | 2608.20375 | proposed= False
+solves: [["", "DDTree attaches target-compatible tokens to wrong parents; fixed budget ignores decoding state."]]
+skill: target-distilled edge scores, state-aware budget
+later_fixes: {}
+catalogue: {"contribution": "Adds a target-distilled, cacheable bi-tower parent-child compatibility residual (TDES; KL + pairwise + BCE losses on DDTree traces) to DFlash log-probs for edge scoring. Sets each round's budget by maximizing a fitted saturating-gain/affine-cost utility driven by draft confidence, hidden-state degeneration and acceptance history (SABA).", "limitation": "Own: drafting, tree construction and verification still run sequentially each round (pipeline bubbles). Scope: batch 1 on one A100, scorer trained per model on 3,046 prompts, and temperature and block size are not stated."}
+EXTRA {'family': 'draft shape & verification', 'on_path': False}
+===== c_ReplaySSM | ReplaySSM | blog (tridao.me / dao-lab.ai) + vLLM RFC #49232 | 2026-06 | None | proposed= False
+solves: [["", "Per-draft state snapshots and full-state writes make hybrid SD slower than decode"]]
+skill: Input ring buffer, deferred flush
+later_fixes: {}
+catalogue: {"contribution": "Keeps a checkpoint state plus a ring buffer of recent SSM inputs (Mamba-2 v/dt/k; GDN corrected u), computing outputs from checkpoint+buffer and flushing every L steps. SD drafts go into the buffer, verification becomes GEMMs (one triangular solve for GDN), and rollback is a pointer move.", "limitation": "Stated: equal to baseline only up to floating-point error; flushes are costlier and more frequent under speculation; no tree-speculation results (chain MTP, window 4)."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== c_2606_15621 | Re-feeding Is Not Replaying | arXiv | 2026-06 | 2606.15621 | proposed= False
+solves: [["", "Credit studies assume re-fed prefixes reproduce decode-time state"]]
+skill: Replica-floor numerical audit
+later_fixes: {}
+catalogue: {"contribution": "A three-pass harness (resume from decode-time KV, identical replica, re-fed prefix) on stock vLLM. Re-feeding the prefix shifts per-token counterfactual credit at low-margin tokens 14-28 pp above the replica floor; vLLM batch-invariant kernels make all three passes bit-identical.", "limitation": "Scope: GSM8K credit estimation, three models, A100s, <$10 compute. Stated: replica passes themselves disagree on 9-23% of estimates."}
+EXTRA {'family': 'hybrid models & exact numerics', 'on_path': False}
+===== dspark | DSpark | arXiv '26 | 2026-07 | 2607.05147 | proposed= False
+solves: [["DFlash", "positions drafted independently: suffix acceptance decays"], ["DFlash", "large batches: verification turns compute-bound, speedup vanishes"]]
+skill: Markov correction head; confidence- scheduled verify length
+later_fixes: {"positions drafted independently: suffix acceptance decays": ["xPress", "Parallel Blindness"], "verifies one draft path; other per- position candidates thrown away": ["PCTree", "TreeSpark"], "target work on rejected positions is thrown away": ["Carryover"], "token-level CE/KL training does not maximise accepted length": ["EDR"]}
+catalogue: {"contribution": "Semi-AR drafter: DFlash parallel backbone plus a cheap sequential head (low-rank r=256 Markov transition bias from the previous sampled token, or a GRU-style RNN head) adding prefix-dependent logit bias while keeping exact per-token softmax probabilities. A calibrated confidence head (trained on 1-TV, sequential temperature scaling) drives a hardware-aware scheduler that picks per-request verification length to maximize expected accepted tokens x engine steps/s, with early stopping to stay lossless.", "limitation": "Paper-stated: the full \u03b3-block draft cost is still paid upfront and is unrecoverable for low-acceptance queries. Scope: offline acceptance measured chain-only at T=1 on Qwen3/Gemma4 \u226414B; production uses \u03b3=5 with an asynchronous scheduler whose losslessness argument relies on two-step-stale confidences."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== angelspec | AngelSpec | arXiv '26 | 2026-07 | 2607.25852 | proposed= False
+solves: [["DFlash", "positions drafted independently: suffix acceptance decays"], ["DFlash", "token-level CE/KL training does not maximise accepted length"]]
+skill: conditioned head + acceptance loss
+later_fixes: {}
+catalogue: {"contribution": "Domain-specialized drafters: (1) a shared-parameter MTP head trained with training-time test plus an LK-loss cold start and then an end-to-end TV (expected-accepted-length) loss, for chat; (2) DFly for code and math, a DFlash-style block-diffusion drafter with hybrid shared plus per-layer target conditioning and a predecessor-conditioned AR hidden-correction head. At serving time it adds D-cut cross-request verify pruning.", "limitation": "Scope: DFly only at block 8, concurrency <=64, 8xH20, Hy3/Qwen3-8B targets. Stated: the D-cut path runs piecewise CUDA graphs only and its selector is not free; live-traffic acceptance (~2.5) is far below benchmark tau."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== dominotree | DominoTree | arXiv '26 | 2026-07 | 2607.08642 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"], ["Domino", "verifies one draft path; other per- position candidates thrown away"]]
+skill: GRU-corrected best-first tree
+later_fixes: {}
+catalogue: {"contribution": "Scores DDTree's best-first heap with Domino's GRU causal correction recomputed along each candidate's realized root-to-node path (non-factorized scores), restricted to a marginal top-M candidate set. Adds a CUDA-graph builder and a host-sync-free, depth-synchronous frontier builder that runs as an out-of-tree SGLang plugin.", "limitation": "Own: on 16 GB cards the tree-verify buffer caps admission at 8-12 requests, so the chain wins goodput past that cap. A single fixed budget (16) is used, and the Domino drafter (trained to 3K tokens) limits long context."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== weaver | Weaver | arXiv '26 | 2026-07 | 2607.06763 | proposed= False
+solves: [["DDTree", "marginal-scored trees mis-rank paths; children ignore their parent"], ["DFlash", "positions drafted independently: suffix acceptance decays"]]
+skill: AR adapter over top-K marginals
+later_fixes: {}
+catalogue: {"contribution": "A 56.7M-param autoregressive adapter (Weaver) re-scores DFlash's top-K per-position marginals, conditioned on the tokens already drafted (no full-vocab projection), to grow best-first proposal trees verified by Traversal verification. Also adds a rollback-free GDN tree-verify kernel (masked triangular solve; commit replays the accepted path).", "limitation": "Stated: the serving path handles one request at a time; depth is capped by DFlash's 16-token block; the tree is built from draft probability, not acceptance. Scope: one target (Qwen3.6-27B bf16, 1x B200)."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== adaflash | AdaFlash | COLM-W '26 | 2026-07 | 2607.19223 | proposed= False
+solves: [["DFlash", "offline distillation misses the live query distribution"], ["DFlash", "large batches: verification turns compute-bound, speedup vanishes"]]
+skill: online distillation + length head
+later_fixes: {}
+catalogue: {"contribution": "Online on-policy distillation of a DFlash diffusion drafter during serving: reverse-KL (entry-wise clipped) mixed with hard top-1 CE, using the target logits already computed in verification. A separately trained lightweight length head predicts each round's acceptance fraction and truncates the 15-token block; it is active only above concurrency 16 and can be scaled by load.", "limitation": "Stated: Qwen3.5-9B (GDN) gains narrow or reverse at C>=32 because SGLang varlen verify is immature. Scope: greedy by default (T=1 only at C<=32); the drafter adapts online to the served stream (cross-domain variant in appendix); GPU type not stated."}
+EXTRA {'family': 'what drafts', 'on_path': False}
+===== dcut | D-cut | arXiv '26 | 2026-07 | 2607.14647 | proposed= False
+solves: [["DFlash", "large batches: verification turns compute-bound, speedup vanishes"]]
+skill: cross-request confidence budget
+later_fixes: {}
+catalogue: {"contribution": "Scores every draft position in the batch by its prefix-product drafter confidence (estimated survival probability) and verifies only a global top-K, so each request keeps a contiguous high-confidence prefix and low-confidence suffixes are pruned across requests. K is picked from {25,50,75,100}% of B(D+1) by maximizing estimated accepted tokens divided by a startup-profiled step-latency table C(B,rho).", "limitation": "Stated: per-step variable verify shape does not fit CPU-GPU overlap (Spec-V2) or full CUDA-graph capture, so it runs with piecewise graphs only. Scope: built on DFlash only, greedy draft proposals, concurrency <=64, H20/H800."}
+EXTRA {'family': 'what drafts', 'on_path': False}

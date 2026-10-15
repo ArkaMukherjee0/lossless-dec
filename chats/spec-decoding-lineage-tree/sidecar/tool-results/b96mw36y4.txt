@@ -1,0 +1,392 @@
+
+#### repo:vllm-project/vllm in:title invariant (total 161)
+- PR #60524 [2026-10-08] open | [Bugfix] Keep compressed-tensors wNa16 linear layers batch invariant
+- PR #60479 [2026-10-07] open | [Bugfix] Keep AWQ and GPTQ linear layers batch invariant
+- IS #60162 [2026-10-06] open | [Bug]: Humming FP8 linear crashes on per-tensor/per-channel FP8 weights, so FP8 models cannot start with VLLM_BATCH_INVARIANT=1 on Ampere
+- PR #60122 [2026-10-05] open | [Bugfix][Attention] Make TRITON_MLA prefill batch invariant under chunked prefill
+- PR #60074 [2026-10-05] open | [Bugfix][Compile] Pin Inductor kernel configs under VLLM_BATCH_INVARIANT
+- PR #60035 [2026-10-05] open | [Bugfix][Pooling] Make MEAN pooling batch invariant when the flag asks for it
+- PR #60034 [2026-10-05] open | [WIP][Perf] Tune small-M batch-invariant GEMMs on Hopper
+- PR #60013 [2026-10-05] open | [Bugfix][Quantization] Keep AWQ batch-invariant under torch.compile
+- IS #60007 [2026-10-05] open | [Bug]: TRITON_MLA is not batch invariant under chunked prefill with `VLLM_BATCH_INVARIANT=1` (DeepSeek-V2-Lite, DeepSeek-V3.1)
+- PR #59985 [2026-10-04] open | [Bugfix] Keep GateLinear batch invariant under VLLM_BATCH_INVARIANT
+- IS #59940 [2026-10-04] open | [Bug]: `VLLM_BATCH_INVARIANT=1` silently produces wrong tokens on a cold model-info cache (`eager_break_during_capture` is resolved at import time)
+- PR #59929 [2026-10-04] open | [DeepSeek-V4-P4] Align batch-invariant mHC and o-proj paths
+- PR #59863 [2026-10-03] open | [DeepSeek-V4-P1] Add standalone batch-invariant SiLU FP8 quantization
+- PR #59233 [2026-09-29] open | [Bugfix] Batch-invariant mode: disable CUDA WNA16 MoE kernel (56887)
+- PR #59199 [2026-09-29] closed | [Bugfix] Disable WNA16 CUDA kernel in batch invariant mode
+- IS #59181 [2026-09-29] open | [Bug] VLLM_BATCH_INVARIANT=1 is not batch-invariant for a pooling (cross-encoder) model on sm_120 — GEMMs fall to the cuBLAS-workspace branch
+- PR #59106 [2026-09-29] closed merged | [Bugfix][Determinism] Preserve output dtype in batch-invariant mean
+- IS #59086 [2026-09-28] open | [Bug]: VLLM_BATCH_INVARIANT=1 is not batch-invariant for AWQ models on sm8x in the default mode
+- IS #59078 [2026-09-28] closed | [Bug]: VLLM_BATCH_INVARIANT=1 breaks DeepEncoder models (DeepSeek-OCR family): mean_batch_invariant returns float32, LayerNorm2d then feeds fp32 into 
+- IS #58899 [2026-09-27] open | [Bug]: Greedy output changes between restarts, also with VLLM_BATCH_INVARIANT=1: the q/k-norm + RoPE combo kernel picks its reduction config by timing
+- PR #58854 [2026-09-26] open | [Test] Cover aligned Mamba state-index kernel invariants
+- PR #58718 [2026-09-25] closed | [Kernel][Perf] Add an sm121 batch-invariant matmul table tuned on GB10
+- PR #58623 [2026-09-24] closed merged | [Distributed] Enable custom all-reduce under VLLM_BATCH_INVARIANT
+- PR #58495 [2026-09-24] closed merged | [Kernel][Perf] Add TP=2/4/8 per-rank shapes to the sm_120 batch-invariant matmul table
+- IS #58263 [2026-09-23] open | [Feature]: Bind batch-invariant mode into KV-offload namespaces and KV-connector compatibility checks
+- PR #58179 [2026-09-22] closed merged | [Bugfix] batch_invariant: keep non-AllReduce collectives enabled on NCCL >= 2.31
+- PR #57815 [2026-09-20] open | [Bugfix][Determinism] Refuse batch-invariant mode on the sparse indexer
+- PR #57586 [2026-09-18] closed merged | [Perf] Use breakable CUDA graphs (no torch.compile) by default under VLLM_BATCH_INVARIANT so the tuned matmul configs see the runtime M
+- PR #57539 [2026-09-18] open | [Kernel] Mamba2: Exact-replay SSD step and its metadata for batch-invariant mode
+- PR #57456 [2026-09-18] closed merged | [Kernel][Perf] Add sm_120 (RTX PRO 6000 / RTX 50) tuned configs for batch-invariant persistent matmul
+- PR #57123 [2026-09-16] open | [Kernel] Keep eps in fp32 in the batch-invariant RMSNorm Triton kernels so torch.compile matches eager
+- PR #57092 [2026-09-16] open | [Bugfix] Make online FP8 MoE experts batch-invariant under VLLM_BATCH_INVARIANT
+- PR #57047 [2026-09-15] open | [Kernel] Fuse AWQ dequantization with GEMM in batch-invariant mode on SM89
+- IS #57016 [2026-09-15] open | [Bug]: `VLLM_BATCH_INVARIANT=1` is not batch-invariant for fused-MoE experts with no warning
+- IS #56370 [2026-09-11] closed | [Bug]: Batch invariance is broken when sequence parallelism / async TP is enabled (`VLLM_BATCH_INVARIANT=1` + `pass_config.enable_sp`)
+- PR #56244 [2026-09-10] open | [Model] Mamba2: Apply the gate inside the scan in batch-invariant mode
+- PR #55958 [2026-09-08] open | [Bugfix][Determinism] Refuse batch-invariant mode on unsupported platforms
+- PR #55905 [2026-09-08] open | [Model] Mamba2: Row-gated decode with full CUDA graphs in batch-invariant mode
+- PR #55895 [2026-09-08] open | [Kernel] Mamba2: Pin SSD Triton configs under batch-invariant mode
+- PR #55881 [2026-09-08] closed merged | [Feat][XPU] VLLM_BATCH_INVARIANT support for Dense/MoE models
+- PR #55868 [2026-09-08] open | [WIP][Kernel] Enable GDN batch-invariant prefix caching
+- PR #55676 [2026-09-07] open | [Perf] Tune batch-invariant matmul for Granite on Ada
+- PR #55627 [2026-09-07] open | [Model] Mamba2: Bit-identical prefill and decode under batch-invariant mode
+- PR #55466 [2026-09-05] open | [Bugfix] Honor FP32 precision in batch-invariant matmul
+- PR #55249 [2026-09-03] open | [Bugfix][Determinism] Fix the batch-invariant softmax override
+- IS #55131 [2026-09-03] open | Batch-invariant matmul is not actually batch-invariant, and TF32 causes precision degradation
+- PR #54993 [2026-09-02] open | [Feature][Mamba] Support batch-invariant Mamba2 prefill and recovery
+- PR #54955 [2026-09-02] open | [DeepSeek-V4][Preview][DO NOT MERGE] Batch-invariant kernels for 0-diff RL
+- PR #54503 [2026-08-31] open | [Bugfix][Kernel] Select batch-invariant matmul configs from runtime M
+- IS #54243 [2026-08-28] open | [Bug]: batch-invariant M buckets collapse under `torch.compile` (0.28.0)
+- PR #53692 [2026-08-25] closed merged | [CI][Docs] Fix decode/prefill consistency test prefix construction; add GLM-4-9B and Phi-4 to batch-invariant tested models
+- PR #53446 [2026-08-23] closed | [Kernel][Perf] Add Hopper (SM90) tuned config for batch-invariant persistent matmul
+- PR #53247 [2026-08-21] closed merged | [Kernel][Perf] Per-architecture tuned configs for batch-invariant persistent matmul (~3x decode kernels on RTX 4090D/H20)
+- PR #52960 [2026-08-19] closed merged | [Bugfix] Fix batch-invariant fp32 matmul OOR on SM89 for N=1
+- PR #52522 [2026-08-16] open | [Feature] Batch-invariant support for speculative decoding
+- PR #52421 [2026-08-15] open | [Bugfix] Enforce deterministic cuDNN convolution under VLLM_BATCH_INVARIANT
+- PR #52420 [2026-08-15] closed | [Bugfix] Enforce deterministic cuDNN convolution under VLLM_BATCH_INVARIANT
+- IS #52407 [2026-08-15] open | [Bug]: VLLM_BATCH_INVARIANT=1 crashes NVFP4 models: emulation break_fp4_bytes device mismatch (lookup table on CPU, indices on GPU)
+- IS #52155 [2026-08-13] open | [Bug]: VLLM_BATCH_INVARIANT does not cover convolution, used in VAE blocks
+- PR #51292 [2026-08-06] closed merged | [Core] Disable fuse_allreduce_rms under VLLM_BATCH_INVARIANT (non-deterministic under TP)
+
+#### repo:vllm-project/vllm in:title invariance (total 94)
+- PR #60531 [2026-10-08] open | [Bugfix][Kernel] Preserve batch invariance in Triton unified attention on SM100
+- PR #60271 [2026-10-06] open | [Bugfix] Check batch-invariance support for every attention backend
+- PR #60192 [2026-10-06] closed merged | [CI/Build] Widen the ragged prefill scoring tolerance, drop batch invariance
+- PR #60056 [2026-10-05] closed merged | [CI/Build] Run the prefill token scoring test under batch invariance
+- PR #60047 [2026-10-05] open | [Bugfix] Register the aten::mm out_dtype overloads for batch invariance
+- PR #60037 [2026-10-05] closed | [Bugfix] Do not rebind torch.bmm when enabling batch invariance
+- PR #60033 [2026-10-05] open | [WIP][Model] Share recurrent arithmetic for Qwen GDN batch invariance
+- PR #59972 [2026-10-04] open | [Docs] Update batch invariance tested models (Blackwell validation)
+- PR #59949 [2026-10-04] closed merged | [Docs][RL] Move pause/resume and batch invariance examples to examples/rl
+- PR #59500 [2026-09-30] closed merged | [Bugfix] Keep batch-invariance NCCL pins out of the weight-transfer group
+- PR #59377 [2026-09-30] closed merged | [Kernel][LoRA] Add deterministic split-K=8 LoRA shrink for batch invariance
+- PR #58866 [2026-09-27] open | [Docs] Add Granite 3.3 Instruct series to batch invariance tested models
+- PR #58476 [2026-09-23] closed merged | [Docs] Add ERNIE 4.5 to batch invariance tested models
+- PR #57778 [2026-09-20] open | [Bugfix][Kernel] Honor batch invariance in WNA16 MoE dispatch
+- PR #57280 [2026-09-17] open | [Bugfix] Honor batch invariance in gated normalization row tiling
+- PR #56528 [2026-09-11] closed merged | [Test][Determinism] Cover VLM batch invariance in default execution mode
+- PR #56475 [2026-09-11] open | docs(batch_invariance): add Granite MoE SWA to validated models
+- PR #56377 [2026-09-11] closed merged | [Bugfix] Disable sequence parallelism / async TP under batch invariance and add a TP regression test
+- IS #56370 [2026-09-11] closed | [Bug]: Batch invariance is broken when sequence parallelism / async TP is enabled (`VLLM_BATCH_INVARIANT=1` + `pass_config.enable_sp`)
+- PR #56339 [2026-09-10] open | docs(batch_invariance): add PLaMo3 to validated models
+- PR #55784 [2026-09-08] open | [Docs] Add SmolLM3 to batch invariance tested models
+- PR #55691 [2026-09-07] closed merged | [Docs] Add OLMo 2 to batch-invariance tested models
+- PR #55612 [2026-09-06] closed merged | [Test][Determinism] Cover chunked prefill in the batch-invariance suite
+- PR #55343 [2026-09-04] closed | [Doc] Add gemma-4-E4B-it to batch invariance tested models
+- PR #55138 [2026-09-03] open | [Docs][Test] Add GraniteSWA (granite-swash-2b) to batch invariance tested models
+- PR #55079 [2026-09-03] open | [Test][Tool Parser] Add streaming split-invariance test to the common suite
+- IS #54506 [2026-08-31] open | [RFC]: Batch invariance for speculative decoding needs to cover the forward pass (M=1 vs M=k+1)
+- PR #54441 [2026-08-30] closed merged | docs: add gemma-2, SmolLM2, Qwen2.5-Coder, Llama-3.2-1B to batch invariance tested models
+- PR #53839 [2026-08-26] closed merged | [Doc] Add EXAONE-4.0-1.2B to batch invariance tested models
+- PR #53650 [2026-08-24] closed merged | [Doc] Add Granite 3.1 series to batch invariance tested models
+- PR #53649 [2026-08-24] closed merged | [Perf] Autotune batch invariance triton kernel in blackwell, 33.6% E2E latency reduction
+- PR #53619 [2026-08-24] closed merged | [Refactor] Refactor batch invariance folder
+- PR #53531 [2026-08-24] closed merged | [Test][VLM] Add batch-invariance tests for Qwen3-VL
+- PR #53403 [2026-08-22] open | [Docs] Add Qwen3-0.6B to batch invariance tested models
+- PR #52231 [2026-08-14] open | [Feature] Support batch invariance on ROCm
+- IS #51902 [2026-08-12] open | [Bug]: H100 FA3 violates batch invariance when an unrelated prefill changes tiling
+- PR #51417 [2026-08-07] closed merged | [CI] Fix Batch Invariance (B200)
+- PR #50993 [2026-08-04] open | [Doc] Clarify batch invariance Ampere support
+- IS #50935 [2026-08-04] closed | [Bug]: Qwen3.5 Series Batch Invariance Support
+- PR #49710 [2026-07-24] open | [Docs] Validate SmolLM2 batch invariance
+- IS #49708 [2026-07-24] open | [Model Validation] SmolLM2-360M-Instruct batch invariance
+- PR #49603 [2026-07-23] closed merged | [Bug] Fix batch invariance rms norm comparison
+- PR #48997 [2026-07-17] closed | [Bugfix] Pin RMSNorm block size under batch invariance
+- PR #48943 [2026-07-17] open | [Docs] Add Llama-3.1-8B-Instruct to batch invariance tested models
+- IS #48875 [2026-07-16] open | [Doc]: batch_invariance.md said "compute capability 9.0+" in v0.20.0–v0.22.0 while code already supported 8.0+ (fixed in v0.23.0)
+- PR #48694 [2026-07-15] open | [Bugfix] Avoid FlashAttention 3 with batch invariance on Hopper
+- PR #48391 [2026-07-12] closed merged | [Bugfix][Kernel] Fix batch invariance in RMSNorm kernels by pinning block size
+- PR #48176 [2026-07-09] closed | Add Phi-4-mini to batch invariance tested models
+- PR #48040 [2026-07-08] closed merged | [Bugfix] test_batch_inference_correctness now uses batch invariance
+- PR #46900 [2026-06-27] closed | [Docs] Add Phi-4-mini-instruct to batch invariance tested models
+- PR #46639 [2026-06-24] open | [Kernel] Support batch invariance for WNA16 Marlin MoE
+- PR #46530 [2026-06-23] closed merged | [CI Test] Mark batch invariance test flaky
+- PR #46396 [2026-06-22] closed merged | [Docs] Add Phi-3.5-mini-instruct to batch invariance tested models
+- PR #46368 [2026-06-22] open | [Docs] Add Qwen2.5-Coder-7B-Instruct to batch invariance tested models
+- PR #45819 [2026-06-16] open | [Feature] Add batch invariance support to GDN_ATTN backend
+- PR #44435 [2026-06-03] closed merged | [Doc] Add Llama-3.2-3B-Instruct to batch-invariance tested models
+- PR #43656 [2026-05-26] open | [Doc] Add google/gemma-2-2b-it to batch invariance tested models
+- PR #43337 [2026-05-21] closed | [Feature] Remove dependencies of cublas for batch invariance
+- PR #42670 [2026-05-14] open | [Bugfix][NVFP4] Expose batch-invariance for FlashInfer + CUTLASS FP4 MoE
+- PR #42456 [2026-05-12] closed merged | [Feature] Support compile mode for batch invariance on SM80
+
+#### repo:vllm-project/vllm in:title deterministic (total 95)
+- PR #60453 [2026-10-07] open | [DeepSeek-V4-P2-04] Isolate deterministic sparse top-k selection
+- PR #59925 [2026-10-04] open | [DeepSeek-V4-P3] deterministic MoE DeepEP
+- PR #59883 [2026-10-03] open | [DeepSeek-V4-P2] Extract deterministic sparse attention
+- PR #59377 [2026-09-30] closed merged | [Kernel][LoRA] Add deterministic split-K=8 LoRA shrink for batch invariance
+- PR #59074 [2026-09-28] closed merged | [Bugfix] Respect Inductor deterministic mode in combo-kernel defaults
+- IS #58910 [2026-09-27] open | [Bug]: DeepSeek-V4.1-Flash on SM120 (RTX PRO 6000): Xid 31 illegal memory access during long prefill — deterministic with CUDA graphs enabled, flaky i
+- IS #58677 [2026-09-25] open | Speculative-decoding draft model (EAGLE/MTP head) compile cache key flips between two values with byte-identical startup args — shared `VllmConfig` mu
+- IS #58616 [2026-09-24] open | vllm serve segfaults deterministically right after weight loading (single L4 GPU, V1 engine) — only avoided by VLLM_TRACE_FUNCTION=1
+- PR #58530 [2026-09-24] closed | Revert "[Dependency] Upgrade FlashInfer version to 0.7.0" — fixes deterministic struct-output regression
+- PR #58417 [2026-09-23] open | feat(parser): parser cache and deterministic tool call IDs for streaming derender
+- IS #57267 [2026-09-17] open | [Bug]: Hybrid Mamba2 with prefix caching (`mamba_cache_mode="all", should be deterministic`) returns different in same batch
+- IS #56887 [2026-09-14] open | [Bug]: moe_wna16_gemm (csrc/libtorch_stable/moe/moe_wna16.cu) is not run-to-run deterministic: split-K partial sums are combined with 16-bit atomicAdd
+- PR #56749 [2026-09-14] open | [Bugfix] Make DSA prefill top-k deterministic on equal scores
+- IS #55927 [2026-09-08] open | DeepSeek-V4-Flash-0731: deterministic wrong token on deep-context exact retrieval at 1-in-4 prompt lengths (reasoning off) — vLLM 0.28.0 + SGLang, rep
+- PR #55872 [2026-09-08] open | [Feat][Kernel] Add an opt-in deterministic FlashInfer TopK backend
+- PR #55514 [2026-09-06] open | [Bugfix][MoE] Deterministic expert selection in the grouped_topk Python fallback
+- IS #55406 [2026-09-04] open | [Bug]: Nemotron-3.5-Lightning-30B-A3B-NVFP4 dies with CUDA illegal memory access in cudagraph replay on SM110 (Jetson Thor); deterministic 5-request r
+- IS #55279 [2026-09-04] open | [Bug]: DFlash2 (dflash method) deterministic cumulative OOB — engine dies with CUDA IMA / Xid 31 after ~11k decode steps under sampling load (sm_80, v
+- PR #55185 [2026-09-03] closed | [Bugfix] Ensure deterministic tools dict serialization
+- PR #55122 [2026-09-03] open | [Kernel] persistent_topk: deterministic select, faster than the exact-topk workaround
+- IS #54785 [2026-09-01] open | [Bug][XPU] XPU graph capture + MTP num_speculative_tokens=4 produce non-deterministic, wrong logits at temperature=0 (k<=3 clean, eager clean, bs>=2 e
+- IS #54521 [2026-08-31] open | [Bug]: Qwen3.8-Flash-Next: greedy decoding is non-deterministic from persistent_topk in prefill when prompt length nears indexer_budget (sm121/GB10)
+- IS #54490 [2026-08-31] closed | [Bug]: enabling prefix caching changes deterministic repeated output
+- IS #54487 [2026-08-31] open | [Bug]: prefix-caching hash configuration changes deterministic repeated output
+- IS #53777 [2026-08-25] closed | [Bug] DFlash2 spec decode + xgrammar: deterministic "Failed to advance FSM" on json_object grammar (same draft token every time)
+- IS #53775 [2026-08-25] open | [Bug]: test_rms_norm fails deterministically on 26-SM MIG H200 CI agents (h200-ci-2-*), passes on 16-SM agents
+- PR #53442 [2026-08-23] closed | [Bugfix] Make BatchedTritonExperts reduction deterministic
+- PR #53440 [2026-08-23] open | [Bugfix] Replace non-deterministic index_add_ with scatter-then-sum in TopKWeightAndReduceNaiveBatched
+- IS #53286 [2026-08-21] open | [New Model]: TR-HASH deterministic token-routed MoE
+- IS #53257 [2026-08-21] open | [Bug] DeepSeek-V4-Flash: non-deterministic output at temperature=0, rate scales with concurrency
+- PR #52421 [2026-08-15] open | [Bugfix] Enforce deterministic cuDNN convolution under VLLM_BATCH_INVARIANT
+- PR #52420 [2026-08-15] closed | [Bugfix] Enforce deterministic cuDNN convolution under VLLM_BATCH_INVARIANT
+- PR #52332 [2026-08-14] closed | [CI] Shard Kernels Mamba Test — deterministic structural split (<20 min)
+- PR #51875 [2026-08-11] closed merged | [Core] Make prefix-cache NONE_HASH deterministic by default
+- PR #51292 [2026-08-06] closed merged | [Core] Disable fuse_allreduce_rms under VLLM_BATCH_INVARIANT (non-deterministic under TP)
+- IS #51290 [2026-08-06] closed | [Bug]: VLLM_BATCH_INVARIANT=1 not deterministic under tensor parallelism (TP>1); fuse_allreduce_rms fused all-reduce is the cause
+- PR #50278 [2026-07-29] open | [Bugfix][LoRA] Make Punica shrink deterministic with split_k=1
+- IS #49918 [2026-07-26] open | [Bug]: Prefill with prompt length == 1 + num_speculative_tokens misclassified as uniform decode → FULL spec-verify cudagraph skips GDN/hybrid recurren
+- IS #49049 [2026-07-18] open | [Bug] Inkling on sm_121a (GB10): unclamped q-row in rel-bias score-mod gather causes deterministic illegal address (coredump evidence); + aux-stream K
+- PR #48198 [2026-07-10] closed | [Test] Deterministic e2e regression tests (xfail) for hybrid-Mamba prefix cache corruption (#43559)
+- PR #48032 [2026-07-08] open | [Bugfix][Kernel] Make Marlin MoE route alignment deterministic
+- PR #46701 [2026-06-25] closed merged | [Core][V1] Support trace_decode_token_ids for deterministic decode replay
+- PR #45683 [2026-06-15] closed merged | [Bugfix] Deterministic MoE combine (reduce_scatterv) under VLLM_BATCH_INVARIANT
+- PR #45677 [2026-06-15] closed | Deterministic MoE combine (reduce_scatterv) under `VLLM_BATCH_INVARIANT`
+- IS #44245 [2026-06-01] open | fix(lora): _load_lora_config retry uses deterministic backoff without jitter — thundering herd risk
+- IS #44209 [2026-06-01] closed | [Bug]: Non-deterministic KV-cache reservation on hybrid GDN model (Qwen3.6) → CUDA-graph capture OOMs after /health passes → restart crash-loop (nativ
+- PR #43741 [2026-05-27] open | [Bugfix][V1] Zero recycled KV cache blocks for FullAttentionSpec to fix non-deterministic output at temperature=0
+- IS #43602 [2026-05-25] closed | [Bug]: Qwen3-VL-2B-Instruct Geo3K accuracy score lower than SGLang with deterministic sampling
+- PR #42166 [2026-05-09] closed | [WIP][Probe] use_deterministic_algorithms(warn_only=False) — surface non-det op
+- PR #41988 [2026-05-07] open | fix(model_loader): deterministic suffix mapping for Gemma4 MoE quantization
+- PR #41926 [2026-05-07] closed merged | Make docs environment deterministic
+- PR #40179 [2026-04-17] closed | [Core] Add --deterministic-prefix-caching for reproducible prefill on ROCm
+- IS #39662 [2026-04-13] closed | Dynamic FP8 on Blackwell B200 with LoRA-merged model produces non-deterministic degenerate output
+- IS #39389 [2026-04-09] open | [Bug]: V1 engine prefix caching was causing non-deterministic outputs during greedy decoding T=0
+- IS #39146 [2026-04-07] open | [Bug]: KV block corruption in base scheduler, Non-deterministic output at temperature=0 without prefix caching
+- IS #38234 [2026-03-26] closed | Test Failure: test_run_eagle_dp[FLASH_ATTN] produces non-deterministic outputs with EAGLE speculative decoding
+- PR #37027 [2026-03-14] closed merged | [CI] Fix flaky tool_use chat completion tests with deterministic seed
+- PR #36293 [2026-03-06] closed merged | [ROCm][CI] Making entrypoints more deterministic on ROCm
+- PR #36057 [2026-03-04] closed merged | Adding deterministic lora benchmarking to vLLM Bench
+- PR #35183 [2026-02-24] closed | [ROCm] Split wvSplitKrc into deterministic/fast kernels, add `--fast-skinny-gemm` CLI flag, overhaul tests
+
+#### repo:sgl-project/sglang in:title deterministic (total 201)
+- IS #43061 [2026-10-08] open | [Bug] `--enable-deterministic-inference` + one request with `repetition_penalty` kills the scheduler on granite-4.0-h (torch.compile `InternalTorchDyn
+- IS #43055 [2026-10-08] open | [Bug] `--enable-deterministic-inference` does not make gpt-oss-20b deterministic: `test_deterministic --test-mode prefix` returns several outputs for 
+- IS #42369 [2026-10-03] open | [Bug][KV Cache] nvfp4 KV silently reuses the checkpoint's fp8-calibrated k/v_scale as NVFP4 global scale → deterministic long-context corruption (sing
+- PR #42145 [2026-10-01] open | [Deterministic] SM120: route small-M bf16 GEMMs to a Triton tile that matches DeepGEMM bit for bit
+- PR #41893 [2026-09-30] open | [DSV4][Spec] DSPARK verify-merged mixed step, deterministic C4 top-k ties, eager ragged indexer
+- PR #41508 [2026-09-28] open | feat(router): add opt-in deterministic response cache
+- PR #41033 [2026-09-24] open | [Draft] [CPU] Deterministic  inference on Xeon platform
+- PR #39789 [2026-09-16] open | [sglang-miles] Cut deterministic inference overhead on ROCm
+- PR #39725 [2026-09-16] closed | [sglang-miles] Cut deterministic inference overhead on ROCm: RMSNorm fusion, split-K matmul, causal prefill bound
+- PR #39607 [2026-09-15] closed merged | [NPU] Support batch invariant FIA graphs for deterministic inference
+- PR #39581 [2026-09-15] open | [sglang-miles] Cherry-pick #37740: keep deterministic inference off the Lean path
+- PR #39564 [2026-09-15] open | [Rust] Add configurable deterministic API parity tests
+- PR #39456 [2026-09-14] open | [Fix] Make the Marlin atomicAdd reduction opt-in (SGLANG_MARLIN_USE_ATOMIC_ADD) and force it off under deterministic inference
+- IS #39455 [2026-09-14] open | [Bug] Marlin atomicAdd K-slice reduction is always on for n < 2048, k >= 2048 (dead `if not True:` guard) and is not disabled by --enable-deterministi
+- PR #38565 [2026-09-08] open | [Sampling] Add `SGLANG_RENORM_DETERMINISTIC` for bit-identical top-p / top-k renorm
+- PR #38176 [2026-09-06] closed merged | keeping router GEMM in fp32 for deterministic inference (DeepSeek V3/V4)
+- IS #38167 [2026-09-06] open | [Bug][Diffusion] MiniMax-H3: 1344x768 fails deterministically with "CUDA driver error: device not ready" on 12GB, and the failed request poisons the s
+- PR #37740 [2026-09-03] closed merged | [AMD] Preserve deterministic inference when Lean Attention is enabled
+- PR #37292 [2026-08-31] open | Support deterministic inference for DeepSeek-V4
+- PR #36785 [2026-08-28] open | [Bug] Bound deterministic FlashInfer CUDA-graph decode launches
+- PR #36745 [2026-08-27] closed | [Kernel] Make fused DSA KPool top-k deterministic
+- PR #36512 [2026-08-26] closed | [Bugfix] Validate chunked_prefill_size >= alignment for deterministic inference (#36344)
+- PR #36417 [2026-08-26] open | Fix deterministic chunked prefill starvation
+- IS #36344 [2026-08-25] open | [Bug] Deterministic inference hangs when chunked prefill is smaller than the prefill alignment
+- IS #36291 [2026-08-25] open | --enable-deterministic-inference accepted and reported enabled, but has no effect on an NVFP4 W4A4 + hybrid-Mamba checkpoint with a DFlash2 drafter (G
+- IS #36174 [2026-08-24] open | [Feature] Support deterministic inference for DeepSeek-V4
+- PR #36149 [2026-08-24] closed merged | fix(xpu): read enable_deterministic_inference from the config bag
+- PR #35938 [2026-08-22] open | Warn when deterministic inference is combined with a quantized KV cache
+- PR #35916 [2026-08-21] open | Keep the DeepSeek router GEMM in fp32 under deterministic inference
+- PR #35774 [2026-08-21] closed merged | [diffusion] Resolve LoRA weight sources deterministically
+- PR #35732 [2026-08-20] open | [Bugfix] Retry deterministic persistent kernels after shared-memory OOR
+- PR #35632 [2026-08-20] closed merged | [Fix] Keep deterministic GDN prefill on Triton
+- PR #35541 [2026-08-19] open | [Fix] Preserve deterministic DSpark target-verify parity
+- PR #35539 [2026-08-19] closed | [Bugfix] Align deterministic DSpark target verify with Triton decode
+- PR #35293 [2026-08-18] closed merged | test: switch the Inkling-Small NVFP4 deterministic suite to DSPARK
+- IS #35201 [2026-08-17] closed | [Bug] DeepSeek-V4 indexer's context-proportional logits allocation is unaccounted by mem_fraction_static — deterministic OOM on long-context prefill
+- IS #34758 [2026-08-13] closed | [Feature] Router GEMM should keep fp32 output under deterministic inference (DeepSeek V3/V4)
+- PR #34684 [2026-08-13] closed | [Fix] Gemma4: pick a deterministic-capable attention backend under --enable-deterministic-inference
+- IS #34683 [2026-08-13] open | [Bug] Radix cache hit changes temperature=0 outputs for Gemma-4 (18/40 greedy flips); --enable-deterministic-inference fails to boot on SM100
+- PR #34591 [2026-08-12] open | Fix deterministic DSV4 top-k fallback on ROCm
+- PR #34543 [2026-08-12] open | [AMD] [Bugfix] Stop registering oversized inputs in the AMD deterministic all-reduce
+- PR #34486 [2026-08-12] open | Fix deterministic-mode shared-memory OutOfResources on sm_89: arch-aware persistent matmul configs
+- PR #34190 [2026-08-09] closed | [Bug] Bound deterministic FlashInfer CUDA-graph decode launches
+- PR #34168 [2026-08-09] closed merged | Add deterministic logprob-consistency test for inkling-small nvfp4
+- PR #34159 [2026-08-09] closed merged | Fix deterministic inference all-reduce for tp>1
+- PR #33945 [2026-08-07] closed merged | feat: support deterministic FA4 for GLM-4.7-Flash
+- PR #33699 [2026-08-05] open | [Bugfix] Support deterministic min-p sampling with a seed
+- IS #33695 [2026-08-05] closed | [Bug] Deterministic sampling rejects min-p requests with a seed
+- IS #33656 [2026-08-05] closed | [Bug] DeepSeek-V4 + hierarchical cache: deterministic SWA KV position corruption (kv-canary TAIL_K_SWA write_position), downstream NaN sampling crash
+- PR #33517 [2026-08-04] closed merged | Fix NaN logits from deterministic Triton extend on the unified memory pool
+- PR #33511 [2026-08-04] open | [Bugfix][MoE] Make Marlin route alignment deterministic
+- PR #33423 [2026-08-03] closed merged | Deterministic gumbel sampling: clamp u=1 so masked tokens can't be sampled
+- PR #33417 [2026-08-03] closed merged | Fix deterministic inference for Inkling
+- PR #33395 [2026-08-03] open | [Speculative] Seed rejection-sampling draft proposals for deterministic inference
+- IS #33356 [2026-08-03] open | [Bug] DSpark large decode CUDA-Graph capture can hit non-deterministic illegal memory on TP8 (v0.5.16)
+- PR #33291 [2026-08-02] open | [Deterministic][Speculative][GDN] Add Decode-Verify-Rollback
+- PR #33203 [2026-08-01] open | [docs] deterministic inference: add a coverage map, document the numerics env vars, refresh the backend list
+- IS #32942 [2026-07-30] closed | [Bug] Unified deterministic extend attention uses different xAI temperature scaling than regular attention
+- IS #32751 [2026-07-29] closed | [Bug] `create_custom_parallel_group` calls `all_gather_object` without explicit `group`, causing non-deterministic device selection and CUDA errors on
+- PR #31387 [2026-07-16] closed | [Bug] Bound deterministic FlashInfer CUDA-graph decode launches
+
+#### repo:sgl-project/sglang in:title invariant (total 50)
+- PR #42867 [2026-10-07] open | [Perf] Opt-in batch-invariant BF16 LM head GEMM for decode-sized batches
+- IS #42508 [2026-10-04] open | [Bug] Scheduler aborts with `double free or corruption` inside the idle-loop invariant check (`session_held_tokens` walk); server hangs permanently af
+- PR #42087 [2026-10-01] open | Fix batch-invariant kernels for Qwen3.8 Flash-Next
+- PR #41498 [2026-09-28] open | [Fix] Respect shared-memory capacity in FP16 batch-invariant GEMM
+- PR #40037 [2026-09-17] closed | [Logprob] Allow chunk-invariant heads to fit graph-pool capacity
+- PR #39607 [2026-09-15] closed merged | [NPU] Support batch invariant FIA graphs for deterministic inference
+- PR #38160 [2026-09-05] closed merged | [Feature] Support BF16 and batch-invariant inference with DeepEP v2
+- PR #37973 [2026-09-04] closed | [Test] Add invariant tests for benchmark serving timing accounting
+- PR #34458 [2026-08-11] closed merged | [Fix] Make DeepSeek-V4 reasoning and tool-call streaming parsing chunk-invariant
+- PR #33262 [2026-08-02] closed | Fix batch-invariant ops test mutating process-global torch state at import
+- PR #32962 [2026-07-30] closed merged | Fix silently wrong EPLB output with --moe-a2a-backend none (rank-invariant dispatch)
+- PR #32308 [2026-07-24] closed merged | [Feature] Add leveled invariant-check primitive for nan/inf/oob validity checks
+- PR #32154 [2026-07-23] closed | [Test] Add CPU coverage for async invariant probes
+- PR #31822 [2026-07-20] open | TOP dense parity (sglang side): delegate RMSNorm to the fused kernel under TOP + always-on tp-invariant row-linear
+- PR #30956 [2026-07-13] closed merged | Preserve RMSNorm shape in batch-invariant mode
+- PR #30907 [2026-07-12] open | Fix batch-invariant RMSNorm higher-rank shape
+- PR #30603 [2026-07-09] closed | feat: batch-invariant deterministic inference for DeepSeek MoE on FA4 + DeepGEMM + DeepEP
+- PR #30106 [2026-07-04] closed | [HiCache] Fix non-leaf eviction assert from prefetch host insert breaking backup invariant
+- PR #29438 [2026-06-26] closed | fix(schedule_policy): enforce single chunked-prefill invariant via has_chunked_req
+- PR #28036 [2026-06-12] closed | [sglang-miles] Fix Qwen3.5 deterministic batch-invariant logprobs
+- PR #27869 [2026-06-11] closed merged | Fix Qwen3.5 deterministic batch-invariant logprobs
+- PR #27731 [2026-06-10] closed merged | [Mem] Add KV-page double-free checks to the invariant checker
+- PR #27461 [2026-06-06] closed merged | Enable async-assert invariant probes by default in CI
+- PR #26658 [2026-05-29] closed merged | test: strengthen CG-replay coverage with prod-fill padding, metadata invariants, and pad-ratio sweep
+- PR #26365 [2026-05-26] open | [7/14] Wire invariant collectives into execution
+- PR #26364 [2026-05-26] open | [6/14] Cover TP-invariant math operations
+- PR #26363 [2026-05-26] open | [5/14] Add TP-invariant math operations
+- PR #26362 [2026-05-26] open | [4/14] Route layernorm through batch-invariant RMSNorm
+- PR #26361 [2026-05-26] open | [3/14] Add batch-invariant math operations
+- PR #25840 [2026-05-20] closed | [Bugfix] batch_invariant_ops: triton fallback for DeepGEMM-failing shapes
+- PR #25624 [2026-05-18] closed merged | Move invariant checks to SchedulerInvariantChecker and retire runtime_checker mixin
+- PR #25623 [2026-05-18] closed merged | Introduce SchedulerInvariantChecker to own invariant-check state
+- PR #24459 [2026-05-05] closed merged | Register aten::rms_norm and aten::mm.dtype in batch invariant mode
+- PR #23322 [2026-04-21] open | [alignment-sglang] PR1: TP-Invariant Kernel Layer
+- PR #22562 [2026-04-10] closed merged | [mem] Flatten memory checkers into composable per-pool invariant checks
+- PR #22062 [2026-04-03] closed merged | [BugFix][RadixTree]: Fix backup invariant violation in Hi-MambaRadixTree
+- PR #19098 [2026-02-21] closed merged | [Auto Sync] Update batch_invariant_ops.py (20260221)
+- IS #17424 [2026-01-20] closed | Is the fused_moe_triton kernel batch-invariant?
+- IS #15481 [2025-12-19] closed | [Bug] Seeded Deterministic/Batch Invariant Inference Not Working on v1/completions endpoint
+- PR #15041 [2025-12-13] open | [Deterministic] Support TP-Invariant Inference
+- PR #14026 [2025-11-27] closed merged | Add CODEOWNERS entry for batch_invariant_ops
+- PR #13259 [2025-11-14] closed merged | Support fast gemm when in batch invariant DeepGEMM fallback
+- PR #12916 [2025-11-09] closed merged | [Auto Sync] Update batch_invariant_ops.py (20251109)
+- PR #12522 [2025-11-02] closed merged | [Deterministic] Optimize bmm_batch_invariant op
+- PR #12144 [2025-10-26] closed merged | Add Batch‑Invariant RMSNorm
+- PR #12143 [2025-10-26] closed | Add Batch‑Invariant RMSNorm
+- PR #12118 [2025-10-25] closed merged | Make bmm batch invariant injection optional
+- PR #11368 [2025-10-09] closed merged | Fix batch invariant ops
+- PR #10695 [2025-09-20] closed merged | [deterministic inference] Move batch invariant pkg to sglang
+- IS #10278 [2025-09-10] closed | [Feature] Support deterministic inference with Batch Invariant Ops
+
+#### repo:vllm-project/vllm in:title wvSplitK (total 20)
+- PR #59531 [2026-10-01] closed | [ROCm] Add gfx1151 W8A8 wvSplitK blockscale skinny path
+- PR #59479 [2026-09-30] closed | [ROCm] Add gfx1151 W8A8 wvSplitK blockscale skinny path
+- PR #53283 [2026-08-21] closed merged | [ROCm][Perf] Use wvSplitK for single-output GEMMs
+- PR #50636 [2026-07-31] closed | [ROCm][Perf] Select wvSplitK only in measured-profitable gfx950 regions
+- PR #44368 [2026-06-02] closed merged | [ROCm][CI] Fix stale wvSplitK GEMM fallback test for N=5
+- PR #44001 [2026-05-29] closed | Revert "[ROCm][Perf] Support N=5 in wvSplitK skinny GEMM kernels for speculative decoding"
+- PR #40784 [2026-04-24] closed merged | [ROCm][Perf] Tune wvSplitK on gfx1151
+- PR #40687 [2026-04-23] closed merged | [ROCm][Perf] Support N=5 in wvSplitK skinny GEMM kernels for speculative decoding
+- PR #37713 [2026-03-20] closed | Readability cleanup for wvSplitK reduces.
+- PR #37712 [2026-03-20] closed merged | Properly enable wvSplitK fp8 path for RDNA
+- PR #35173 [2026-02-24] closed | [Kernel] Immediately execute argument assertions in wvSplitK
+- PR #34709 [2026-02-17] closed merged | [ROCm] Enable wvSplitK skinny GEMM kernel for RDNA4/gfx1x decode
+- PR #34177 [2026-02-09] closed | [ROCm][Kernel] Add GFX11 (RDNA3) support for wvSplitK skinny GEMM kernels
+- PR #34176 [2026-02-09] closed | [ROCm][Kernel] Add GFX11 (RDNA3/4) support for wvSplitK skinny GEMM kernels
+- PR #34013 [2026-02-06] closed merged | Threshold fix wvSplitk for occasional CI fails
+- PR #33762 [2026-02-04] closed merged | Add padding support to wvSplitK solution for skinny GEMMs
+- PR #33527 [2026-02-02] closed merged | Adds padding and perf improvements to wvSplitK_fp8
+- PR #32831 [2026-01-22] closed merged | [CI][AMD][BugFix] Update wvSplitK (and other skinny_gemm wrappers) to ensure tensors passed will be made contiguous for the kernel
+- PR #29937 [2025-12-03] closed merged | Improve wvsplitK tile and balance heristics.
+- PR #21350 [2025-07-22] closed merged | [AMD][BugFix] Fix omission  of wvSplitK kernel for small batch sizes (1-4) due to torch.compile
+
+#### repo:vllm-project/vllm in:title skinny (total 53)
+- PR #60027 [2026-10-05] closed merged | [Perf][Qwen4Exp] Keep the HC up projection on the skinny GEMM path
+- PR #59869 [2026-10-03] closed | [Perf][Qwen4Exp] Tune the Qwen3.8-Flash-Next skinny GEMMs for sm_120
+- PR #59850 [2026-10-03] closed merged | [CI] Drop duplicate bf16 skinny GEMM test from Kimi K3 B200 job
+- PR #59778 [2026-10-02] closed | Tune the Qwen3.8-Flash-Next skinny GEMMs for GB10 (sm_121)
+- PR #59753 [2026-10-02] closed merged | [Perf][Qwen4Exp] Add SM121 TP=1 skinny-GEMM plans
+- PR #59632 [2026-10-01] closed merged | [Performance] Add SM121 TP=2 skinny-GEMM plans
+- IS #59605 [2026-10-01] closed | [Performance]: Qwen4Exp skinny decode GEMM has no SM12x plans; on GB10 (DGX Spark) BF16 projections fall back to cuBLAS SM80 WMMA kernels
+- PR #59531 [2026-10-01] closed | [ROCm] Add gfx1151 W8A8 wvSplitK blockscale skinny path
+- PR #59479 [2026-09-30] closed | [ROCm] Add gfx1151 W8A8 wvSplitK blockscale skinny path
+- PR #58566 [2026-09-24] closed merged | [ROCm] Cut 69 wasted contiguous copies per decode step from the skinny GEMM path
+- PR #57848 [2026-09-21] open | [Kernel][Qwen] Tune the SM103 MoE router skinny GEMM
+- PR #57199 [2026-09-16] open | [ROCm][Perf] W4A16: speed up skinny GEMM decode, including speculative batches
+- PR #57015 [2026-09-15] open | [ROCm][Perf] W4A16: widen skinny GEMM LDS activation loads to b128
+- PR #56751 [2026-09-14] closed | [Perf][DSV4.1] Skinny GEMM dispatch for tiny-M decode projections
+- PR #54984 [2026-09-02] closed merged | [CI/Build][ROCm] Guard the two CUDA-only tests in test_bf16_skinny_gemm
+- PR #54965 [2026-09-02] closed merged | [ROCm][Perf] W4A16: keep skinny GEMM zero-points packed 4-bit
+- PR #54524 [2026-08-31] closed | [Kernel] Make FlashInfer CuTeDSL the default unquantized BF16 GEMM and drop skinny-GEMM dispatch
+- PR #54447 [2026-08-30] open | [Kimi K3][Kernel] Enable residual skinny GEMM on SM100
+- PR #53202 [2026-08-21] closed | [Kernel] Default unquantized BF16 linear to FlashInfer mm_bf16 and drop the CuTe skinny GEMM
+- IS #52631 [2026-08-17] closed | [Performance][ROCm] shared_expert_gate ([1, K] weight) misses every skinny-GEMM path and costs 13.7% of the decode step
+- PR #52619 [2026-08-17] closed merged | [ROCm][Perf] Enable medium-skinny dispatch in RDNAHybridW4A16LinearKernel
+- PR #51877 [2026-08-11] closed merged | [ROCm][CI] Speed Up ROCm Skinny GEMM Tests (reduced parameterizations, 
+- PR #51511 [2026-08-08] open | [Bugfix][ROCm] Disable skinny GEMM on gfx1151
+- PR #50907 [2026-08-03] closed merged | [ROCm] Remove stale SDPA and skinny GEMM workarounds
+- PR #49791 [2026-07-25] closed merged | [Kernel] Extend CuTe DSL skinny GEMM to GLM-5.2
+- PR #49309 [2026-07-21] closed merged | [ROCm][CI] Use explicit wvSplitKrc skinny-GEMM test tolerance for bf16 (gfx950)
+- PR #47712 [2026-07-06] closed | [Perf][Kernel] Decode-M GEMM dispatch for DSA bf16 A/B projections: skinny GEMV + min-latency fused_a (Blackwell)
+- PR #45559 [2026-06-14] open | [ROCm][Kernel] Extend skinny gemm N=5 to N=8 cases on GFX12 (RDNA4) using  SWMMAC optimization
+- PR #44001 [2026-05-29] closed | Revert "[ROCm][Perf] Support N=5 in wvSplitK skinny GEMM kernels for speculative decoding"
+- PR #40977 [2026-04-27] closed merged | [ROCm][Kernel] Add HybridW4A16LinearKernel: Triton prefill + HIP skinny decode
+- PR #40827 [2026-04-24] open | [ROCm] Fix two RDNA4 correctness bugs in the LLMM1 skinny-GEMM kernel
+- PR #40687 [2026-04-23] closed merged | [ROCm][Perf] Support N=5 in wvSplitK skinny GEMM kernels for speculative decoding
+- PR #35553 [2026-02-27] closed merged | [ROCm][CI] Fix tool use test stability - disable skinny GEMM, prefix caching, eliminate batch variance
+- PR #35183 [2026-02-24] closed | [ROCm] Split wvSplitKrc into deterministic/fast kernels, add `--fast-skinny-gemm` CLI flag, overhaul tests
+- PR #35152 [2026-02-23] closed merged | [ROCm][CI] Disable skinny GEMMs in language model standard tests to fix non-determinism
+- PR #35049 [2026-02-22] closed merged | [ROCm][CI] Disable skinny GEMMs in multimodal tests to fix non-deterministic results
+- PR #34709 [2026-02-17] closed merged | [ROCm] Enable wvSplitK skinny GEMM kernel for RDNA4/gfx1x decode
+- PR #34304 [2026-02-11] closed merged | Improvements to wvSplitKrc skinny GEMM solution
+- PR #34181 [2026-02-09] closed merged | [CI][AMD][BugFix] Use torch.testing.assert_close instead of assert torch.allclose in test_rocm_skinny_gemms.py
+- PR #34177 [2026-02-09] closed | [ROCm][Kernel] Add GFX11 (RDNA3) support for wvSplitK skinny GEMM kernels
+- PR #34176 [2026-02-09] closed | [ROCm][Kernel] Add GFX11 (RDNA3/4) support for wvSplitK skinny GEMM kernels
+- PR #33762 [2026-02-04] closed merged | Add padding support to wvSplitK solution for skinny GEMMs
+- PR #33366 [2026-01-29] closed merged | [Bugfix][ROCm] Fixing the skinny gemm dispatch logic from #32831
+- PR #32831 [2026-01-22] closed merged | [CI][AMD][BugFix] Update wvSplitK (and other skinny_gemm wrappers) to ensure tensors passed will be made contiguous for the kernel
+- PR #29843 [2025-12-02] closed merged | Atomics Reduce Counting Optimization for SplitK Skinny GEMMs.
+- PR #29807 [2025-12-01] closed | SplitK with Atomic Reduce Counting for Skinny GEMMs 
+- PR #24988 [2025-09-16] closed merged | [ROCm] Add skinny gemm bias support for dtypes fp16,bf16,fp8
+- PR #19211 [2025-06-05] closed | Disable skinny gemms by default
+- PR #18010 [2025-05-12] closed merged | [ROCm][Kernel] Add gfx950 support for skinny gemms
+- PR #17071 [2025-04-23] closed merged | [Kernel][Hardware][AMD] Bf16 mfma opt for ROCm skinny GEMMs
+- PR #17060 [2025-04-23] closed merged | Add missing rocm_skinny_gemms kernel test to CI
+- PR #17011 [2025-04-22] closed merged | [ROCm][Misc] Follow-ups for Skinny Gemms on ROCm.
+- PR #15830 [2025-03-31] closed merged | [Performance][ROCm] Add skinny gemms for unquantized linear on ROCm
+
+#### repo:vllm-project/vllm in:title LLMM1 (total 2)
+- PR #40827 [2026-04-24] open | [ROCm] Fix two RDNA4 correctness bugs in the LLMM1 skinny-GEMM kernel
+- PR #40770 [2026-04-24] closed | [ROCm] Rename LLMM1 to vecMatMul, refactor, and fix RDNA4 correctness bugs
+
+#### repo:ROCm/aiter in:title skinny (total 9)
+- IS #5781 [2026-09-23] open | [Issue]: bf16 GEMM asm kernels crash with GPU memory access fault on skinny M=1 shapes (gfx950)
+- PR #4791 [2026-08-17] closed | fix(tuned_gemm): gate skinny GEMM default to archs with a real kernel
+- PR #3882 [2026-06-23] closed | perf(tuned_gemm): route skinny bf16 GEMMs (N<=256, N%64==0, M>16) to splitk asm
+- PR #665 [2025-07-16] closed merged | [Bugfix] Skinny GEMM in tuned gemm.py: add output conversion to tuned_gemm.mm
+- IS #663 [2025-07-16] open | [Issue]: The skinny gemm in the tuned_gemm does not adhere to the specified output dtype `otype`.
+- PR #602 [2025-07-02] closed merged | add MI350 support for skinny_gemm
+- PR #414 [2025-05-13] closed merged | Skinny GEMM support bfloat16 input
+- PR #410 [2025-05-12] closed | Skinny GEMM support bfloat16 input
+- IS #352 [2025-04-28] closed | [Issue]: Skinny GEMM is not applied to `bfloat16` input, but `float16` only in default condition.

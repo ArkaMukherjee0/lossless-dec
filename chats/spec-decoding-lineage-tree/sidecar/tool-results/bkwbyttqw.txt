@@ -1,0 +1,175 @@
+67152
+Abstract
+Speculative decoding accelerates Large Language Model (LLM) inference by decoupling draft generation from target verification. While recent parallel drafters efficiently propose long token sequences in a single forward pass, they suffer from rapid acceptance decay due to a lack of inter-token dependencies. Furthermore, indiscriminately verifying these extended blocks wastes critical batch capacity on tokens with high rejection risks, severely degrading throughput in high-concurrency serving systems. We introduce DSpark, a speculative decoding framework that unifies high-throughput parallel generation with adaptive, load-aware verification. To maintain draft quality, DSpark utilizes a semi-autoregressive architecture—coupling a parallel backbone with a lightweight sequential module—to introduce intra-block dependency modeling and mitigate suffix decay. To optimize system efficiency, DSpark employs confidence-scheduled verification, dynamically tailoring the verification length for each request based on estimated prefix survival probabilities and engine-specific throughput profiles. On offline benchmarks across diverse domains, DSpark substantially improves the accepted length over state-of-the-art autoregressive and parallel drafters. When deployed within the DeepSeek-V4 serving system under live user traffic, DSpark successfully mitigates verification waste.
+Compared to the established production baseline (MTP-1), DSpark accelerates per-user generation speeds by 60%–85% at matched throughput levels.
+More importantly, by preventing severe throughput degradation under strict interactivity constraints, it enables performance tiers that were previously unattainable, shifting the Pareto frontier of our serving system.
+To facilitate community progress, we open-source the DSpark checkpoints alongside DeepSpec, an algorithm-driven training repository for speculative decoding.
+**footnotetext: Equal contribution.
+1 Introduction
+Large Language Models (LLMs) generate text autoregressively: each new token requires a full forward pass conditioned on all preceding tokens, making inference latency proportional to the output length.
+The resulting low GPU utilization and high user-perceived waiting time constitute a primary bottleneck in production LLM serving, particularly for latency-sensitive scenarios such as real-time conversational assistants and multi-turn agentic workflows.
+Speculative decoding (Leviathan et al., 2023; Chen et al., 2023) offers a principled solution: a lightweight draft model proposes a block of candidate tokens, and the full-size target model verifies the entire block in a single forward pass via rejection sampling, accepting the longest prefix consistent with the target distribution and appending one bonus token.
+Because verification is parallel and the acceptance rule preserves the target distribution exactly, speculative decoding accelerates generation without any quality loss.
+The design of the draft model governs the trade-off between drafting latency and acceptance rate. Early drafters are autoregressive (Li et al., 2024b; Cheng et al., 2024), conditioning each position on previously sampled tokens. However, their drafting latency grows linearly with the block size, forcing these methods to use short blocks and shallow architectures. To break this sequential bottleneck, parallel drafters (Cai et al., 2024; Liu et al., 2026a; Chen et al., 2026) have emerged as a compelling alternative: all draft positions are produced in a single forward pass, making drafting latency nearly independent of block size. This structural advantage theoretically allows parallel drafters to efficiently generate substantially longer draft blocks.
+However, fully unlocking the potential of large parallel draft blocks introduces two critical bottlenecks—one in generation quality, and the other in system efficiency.
+First, because parallel drafters predict each position independently, they cannot model inter-token dependencies within a block. This independence leads to multi-modal collisions and rapid acceptance decay at later positions (Gu et al., 2018; Huang et al., 2022b).
+Second, determining the optimal verification length remains a challenge. While parallel generation easily produces long draft blocks, indiscriminately verifying all proposed tokens degrades system throughput, particularly under high-concurrency workloads (Liu et al., 2024c; Hu et al., 2026b). The ideal verification length varies along two axes.
+On the data side, structured requests like code naturally sustain higher acceptance rates than open-ended chat (Xia et al., 2024; Abramovich et al., 2026).
+On the system side, verifying extra tokens is nearly free under light loads. Under heavy loads, however, verifying tokens with a high rejection risk occupies critical batch capacity that could otherwise serve other active requests (Liu et al., 2024b; Wu et al., 2025).
+To address these bottlenecks, we introduce DSpark, a speculative decoding framework that unifies high-throughput parallel generation with adaptive, load-aware verification. At its core, DSpark is designed to resolve the inherent trade-offs in draft generation and verification through two complementary mechanisms.
+• 
+First, to overcome the lack of inter-token dependencies, DSpark adopts a semi-autoregressive architecture. It keeps the computationally expensive draft backbone fully parallel, appending only a lightweight serial output head to inject local transition information. This design preserves the drafting speed of parallel models while significantly mitigating suffix decay.
+• 
+Second, to resolve the system-level bottleneck, DSpark employs confidence-scheduled verification. By coupling a confidence head—which estimates per-position prefix survival probabilities—with a hardware-aware scheduler, DSpark dynamically tailors the verification length for each request. This scheduler leverages real-time engine throughput profiles to route target verification budget only toward tokens with the highest expected return.
+We extensively evaluate DSpark across both controlled offline benchmarks and production-scale online deployments.
+On controlled offline benchmarks—spanning mathematical reasoning, code generation, and daily chat—DSpark consistently outperforms strong baselines. Specifically, across the Qwen3-4B, 8B, and 14B target models (Yang et al., 2025), it improves the macro-average accepted length over the autoregressive Eagle3 (Li et al., 2026b) by 30.9%, 26.7%, and 30.0%, and over the parallel DFlash (Chen et al., 2026) by 16.3%, 18.4%, and 18.3%, respectively. Beyond top-line metrics, our fine-grained position-wise analysis reveals the distinct generation characteristics of different drafters, empirically demonstrating how DSpark successfully combines the high initial-token capacity of parallel models with the suffix coherence of autoregressive models.
+Beyond offline evaluation, we deployed DSpark within the DeepSeek-V4 (DeepSeek-AI, 2026) serving system to assess its performance under live user traffic. Compared to the prior MTP-1 production baseline (DeepSeek-AI, 2024), DSpark significantly broadens the system’s operational envelope. Specifically, it consistently accelerates per-user generation speeds by 60%–85% (V4-Flash) and 57%–78% (V4-Pro) at matched aggregate throughput capacities.
+Furthermore, under strict Service Level Agreements (SLAs) where the baseline’s capacity deteriorates severely—such as 120 TPS for Flash and 50 TPS for Pro—DSpark mitigates verification overhead to maintain robust throughput. By overcoming this performance cliff, DSpark unlocks strict interactivity tiers that were previously unattainable, effectively shifting the Pareto frontier of LLM serving.
+To foster collective advancement within the open-source community, we are making our artifacts publicly available. Specifically, we release the trained DSpark checkpoints for both the DeepSeek-V4-Flash (preview) and DeepSeek-V4-Pro (preview) models. Furthermore, we open-source DeepSpec, an algorithm-driven training repository, including Eagle3, DFlash and DSpark.
+These artifacts are intended to support further research on efficient LLM serving.
+2 Background
+2.1 Speculative Decoding
+Autoregressive language models generate one token per forward pass, making inference latency proportional to output length.
+Speculative decoding (Ge et al., 2022; Leviathan et al., 2023; Chen et al., 2023) accelerates the inference of a target model $M_{t}$ using a lightweight draft model $M_{d}$ .
+At each decoding cycle, the draft model proposes $\gamma$ candidate tokens $x_{1},\ldots,x_{\gamma}$ . The target model verifies all candidates in a single forward pass, accepting the longest prefix consistent with its own distribution.
+Concretely, at each draft position $k$ , the target model computes its own distribution $p_{k}^{t}$ and compares it against the draft distribution $p_{k}^{d}$ .
+The token $x_{k}$ is accepted with probability $\min(1,\,p_{k}^{t}(x_{k})/p_{k}^{d}(x_{k}))$ .
+Verification proceeds left to right: the first rejection at position $k$ discards all subsequent tokens $x_{k+1},\ldots,x_{\gamma}$ , regardless of their quality.
+Let $\tau$ denote the number of accepted tokens per cycle, and let $T_{\text{draft}}$ and $T_{\text{verify}}$ be the wall-clock times of the drafting and verification passes, respectively.
+The average latency per generated token is: | |$L=\frac{T_{\text{draft}}+T_{\text{verify}}}{\tau}.$  | |(1)
+Improving speedup therefore reduces to three levers: lowering $T_{\text{draft}}$ (draft faster), raising $\tau$ (draft better), or reducing the effective $T_{\text{verify}}$ (verify smarter).
+2.2 Drafter Architectures
+The design of the draft model determines how $T_{\text{draft}}$ and $\tau$ trade off.
+Existing approaches fall into two categories.
+Autoregressive drafters.
+Autoregressive drafters generate draft tokens sequentially, conditioning each position on previously sampled tokens (DeepSeek-AI, 2024; Li et al., 2024c; Li et al., 2024b; Li et al., 2026b; Zhang et al., 2025).
+This explicit dependency gives strong modeling capacity, but the drafting cost grows linearly with block size: $T_{\text{draft}}\propto\gamma$ , which forces autoregressive drafters to use small $\gamma$ and shallow architectures to keep $T_{\text{draft}}$ low.
+To compensate for the short block, tree-based verification (Miao et al., 2024) expands candidates into a tree and verifies multiple paths via tree attention, but the large number of verification tokens reduces overall serving throughput.
+Parallel drafters.
+Parallel drafters produce all $\gamma$ draft tokens in a single forward pass, making $T_{\text{draft}}$ nearly independent of the block size (Cai et al., 2024; Chen et al., 2026; Liu et al., 2026a; Li et al., 2025a; Sandler et al., 2026).
+This allows substantially larger blocks (e.g., $\gamma{=}16$ ) without proportionally increasing latency.
+Among them, DFlash (Chen et al., 2026) is a state-of-the-art parallel drafter, which conditions its draft model on rich context features extracted from the target model (KV injection).
+During prefill, hidden states from a set of target layers $\{l_{1},\ldots,l_{m}\}$ are concatenated and projected into the draft hidden space: | |$H_{\text{ctx}}=\mathrm{RMSNorm}\bigl(W_{c}\,[H^{(l_{1})};\,\ldots;\,H^{(l_{m})}]\bigr),$  | |(2)
+where $W_{c}\in\mathbb{R}^{d\times md}$ is a shared projection.
+These context features are injected into every draft layer by concatenating them with the draft block representations along the sequence dimension of keys and values: | |$K_{i}=[W_{i}^{K}H_{\text{ctx}};\;W_{i}^{K}H_{d}],\quad V_{i}=[W_{i}^{V}H_{\text{ctx}};\;W_{i}^{V}H_{d}].$  | |(3)
+All positions within a block attend bidirectionally to each other and to the injected target context.
+The draft model shares the target model’s embedding layer and language modeling head (both frozen).
+It takes as input the embedding of an anchor token11
+ 1
+ We use the terms anchor token and bonus token interchangeably in this paper to denote the final token generated by the target model in the previous decoding round. followed by $\gamma$ mask token embeddings, and produces logits for all mask positions in a single forward pass.
+Since drafting requires only a single forward pass regardless of block size, DFlash can afford deeper architectures and larger blocks than autoregressive drafters under the same latency budget.
+3 Architecture
+The overview of DSpark is shown in Figure 1. Recall from Equation 1 that the per-token latency of speculative decoding is $L=(T_{\text{draft}}+T_{\text{verify}})/\tau$ .
+Autoregressive drafters achieve high $\tau$ but pay $T_{\text{draft}}\propto\gamma$ ; parallel drafters collapse $T_{\text{draft}}$ to a single pass but sacrifice $\tau$ because each position is predicted independently.
+Meanwhile, fixed-length verification wastes $T_{\text{verify}}$ on low-confidence suffix tokens that are almost certain to be rejected.
+DSpark addresses these limitations with two complementary components:
+• 
+Semi-autoregressive generation (Section 3.1). A parallel backbone handles the bulk of draft computation, which keeps $T_{\text{draft}}$ nearly independent of $\gamma$ . A lightweight sequential block then injects dependency among draft tokens, improving $\tau$ at minimal additional latency.
+• 
+Confidence-scheduled verification (Section 3.2). A confidence head estimates per-position acceptance probabilities, and a hardware-aware scheduler uses these estimates to prune low-confidence suffix tokens, cutting unnecessary verification compute.
+Figure 1: 
+The DSpark architecture and decoding cycle. Given prompt tokens ABC, the target model executes one step to generate the next token D, which serves as the anchor for the drafting phase. Using D as the input, DSpark employs a heavy parallel backbone and a lightweight sequential head to generate draft tokens EFGH along with their corresponding confidence scores $c_{1}$ – $c_{4}$ . The Hardware-Aware Prefix Scheduler then evaluates these scores to retain the prefix EFG and drop the low-confidence token H.
+Finally, the target model verifies the scheduled prefix in parallel. As illustrated, E and F are accepted while G is rejected, prompting the model to generate a corrected token G∗ to complete the current round.
+3.1 Semi-Autoregressive Generation
+A parallel drafter produces all $\gamma$ draft logits in one forward pass, so each prediction cannot condition on tokens sampled elsewhere in the block.
+When the context admits multiple plausible continuations, e.g., “of course” and “no problem”, a parallel drafter may produce incoherent combinations such as “of problem” or “no course”, because each position marginalizes over all possible predecessors rather than conditioning on the one actually sampled (Gu et al., 2018; Huang et al., 2022a).
+Acceptance rate thus decays rapidly along the block, wasting both draft and verification compute.
+We therefore adopt a semi-autoregressive structure that splits draft generation into two stages:
+Parallel stage.
+A parallel backbone (in our instantiation, DFlash (Chen et al., 2026)) runs a single forward pass over the entire block, producing hidden states $h_{1},\ldots,h_{\gamma}$ and base logits $U_{1},\ldots,U_{\gamma}$ .
+We make only a minor modification to the original DFlash backbone: instead of feeding an anchor token plus $\gamma$ mask tokens and predicting only the mask positions, we treat the anchor itself as the first prediction position, so $\gamma$ input tokens (anchor $+$ $\gamma{-}1$ masks) yield $\gamma$ draft logits.
+This reduces draft computation while maintaining similar draft quality.
+Sequential stage.
+The sequential stage supplements the base logits with a prefix-dependent transition bias
+ $B_{k}(x_{0},x_{<k},x_{k})$ , allowing each draft position to condition on previously sampled
+tokens within the block. Rather than defining a globally normalized energy model, the
+sequential stage induces a causal block distribution through an autoregressive
+factorization: | |$P(X\mid x_{0})=\prod_{k=1}^{\gamma}p_{k}(x_{k}\mid x_{0},x_{<k}),\qquad p_{k}(v\mid x_{0},x_{<k})=\frac{\exp\!\left(U_{k}(v)+B_{k}(x_{0},x_{<k},v)\right)}{\sum_{u\in\mathcal{V}}\exp\!\left(U_{k}(u)+B_{k}(x_{0},x_{<k},u)\right)}.$  | |(4)
+Here, $x_{0}$ denotes the anchor token from the previous verification cycle, $U_{k}$ is the
+base logit vector produced by the parallel backbone at position $k$ , and $\mathcal{V}$ is the
+vocabulary. At inference time, the sequential block samples left to right according to
+ $p_{k}(\cdot\mid x_{0},x_{<k})$ .
+Because this sampling process is inherently sequential, the block must be computationally
+lightweight ( $T_{\text{sequential}}\ll T_{\text{parallel}}$ ) so that the overall draft latency
+remains dominated by the parallel stage.
+We describe two instantiations of the sequential block below.
+• 
+Markov head. The simplest instantiation restricts $B_{k}$ to depend only on the immediately preceding token, reducing it to a first-order transition $B(x_{k-1},x_{k})$ .
+In principle this is a full $V\times V$ matrix $B$ ; we approximate it with a low-rank factorization $B=W_{1}W_{2}$ , where $W_{1}\in\mathbb{R}^{V\times r}$ and $W_{2}\in\mathbb{R}^{r\times V}$ .
+Given the preceding token $x_{k-1}$ , the transition bias for position $k$ is: | |$B(x_{k-1},\,\cdot\,)=W_{1}[x_{k-1}]\,W_{2}\;\in\;\mathbb{R}^{V},$  | |(5)
+where $W_{1}$ serves as an embedding lookup table and $W_{2}$ as a logit projection.
+The low-rank factorization ( $r{=}256$ by default) keeps both storage and per-step compute small, making the sequential loop efficient even for large vocabularies.
+Returning to the earlier example: once position 1 samples “of”, the Markov head boosts “course” and suppresses “problem” at position 2, which mitigates the cross-mode collision.
+• 
+RNN head. The Markov head is memoryless beyond one step—position $k$ cannot access tokens before $x_{k-1}$ .
+The RNN head relaxes this by maintaining a recurrent state $s_{k}$ that accumulates the full prefix history within a block.
+At each step, the module concatenates the current state $s_{k-1}\in\mathbb{R}^{r}$ , the previous token embedding $W_{1}[x_{k-1}]\in\mathbb{R}^{r}$ , and the backbone hidden $h_{k}\in\mathbb{R}^{d}$ into an input vector $z_{k}=[s_{k-1};\,W_{1}[x_{k-1}];\,h_{k}]\in\mathbb{R}^{2r+d}$ , then applies a single gated update: | |$\displaystyle s_{k}=\sigma(W_{g}\,z_{k})$  |$\displaystyle\odot s_{k-1}\;+\;\bigl(1-\sigma(W_{g}\,z_{k})\bigr)\odot\tanh(W_{c}\,z_{k}),$  | |(6) | | |$\displaystyle B_{k}(x_{<k},\,\cdot\,)=W_{2}^{\top}\,\tanh(W_{o}\,z_{k}),$  |
+where $W_{g},W_{c},W_{o}\in\mathbb{R}^{r\times(2r+d)}$ are jointly parameterized by a single linear projection that is split into gate, candidate, and output components.
+The state $s_{0}$ is initialized to zero.
+3.2 Confidence-Scheduled Verification
+The semi-autoregressive architecture enables DSpark to generate large draft blocks efficiently. However, producing more draft tokens does not automatically translate to higher end-to-end speedups. Indiscriminately verifying the full draft block can actually degrade overall system throughput, especially in high-concurrency scenarios (Liu et al., 2024c; Hu et al., 2026b).
+This performance bottleneck stems from two interacting factors.
+First, on the data side, draft acceptance rates inherently vary across domains: structured text like code naturally yields high acceptance, whereas open-ended chat has significantly lower acceptance (Xia et al., 2024; Abramovich et al., 2026).
+Second, on the system side, the actual cost of verifying an extra token depends strictly on the engine load. Under light system load, an extra verification incurs minimal penalty even if rejected. However, under high-concurrency deployments, every unnecessary verification occupies target model batch capacity that could otherwise serve other active requests (Liu et al., 2024b; Wu et al., 2025).
+Therefore, fully unlocking the potential of large draft blocks requires a unified mechanism that routes target model compute only toward tokens with a positive expected return. DSpark achieves this by coupling a confidence head (Section 3.2.1) that predicts prefix survival probabilities, with a hardware-aware prefix scheduler (Section 3.2.2) that dynamically determines the optimal verification lengths based on current system load.
+3.2.1 Confidence Head
+Drawing inspiration from Huang et al. (2024); Wang et al. (2026b), the confidence head outputs a scalar $c_{k}\in(0,1)$ for each draft position $k$ . Crucially, $c_{k}$ models the conditional probability that the draft token at position $k$ will survive target verification, given that all preceding tokens in the block have been accepted.
+The architecture features a lightweight linear projection followed by a sigmoid function: | |$c_{k}=\sigma\bigl(w^{\top}[h_{k};\,W_{1}[x_{k-1}]]\bigr),$  | |(7)
+where $h_{k}$ is the hidden state of the backbone and $W_{1}[x_{k-1}]$ is the Markov Embedding from the previous draft token. We supervise $c_{k}$ using the analytical acceptance rate per-step $c_{k}^{*}$ . This rate is determined by the total variation distance between the draft distribution $p_{k}^{d}$ and the target distribution $p_{k}^{t}$ : | |$c_{k}^{*}=1-\tfrac{1}{2}\|p_{k}^{d}-p_{k}^{t}\|_{1}.$  | |(8)
+Post-hoc Calibration.
+Unlike threshold-based verification heuristics (Huang et al., 2024; Li et al., 2024b; Zhang et al., 2026b), which only require confidence scores to correctly rank draft token qualities, our hardware-aware scheduling approach (detailed in Section 3.2.2) precisely requires the absolute magnitudes of the cumulative acceptance probabilities to compute the expected acceptance length $\tau$ . Because neural confidence estimates are often overconfident (Guo et al., 2017; Ovadia et al., 2019), using the raw confidence scores directly would distort the throughput estimation, leading to suboptimal scheduling.
+To address this, we introduce Sequential Temperature Scaling (STS). Because each $c_{i}$ models a conditional probability, the chain rule dictates that the joint probability of a draft prefix being accepted factorizes into the cumulative product $\prod_{i\leqslant k}c_{i}$ . Using a held-out validation set, STS calibrates this joint probability consecutively from left to right. Specifically, at each position $k\in\{1,\dots,\gamma\}$ , we perform a simple 1D grid search to find the optimal temperature scalar that minimizes the Expected Calibration Error (ECE) (Naeini et al., 2015) of the cumulative product, keeping the already-calibrated scores of all preceding positions fixed. Crucially, temperature scaling is an order-preserving transformation: it rectifies the predicted probabilities to match empirical acceptance rates without disrupting the relative draft token rankings learned by the confidence head.
+3.2.2 Hardware-Aware Prefix Scheduler
+Algorithm 1 Hardware-Aware Prefix Scheduler
+ 0:
+  Active requests $r\in\{1,\dots,R\}$ ; confidence sequence $c_{r,1},\dots,c_{r,\gamma}$ per request; profiled step curve $\text{SPS}(B)$ 
+ 0:
+  Selected per-request prefix lengths $\ell^{*}_{1},\dots,\ell^{*}_{R}$ 
+ 1:
+  for $r=1$ to $R$ do
+ 2:
+   Compute prefix survival probabilities: $a_{r,j}\leftarrow\prod_{i\leqslant j}c_{r,i}$ for $j=1,\dots,\gamma$ 
+ 3:
+  end for
+ 4:
+  Construct candidate space $\mathcal{E}\leftarrow\{(r,j)\mid a_{r,j}>0\}$ and sort descending by $a_{r,j}$ 
+ 5:
+  Initialize states: $\ell_{r}\leftarrow 0$ for all $r$ ; Batch size $B\leftarrow R$ ; Expected accepts $\tau^{*}\leftarrow R$ 
+ 6:
+  Initialize tracking: $\Theta_{\text{best}}\leftarrow R\cdot\text{SPS}(R)$ ; Selected lengths $\ell^{*}_{r}\leftarrow 0$ for all $r$ 
+ 7:
+  for each $(r,j)\in\mathcal{E}$ in sorted order do
+ 8:
+    $\ell_{r}\leftarrow j$ ; $B\leftarrow B+1$ ; $\tau^{*}\leftarrow\tau^{*}+a_{r,j}$ 
+ 9:
+   Current throughput $\Theta\leftarrow\tau^{*}\cdot\text{SPS}(B)$ 
+ 10:
+   if $\Theta>\Theta_{\text{best}}$ then
+ 11:
+     $\Theta_{\text{best}}\leftarrow\Theta$ ; Update selected lengths $\ell^{*}_{r}\leftarrow\ell_{r}$ 
+ 12:
+   else
+ 13:
+    break
+ 14:
+   end if
+ 15:
+  end for
+ 16:
+  return $(\ell^{*}_{1},\dots,\ell^{*}_{R})$ achieving $\Theta_{\text{best}}$ 
+Prior methods (Huang et al., 2024; Li et al., 2024b) typically apply a static threshold to confidence scores to determine verification length. While effective under isolated, single-request assumptions, static thresholds can be suboptimal in high-concurrency production systems, where the utility of verifying a draft token depends heavily on the current system load.
+To address this, we formulate verification length selection as a global throughput maximization problem (Algorithm 1). Consider a batch of $R$ active requests. For request $r$ , let $c_{r,1},\dots,c_{r,\gamma}$ be the per-position confidence estimates, and let $\ell_{r}\in\{0,\dots,\gamma\}$ denote the scheduled verification length. Because speculative decoding dynamically accepts draft tokens only as a continuous prefix, the survival probability of a token at position $j$ is the cumulative product $a_{r,j}=\prod_{i\leqslant j}c_{r,i}$ .
+In a single verification step, the total batch size (measured in tokens) sent to the target model is $B=\sum_{r=1}^{R}(1+\ell_{r})$ , and the expected number of successfully accepted tokens is $\tau=\sum_{r=1}^{R}\bigl(1+\sum_{j=1}^{\ell_{r}}a_{r,j}\bigr)$ .
+Under a simplifying assumption22
+ 2
+ In practical serving scenarios, average context lengths remain well below extremes (e.g., 1M tokens), making their impact on decode latency marginal for highly optimized architectures like DeepSeek-V4. Moreover, in prefill-decode disaggregated deployments, decode load balancers keep both request counts and total context lengths roughly balanced across data-parallel (DP) ranks. This effectively amortizes sequence-length variance, allowing us to safely assume that engine throughput depends predominantly on the verification batch size $B$ ., let $\text{SPS}(B)$ denote the engine throughput, measured in steps per second, for a given forward-pass batch size $B$ . Crucially, this capacity curve is profiled once during engine initialization and stored as a lightweight cost table. Our scheduler then aims to maximize the expected system-wide token throughput $\Theta=\tau\cdot\text{SPS}(B)$ by dynamically selecting verification lengths $\ell_{1},\dots,\ell_{R}$ .
+Although finding the global maximum of $\Theta$ appears to be a combinatorial search, the objective structure allows for an efficient greedy solution. Because $a_{r,j}$ is monotonically non-increasing with respect to $j$ (i.e., $a_{r,j}\leq a_{r,j-1}$ ), the marginal gain in expected accepted tokens for extending request $r$ ’s verification length from $j-1$ to $j$ is exactly $a_{r,j}$ . This monotonicity ensures that sorting candidate tokens globally by $a_{r,j}$ naturally respects intra-block prefix dependencies. Consequently, if the total verification batch size $B$ were fixed, the optimal allocation $\{\ell_{r}\}$ would be determined by greedily selecting the draft tokens with the highest survival probabilities from the global pool of all $\{a_{r,j}\}$ .
+Building on this insight, the optimization can be evaluated along this greedy admission path. We first globally sort all valid prefix extensions in descending order of survival probability. To dynamically determine the optimal target batch size $B$ , we incrementally admit tokens from this sorted pool, updating the expected throughput $\Theta$ via an lookup from the cost table.
+Lossless speculative decoding strictly requires the non-anticipating property: admission decisions must not depend on future candidate tokens (Leviathan et al., 2023; Chen et al., 2023). Because our confidence head relies on the Markov feature of the previously sampled token, computing the next survival probability $a_{r,k+1}$ explicitly requires the instantiated candidate $x_{r,k}$ . A retrospective global search would thus inadvertently leak $x_{r,k}$ into the admission decision for step $k$ , introducing selection bias (we provide a concrete counterexample demonstrating this theoretical violation in Appendix A).
+To enforce strict causality, the scheduler (Algorithm 1) employs an early-stopping mechanism. By breaking the greedy search immediately when the throughput drops ( $\Theta\leq\Theta_{\text{best}}$ ), the truncation decision relies solely on the prefix processed up to that exact step. This isolates the admission event from future tokens, ensuring exact target-distribution recovery. Note that this stepwise early-stopping yields the global maximum throughput if and only if the objective $\Theta$ is unimodal, which implicitly assumes a smoothly decaying hardware capacity curve. We address the engineering adaptations required for real-world, non-smooth SPS characteristics and asynchronous system pipelines in Section 5.2.
+3.3 Training
+During training, we randomly sample multiple anchor positions from each target sequence to form $\gamma$ -token blocks as training data.
+The target model is frozen throughout training; the draft model shares its embedding layer and language modeling head and keeps them frozen, updating only the backbone drafter, sequential block, and confidence head.
+The training objective consists of three terms: a cross-entropy loss $\mathcal{L}_{\text{ce}}$ , a distribution-matching loss $\mathcal{L}_{\text{tv}}$ , and a confidence loss $\mathcal{L}_{\text{conf}}$ .
+All three are position-weighted by $w_{k}=\exp(-(k{-}1)/\gamma)$ (Chen et al., 2026), which emphasizes earlier block positions that contribute more to the expected acceptance length under prefix-based verification.
+The cross-entropy loss $\mathcal{L}_{\text{ce}}$ trains the drafter to predict the correct next token: | |$\mathcal{L}_{\text{ce}}=-\sum_{k=1}^{\gamma}w_{

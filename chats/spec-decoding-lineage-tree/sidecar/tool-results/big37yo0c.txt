@@ -1,0 +1,378 @@
+
+#### repo:vllm-project/vllm batch invariant speculative (total 248)
+- PR #60531 [2026-10-08] open | [Bugfix][Kernel] Preserve batch invariance in Triton unified attention on SM100
+- IS #60366 [2026-10-07] open | [RFC]: Bounded prefix reuse for target-token prefill scoring
+- IS #60162 [2026-10-06] open | [Bug]: Humming FP8 linear crashes on per-tensor/per-channel FP8 weights, so FP8 models cannot start with VLLM_BATCH_INVARIANT=1 on Ampere
+- PR #60113 [2026-10-05] open | [Core][NIXL] Transfer KV between different P/D KV cache group plans
+- PR #60040 [2026-10-05] open | [ROCm][Attention] Support multimodal Prefix-LM in ROCM_ATTN
+- IS #59940 [2026-10-04] open | [Bug]: `VLLM_BATCH_INVARIANT=1` silently produces wrong tokens on a cold model-info cache (`eager_break_during_capture` is resolved at impor
+- IS #59926 [2026-10-04] open | [Bug] DeepSeek-V4-Flash tool-call format failures associated with prefix-cache reuse; worst for short cached head + long uncached suffix; `c
+- PR #59810 [2026-10-02] open | [Bugfix][DBO] Fix crash when merging auxiliary hidden states
+- PR #59754 [2026-10-02] open | [Bugfix][Tool Parser] Emit FunctionGemma tool calls that arrive in a single streaming delta
+- PR #59726 [2026-10-02] closed | [Mamba][Perf] Opt-in fused kernel for align-mode Mamba state indices
+- PR #59533 [2026-10-01] closed merged | [Perf][Qwen4Exp] Merge QSA QKVG and indexer QK projections
+- PR #58918 [2026-09-27] open | [Bugfix][Compile] Replace Transformers AOT caching with graph caching
+- PR #58371 [2026-09-23] closed merged | [Perf][Spec Decode] Enable fused multi-step draft decode for FlashInfer trtllm-gen
+- PR #58340 [2026-09-23] open | [Spec Decode] Expose adaptive verified draft token count
+- PR #58319 [2026-09-23] closed | [Bugfix] MiniMax-M3: recover decode_query_len during CUDA graph capture
+- PR #58259 [2026-09-23] closed merged | [Bugfix] Fix resumable request + async scheduling handoff race
+- PR #58207 [2026-09-22] open | [Core] Pick hybrid KV cache group size by worst-case padding bytes; add --min-kv-cache-group-layers
+- IS #57932 [2026-09-21] open | [Bug]: SM120 / RTX PRO 6000 Blackwell: GLM-5.3-Flash fails with FlashInfer attention backend
+- PR #57736 [2026-09-20] open | feat: add windowed hidden-state capture for vLLM rollout
+- PR #57658 [2026-09-19] open | [Spec Decode] Fix Hybrid Mamba KV-cache admission for dynamic K
+- PR #57635 [2026-09-18] closed merged | [Bugfix] Persist FlashInfer autotune cache per rank to fix the rank-0-only cache-hit deadlock
+- PR #57568 [2026-09-18] closed merged | [Bugfix][Spec Decode] Implement get_top_tokens() on the ROCm DeepSeek V4 MTP drafter
+- PR #57442 [2026-09-17] open | [Frontend][Core] Sampled-token logprob fast path for /inference/v1/generate (return_token_logprobs)
+- PR #57318 [2026-09-17] open | [Kernel][GDN] Use flashinfer bf16 mm for the GDN gate projection
+- PR #57280 [2026-09-17] open | [Bugfix] Honor batch invariance in gated normalization row tiling
+- IS #57087 [2026-09-15] open | [Bug] GLM-5.3 hybrid (nvfp4, GB10/sm121, TP2): concurrent batching corrupts non-ASCII generation — fragment-token state poisoning + silent D
+- PR #56995 [2026-09-15] open | [Bugfix][Spec Decode] Implement get_top_tokens() on the generic MTP drafter
+- PR #56960 [2026-09-15] closed merged | [Feat][Model] Enable KDA prefill checkpoints for GLM-5.3-Flash
+- IS #56900 [2026-09-14] open | [Bug]: Qwen/Qwen1.5-MoE-A2.7B-Chat produces degenerate output with torch.compile (VLLM_COMPILE) but correct output without it on vLLM 0.28.0
+- IS #56887 [2026-09-14] open | [Bug]: moe_wna16_gemm (csrc/libtorch_stable/moe/moe_wna16.cu) is not run-to-run deterministic: split-K partial sums are combined with 16-bit
+- IS #56736 [2026-09-14] open | hybrid Mamba/GDN + speculative decoding: Xid 31 in the align mamba path (fault address below the CUDA segment)
+- PR #56577 [2026-09-12] open | [Spec Decode][Perf] Add opt-in FP8 proposal head for Qwen4Exp MTP
+- PR #56531 [2026-09-11] closed merged | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent
+- PR #56509 [2026-09-11] open | [Model] Fix DeepSeek-V4.1-Flash SM120/GB10 geometry mismatch for SWA …
+- IS #56506 [2026-09-11] closed | [RFC]: DeepSeek-V4.1-Flash performance on ROCm
+- PR #56448 [2026-09-11] closed merged | [Bugfix][Spec Decode] Cap DFlash/DSpark profiling query batch
+- IS #56396 [2026-09-11] closed | [Bug]: DeepSeek-V4.1-Flash: SimpleCPUOffloadConnector crashes with `assert block_size % hash_block_size == 0` (block_size=8, hash_block_size
+- PR #56375 [2026-09-11] closed | [Bugfix][Spec Decode] Fix arange capacity at token boundary
+- PR #56142 [2026-09-09] open | [Bugfix][V1] Bound hybrid shared-prefix checkpoints by all full-attention hits
+- IS #56133 [2026-09-09] open | [RFC]: Runtime prefill/decode role switching for EP groups
+
+#### repo:vllm-project/vllm batch invariant spec decode (total 230)
+- PR #60269 [2026-10-06] open | [Perf][Core] Reduce free KV cache queue overhead
+- PR #60097 [2026-10-05] open | [Perf][MRv2] Read the vocabulary once in the token-logprob kernel, and split rows across programs
+- IS #60095 [2026-10-05] open | [Performance]: MRv2 token-logprob kernel reads the vocabulary twice and runs one program per row
+- IS #60008 [2026-10-05] open | [Performance]: Hybrid Mamba prefix caching (`mamba_cache_mode="align"`) costs 11-16% throughput on Nemotron-3.5-Lightning with no cache hits
+- IS #59940 [2026-10-04] open | [Bug]: `VLLM_BATCH_INVARIANT=1` silently produces wrong tokens on a cold model-info cache (`eager_break_during_capture` is resolved at impor
+- PR #59800 [2026-10-02] closed merged | [Perf] Use value-only reduction for native per-token FP8 quantization
+- PR #59788 [2026-10-02] closed merged | [Bugfix] Give each data-parallel engine its own global RNG streams
+- PR #59726 [2026-10-02] closed | [Mamba][Perf] Opt-in fused kernel for align-mode Mamba state indices
+- PR #59533 [2026-10-01] closed merged | [Perf][Qwen4Exp] Merge QSA QKVG and indexer QK projections
+- PR #59377 [2026-09-30] closed merged | [Kernel][LoRA] Add deterministic split-K=8 LoRA shrink for batch invariance
+- PR #59224 [2026-09-29] open | [Transformers backend] Support Mamba2 (SSD) layers
+- PR #59144 [2026-09-29] open | fix: handle sampling when all tokens are invalid (allowed_token_ids + bad_words contradiction)
+- PR #59124 [2026-09-29] open | [ROCm][Perf][MLA] Add opt-in FlyDSL FP8 prefill attention for AITER MLA
+- PR #59106 [2026-09-29] closed merged | [Bugfix][Determinism] Preserve output dtype in batch-invariant mean
+- PR #59069 [2026-09-28] open | [ROCm][Kimi-K3] Fuse AttnRes output with per-token FP8 input quantization
+- PR #59031 [2026-09-28] closed merged | [Bugfix] Load stacked expert weights for non-gated MoE
+- IS #58644 [2026-09-25] open | [CI] test_mtp_sharded_sampling_equivalence diverges intermittently (2 failures on 2026-09-24)
+- PR #58395 [2026-09-23] closed | [Bugfix][V1][AsyncScheduler] Clamp delivered tokens to reserved output placeholders instead of killing EngineCore
+- PR #58371 [2026-09-23] closed merged | [Perf][Spec Decode] Enable fused multi-step draft decode for FlashInfer trtllm-gen
+- PR #58340 [2026-09-23] open | [Spec Decode] Expose adaptive verified draft token count
+- PR #58259 [2026-09-23] closed merged | [Bugfix] Fix resumable request + async scheduling handoff race
+- IS #57932 [2026-09-21] open | [Bug]: SM120 / RTX PRO 6000 Blackwell: GLM-5.3-Flash fails with FlashInfer attention backend
+- PR #57709 [2026-09-19] closed | [Attention] Add opt-in FlashInfer experimental FA2 paged-prefill integration
+- PR #57658 [2026-09-19] open | [Spec Decode] Fix Hybrid Mamba KV-cache admission for dynamic K
+- PR #57635 [2026-09-18] closed merged | [Bugfix] Persist FlashInfer autotune cache per rank to fix the rank-0-only cache-hit deadlock
+- PR #57568 [2026-09-18] closed merged | [Bugfix][Spec Decode] Implement get_top_tokens() on the ROCm DeepSeek V4 MTP drafter
+- PR #57318 [2026-09-17] open | [Kernel][GDN] Use flashinfer bf16 mm for the GDN gate projection
+- PR #57139 [2026-09-16] open | [KVConnector][P2P] Register peers off the scheduler thread
+- PR #57092 [2026-09-16] open | [Bugfix] Make online FP8 MoE experts batch-invariant under VLLM_BATCH_INVARIANT
+- PR #56996 [2026-09-15] open | [Perf][Attention] Source Triton metadata builder geometry from kv_cache_spec
+- PR #56995 [2026-09-15] open | [Bugfix][Spec Decode] Implement get_top_tokens() on the generic MTP drafter
+- IS #56900 [2026-09-14] open | [Bug]: Qwen/Qwen1.5-MoE-A2.7B-Chat produces degenerate output with torch.compile (VLLM_COMPILE) but correct output without it on vLLM 0.28.0
+- IS #56887 [2026-09-14] open | [Bug]: moe_wna16_gemm (csrc/libtorch_stable/moe/moe_wna16.cu) is not run-to-run deterministic: split-K partial sums are combined with 16-bit
+- PR #56836 [2026-09-14] open | [Bugfix][KV Offload] Bound unanswered P2P lookup waits
+- PR #56782 [2026-09-14] open | [Feature][Sampling] Compact target-token-scoring fast path (V1 runner)
+- IS #56736 [2026-09-14] open | hybrid Mamba/GDN + speculative decoding: Xid 31 in the align mamba path (fault address below the CUDA segment)
+- PR #56577 [2026-09-12] open | [Spec Decode][Perf] Add opt-in FP8 proposal head for Qwen4Exp MTP
+- PR #56531 [2026-09-11] closed merged | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent
+- PR #56509 [2026-09-11] open | [Model] Fix DeepSeek-V4.1-Flash SM120/GB10 geometry mismatch for SWA …
+- IS #56506 [2026-09-11] closed | [RFC]: DeepSeek-V4.1-Flash performance on ROCm
+
+#### repo:vllm-project/vllm batch invariant eagle (total 87)
+- PR #60269 [2026-10-06] open | [Perf][Core] Reduce free KV cache queue overhead
+- IS #59926 [2026-10-04] open | [Bug] DeepSeek-V4-Flash tool-call format failures associated with prefix-cache reuse; worst for short cached head + long uncached suffix; `c
+- PR #59788 [2026-10-02] closed merged | [Bugfix] Give each data-parallel engine its own global RNG streams
+- PR #59031 [2026-09-28] closed merged | [Bugfix] Load stacked expert weights for non-gated MoE
+- PR #58918 [2026-09-27] open | [Bugfix][Compile] Replace Transformers AOT caching with graph caching
+- PR #58371 [2026-09-23] closed merged | [Perf][Spec Decode] Enable fused multi-step draft decode for FlashInfer trtllm-gen
+- PR #58207 [2026-09-22] open | [Core] Pick hybrid KV cache group size by worst-case padding bytes; add --min-kv-cache-group-layers
+- PR #57635 [2026-09-18] closed merged | [Bugfix] Persist FlashInfer autotune cache per rank to fix the rank-0-only cache-hit deadlock
+- PR #57092 [2026-09-16] open | [Bugfix] Make online FP8 MoE experts batch-invariant under VLLM_BATCH_INVARIANT
+- PR #56995 [2026-09-15] open | [Bugfix][Spec Decode] Implement get_top_tokens() on the generic MTP drafter
+- IS #56736 [2026-09-14] open | hybrid Mamba/GDN + speculative decoding: Xid 31 in the align mamba path (fault address below the CUDA segment)
+- PR #56531 [2026-09-11] closed merged | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent
+- PR #56142 [2026-09-09] open | [Bugfix][V1] Bound hybrid shared-prefix checkpoints by all full-attention hits
+- PR #55978 [2026-09-09] closed | [Perf] Trim redundant per-step Python work on the GDN decode and V2 spec-decode paths
+- PR #55947 [2026-09-08] open | [Feature][Spec Decode] Add Uno shared-model drafting with a draft-only LoRA adapter (Model Runner V2)
+- PR #55939 [2026-09-08] closed merged | [MyPy][3/N] Fix MyPy errors in test groups (part 3)
+- IS #55697 [2026-09-07] open | [RFC]: Application-Directed Prefix Checkpoints for Mamba / Hybrid Prefix Caching
+- PR #55601 [2026-09-06] closed merged | [Bugfix] Seed hybrid mamba state index with mamba_block_size on prefix-cache hits
+- PR #55368 [2026-09-04] closed merged | [ROCm][MoE] Pad the AITER MoE intermediate size at allocation time, and round the expert-group count to a kernel that exists
+- IS #55279 [2026-09-04] open | [Bug]: DFlash2 (dflash method) deterministic cumulative OOB — engine dies with CUDA IMA / Xid 31 after ~11k decode steps under sampling load
+- IS #55259 [2026-09-03] open | [RFC]: Optional native startup self-benchmarking for forward-pass performance characterization
+- PR #55101 [2026-09-03] closed | Strix halo mtp cache
+- PR #54706 [2026-09-01] closed merged | [ROCm][RDNA3] Fix W4A16 split-K accuracy and determinism
+- PR #54637 [2026-08-31] open | [Model Runner V2] Automatic prefix caching for GDN hybrid models (mamba_cache_mode=all) with MTP speculative decoding
+- PR #54627 [2026-08-31] open | [Core] Apply prefill_schedule_interval outside data parallelism
+- IS #54498 [2026-08-31] open | [Bug]: V1 EAGLE/MTP drafter mis-addresses KV slots on M-RoPE models
+- IS #54392 [2026-08-30] open | [Bug]: PD-admitted Mamba request is spec-padded before prefill completes, then align split truncates the 8-token window to 5
+- PR #54092 [2026-08-27] closed | [Perf][Spec Decode] dflash/dspark: prefix-cache last-block-drop exemption + decode-path overhead reductions
+- PR #54076 [2026-08-27] open | [Bugfix][V1] Use the Mamba cache group's block size for align-mode chunk splitting
+- PR #53948 [2026-08-26] open | [MRV2][PP] Defer sampled-result receives
+- PR #53906 [2026-08-26] closed merged | [Model] add GLM-5.3-Flash support
+- IS #53786 [2026-08-25] open | [Feature][KV cache] Support fine-grained prefix hits for sliding-window groups
+- PR #53753 [2026-08-25] closed | [Model][Spec Decode] Orthrus diffusion-mode decoding (WIP)
+- IS #53084 [2026-08-20] closed | [Bug]: MooncakeStoreConnector stores invalid recurrent states with mamba_cache_mode=align, causing silent output corruption
+- PR #53080 [2026-08-20] open | [Bugfix] Separate target and draft scheduling budgets
+- PR #52522 [2026-08-16] open | [Feature] Batch-invariant support for speculative decoding
+- PR #52231 [2026-08-14] open | [Feature] Support batch invariance on ROCm
+- IS #51788 [2026-08-11] open | [RFC]: Suffix decoding on GPU (`suffix_gpu`) — GPU-resident suffix decoding compatible with async scheduling
+- IS #51771 [2026-08-11] open | EAGLE/MTP block drop + prefix caching is untested for hybrid models with ≥3 attention groups (DeepSeek-V4-Flash + DSpark lands there)
+- PR #51705 [2026-08-10] closed merged | [ROCm][MLA][DCP] Support causal multi-token verification
+
+#### repo:vllm-project/vllm batch invariant mtp (total 151)
+- PR #60269 [2026-10-06] open | [Perf][Core] Reduce free KV cache queue overhead
+- PR #60113 [2026-10-05] open | [Core][NIXL] Transfer KV between different P/D KV cache group plans
+- IS #60008 [2026-10-05] open | [Performance]: Hybrid Mamba prefix caching (`mamba_cache_mode="align"`) costs 11-16% throughput on Nemotron-3.5-Lightning with no cache hits
+- IS #59926 [2026-10-04] open | [Bug] DeepSeek-V4-Flash tool-call format failures associated with prefix-cache reuse; worst for short cached head + long uncached suffix; `c
+- PR #59800 [2026-10-02] closed merged | [Perf] Use value-only reduction for native per-token FP8 quantization
+- PR #59788 [2026-10-02] closed merged | [Bugfix] Give each data-parallel engine its own global RNG streams
+- PR #59726 [2026-10-02] closed | [Mamba][Perf] Opt-in fused kernel for align-mode Mamba state indices
+- PR #59533 [2026-10-01] closed merged | [Perf][Qwen4Exp] Merge QSA QKVG and indexer QK projections
+- PR #59124 [2026-09-29] open | [ROCm][Perf][MLA] Add opt-in FlyDSL FP8 prefill attention for AITER MLA
+- PR #59031 [2026-09-28] closed merged | [Bugfix] Load stacked expert weights for non-gated MoE
+- PR #58979 [2026-09-28] open | [Bugfix][Model] Avoid rank-local compilation of GLM indexer key norm
+- IS #58644 [2026-09-25] open | [CI] test_mtp_sharded_sampling_equivalence diverges intermittently (2 failures on 2026-09-24)
+- PR #58371 [2026-09-23] closed merged | [Perf][Spec Decode] Enable fused multi-step draft decode for FlashInfer trtllm-gen
+- PR #58207 [2026-09-22] open | [Core] Pick hybrid KV cache group size by worst-case padding bytes; add --min-kv-cache-group-layers
+- IS #57932 [2026-09-21] open | [Bug]: SM120 / RTX PRO 6000 Blackwell: GLM-5.3-Flash fails with FlashInfer attention backend
+- PR #57645 [2026-09-18] open | [Perf][Kernel] Fuse post-norm, residual add and pre-norm into one op
+- PR #57635 [2026-09-18] closed merged | [Bugfix] Persist FlashInfer autotune cache per rank to fix the rank-0-only cache-hit deadlock
+- PR #57568 [2026-09-18] closed merged | [Bugfix][Spec Decode] Implement get_top_tokens() on the ROCm DeepSeek V4 MTP drafter
+- PR #57478 [2026-09-18] open | [ROCm][DSv4.1][Perf] Fused router gate for gfx950
+- PR #57318 [2026-09-17] open | [Kernel][GDN] Use flashinfer bf16 mm for the GDN gate projection
+- PR #57092 [2026-09-16] open | [Bugfix] Make online FP8 MoE experts batch-invariant under VLLM_BATCH_INVARIANT
+- PR #56995 [2026-09-15] open | [Bugfix][Spec Decode] Implement get_top_tokens() on the generic MTP drafter
+- PR #56960 [2026-09-15] closed merged | [Feat][Model] Enable KDA prefill checkpoints for GLM-5.3-Flash
+- PR #56628 [2026-09-12] closed merged | [ROCm][DSV4.1][Perf] Stride the DSA decode candidate mask over the live context
+- PR #56577 [2026-09-12] open | [Spec Decode][Perf] Add opt-in FP8 proposal head for Qwen4Exp MTP
+- PR #56531 [2026-09-11] closed merged | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent
+- IS #56506 [2026-09-11] closed | [RFC]: DeepSeek-V4.1-Flash performance on ROCm
+- IS #56396 [2026-09-11] closed | [Bug]: DeepSeek-V4.1-Flash: SimpleCPUOffloadConnector crashes with `assert block_size % hash_block_size == 0` (block_size=8, hash_block_size
+- PR #56254 [2026-09-10] closed merged | [DSA] Wire DeepGEMM sparse MQA logits into the DeepSeek V4.1 indexer
+- PR #55978 [2026-09-09] closed | [Perf] Trim redundant per-step Python work on the GDN decode and V2 spec-decode paths
+- PR #55947 [2026-09-08] open | [Feature][Spec Decode] Add Uno shared-model drafting with a draft-only LoRA adapter (Model Runner V2)
+- PR #55939 [2026-09-08] closed merged | [MyPy][3/N] Fix MyPy errors in test groups (part 3)
+- IS #55800 [2026-09-08] open | [Bug]: DFlash2 spec-decode with a sliding-window drafter: admission (full_sequence_must_fit) and execution allocation both scale the drafter
+- IS #55697 [2026-09-07] open | [RFC]: Application-Directed Prefix Checkpoints for Mamba / Hybrid Prefix Caching
+- PR #55601 [2026-09-06] closed merged | [Bugfix] Seed hybrid mamba state index with mamba_block_size on prefix-cache hits
+- PR #55516 [2026-09-06] open | [Bugfix][GDN] Reclassify a partial final speculative group as prefill at the max-model-len boundary
+- PR #55494 [2026-09-05] open | [Kernel] Add losslessly packed BF16 lm_head backend
+- PR #55368 [2026-09-04] closed merged | [ROCm][MoE] Pad the AITER MoE intermediate size at allocation time, and round the expert-group count to a kernel that exists
+- IS #55279 [2026-09-04] open | [Bug]: DFlash2 (dflash method) deterministic cumulative OOB — engine dies with CUDA IMA / Xid 31 after ~11k decode steps under sampling load
+- IS #55259 [2026-09-03] open | [RFC]: Optional native startup self-benchmarking for forward-pass performance characterization
+
+#### repo:vllm-project/vllm batch invariant ROCm (total 197)
+- PR #60232 [2026-10-06] open | [Model][Kernel] Add Granite Switch model
+- IS #60162 [2026-10-06] open | [Bug]: Humming FP8 linear crashes on per-tensor/per-channel FP8 weights, so FP8 models cannot start with VLLM_BATCH_INVARIANT=1 on Ampere
+- PR #60047 [2026-10-05] open | [Bugfix] Register the aten::mm out_dtype overloads for batch invariance
+- PR #60040 [2026-10-05] open | [ROCm][Attention] Support multimodal Prefix-LM in ROCM_ATTN
+- PR #60037 [2026-10-05] closed | [Bugfix] Do not rebind torch.bmm when enabling batch invariance
+- IS #60008 [2026-10-05] open | [Performance]: Hybrid Mamba prefix caching (`mamba_cache_mode="align"`) costs 11-16% throughput on Nemotron-3.5-Lightning with no cache hits
+- PR #59985 [2026-10-04] open | [Bugfix] Keep GateLinear batch invariant under VLLM_BATCH_INVARIANT
+- IS #59940 [2026-10-04] open | [Bug]: `VLLM_BATCH_INVARIANT=1` silently produces wrong tokens on a cold model-info cache (`eager_break_during_capture` is resolved at impor
+- IS #59926 [2026-10-04] open | [Bug] DeepSeek-V4-Flash tool-call format failures associated with prefix-cache reuse; worst for short cached head + long uncached suffix; `c
+- PR #59500 [2026-09-30] closed merged | [Bugfix] Keep batch-invariance NCCL pins out of the weight-transfer group
+- PR #59467 [2026-09-30] open | [Kernel][Fusion] Fuse GELU-tanh+Mul with NVFP4 quantization (Gemma 2/3/4)
+- PR #59124 [2026-09-29] open | [ROCm][Perf][MLA] Add opt-in FlyDSL FP8 prefill attention for AITER MLA
+- IS #59086 [2026-09-28] open | [Bug]: VLLM_BATCH_INVARIANT=1 is not batch-invariant for AWQ models on sm8x in the default mode
+- PR #59069 [2026-09-28] open | [ROCm][Kimi-K3] Fuse AttnRes output with per-token FP8 input quantization
+- PR #58979 [2026-09-28] open | [Bugfix][Model] Avoid rank-local compilation of GLM indexer key norm
+- PR #58935 [2026-09-27] open | [Bugfix][XPU] Enforce attention backend capability gates via validate_configuration
+- IS #58913 [2026-09-27] open | XPU: get_attn_backend_cls never calls validate_configuration - all attention backend capability gates are dead on XPU
+- PR #58650 [2026-09-25] open | [ROCm][Attention] Shape-aware split-KV and launch config for Triton DiffKV (gfx950)
+- PR #58623 [2026-09-24] closed merged | [Distributed] Enable custom all-reduce under VLLM_BATCH_INVARIANT
+- PR #58259 [2026-09-23] closed merged | [Bugfix] Fix resumable request + async scheduling handoff race
+- PR #58218 [2026-09-22] closed | [Bugfix][ROCm][Determinism] mean_kernel: 2-D grid so huge program counts don't kill the HIP launch
+- PR #58177 [2026-09-22] open | [Perf][Attention] Reuse KV loads across DiffKV prefill query positions
+- PR #58131 [2026-09-22] open | [Bugfix][XPU] Forward num_splits to the XPU flash attention kernel
+- IS #57932 [2026-09-21] open | [Bug]: SM120 / RTX PRO 6000 Blackwell: GLM-5.3-Flash fails with FlashInfer attention backend
+- PR #57767 [2026-09-20] open | [ROCm] Add native HIP RDNA3/RDNA4 custom all-reduce backend
+- PR #57586 [2026-09-18] closed merged | [Perf] Use breakable CUDA graphs (no torch.compile) by default under VLLM_BATCH_INVARIANT so the tuned matmul configs see the runtime M
+- PR #57568 [2026-09-18] closed merged | [Bugfix][Spec Decode] Implement get_top_tokens() on the ROCm DeepSeek V4 MTP drafter
+- PR #57478 [2026-09-18] open | [ROCm][DSv4.1][Perf] Fused router gate for gfx950
+- PR #57318 [2026-09-17] open | [Kernel][GDN] Use flashinfer bf16 mm for the GDN gate projection
+- PR #57280 [2026-09-17] open | [Bugfix] Honor batch invariance in gated normalization row tiling
+- PR #57042 [2026-09-15] open | [Kernel] Accumulate ranks in absolute order in 2-stage custom all-reduce
+- IS #57016 [2026-09-15] open | [Bug]: `VLLM_BATCH_INVARIANT=1` is not batch-invariant for fused-MoE experts with no warning
+- PR #57015 [2026-09-15] open | [ROCm][Perf] W4A16: widen skinny GEMM LDS activation loads to b128
+- PR #56996 [2026-09-15] open | [Perf][Attention] Source Triton metadata builder geometry from kv_cache_spec
+- PR #56995 [2026-09-15] open | [Bugfix][Spec Decode] Implement get_top_tokens() on the generic MTP drafter
+- IS #56900 [2026-09-14] open | [Bug]: Qwen/Qwen1.5-MoE-A2.7B-Chat produces degenerate output with torch.compile (VLLM_COMPILE) but correct output without it on vLLM 0.28.0
+- IS #56887 [2026-09-14] open | [Bug]: moe_wna16_gemm (csrc/libtorch_stable/moe/moe_wna16.cu) is not run-to-run deterministic: split-K partial sums are combined with 16-bit
+- PR #56628 [2026-09-12] closed merged | [ROCm][DSV4.1][Perf] Stride the DSA decode candidate mask over the live context
+- PR #56531 [2026-09-11] closed merged | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent
+- IS #56506 [2026-09-11] closed | [RFC]: DeepSeek-V4.1-Flash performance on ROCm
+
+#### repo:vllm-project/vllm batch invariance AMD (total 324)
+- PR #60446 [2026-10-07] open | [Bugfix][Kernel] Remove invalid NC from Kimi-K3 KDA autotune keys
+- PR #60443 [2026-10-07] open | [DeepSeek-V4-P2-02] Stabilize C128 sparse metadata for graph replay
+- PR #60442 [2026-10-07] open | [DeepSeek-V4-P2-01] Make sparse prefill request-local in BI mode
+- PR #60434 [2026-10-07] closed merged | [Kernel] Remove WAR for LL CuTeDSL BF16 GEMM
+- PR #60411 [2026-10-07] closed merged | [Bugfix][Quant] Read safetensors headers of checkpoints with other file names
+- PR #60402 [2026-10-07] open | Remove Python 3.10 support now that it is EOL
+- PR #60397 [2026-10-07] open | [ROCm][Perf][DSv4.1] Mono decode layer for DeepSeek-V4.1-Flash on MI355X
+- PR #60389 [2026-10-07] closed merged | [Bugfix][ROCm] Keep MLA derived weights in place on weight reload
+- PR #60381 [2026-10-07] closed merged | [CI] Bump Transformers version to 5.19.0
+- PR #60367 [2026-10-07] closed merged | [ROCm][Bugfix] Map sleep-mode cuMem memory for the host
+- PR #60337 [2026-10-07] closed merged | [Bugfix][Quantization] Accept folded NVFP4 scales for Humming A16
+- PR #60324 [2026-10-07] open | [Core] Update PyTorch to 2.15.0, torchvision to 0.29.1, triton to 3.9.0 (test channel)
+- PR #60322 [2026-10-07] open | [ROCm][MoE] Split AiterExperts by weight-quantization key
+- PR #60297 [2026-10-06] open | [CI] Log host memory usage during image build bake
+- PR #60289 [2026-10-06] closed merged | [Model] Streamline EmbeddingGemma 2 config resolution and harmonize Triton prefill attention
+- PR #60271 [2026-10-06] open | [Bugfix] Check batch-invariance support for every attention backend
+- PR #60269 [2026-10-06] open | [Perf][Core] Reduce free KV cache queue overhead
+- PR #60259 [2026-10-06] open | [Doc] Require GCC 13 for CUDA source builds
+- PR #60242 [2026-10-06] closed merged | [Misc] Report a missing DeepSelect extension only when it is requested
+- PR #60240 [2026-10-06] closed merged | [Bugfix] Warn only on per-request do_normalize/do_rescale overrides
+- PR #60210 [2026-10-06] closed merged | [Bugfix] Index Mamba align state copies by request slot in MRV2
+- PR #60207 [2026-10-06] open | [Perf][Attention] Fuse DCP empty-row neutralization in sparse MLA decode into one Triton kernel
+- PR #60203 [2026-10-06] closed merged | [Rust Frontend] Pass tool defer_loading through to chat templates
+- PR #60192 [2026-10-06] closed merged | [CI/Build] Widen the ragged prefill scoring tolerance, drop batch invariance
+- PR #60163 [2026-10-06] open | [Bugfix][Quantization] Fix Humming FP8 linear for per-tensor/per-channel FP8 weights
+- PR #60159 [2026-10-06] closed merged | [ROCm][Perf] Use native merge_attn_states kernel on gfx942/gfx950
+- PR #60156 [2026-10-06] open | [Bugfix][Attention] Preserve small FP8 softmax weights in Triton attention
+- PR #60152 [2026-10-06] closed merged | [UX] Skip checkpoint shards an MTP head does not load 
+- PR #60142 [2026-10-05] closed merged | [Bugfix] Fix Qwen4Exp FP8 PLE pinned lookup kernel failing to compile below SM89
+- PR #60141 [2026-10-05] open | [Bugfix] Bound EngineCore exit after a startup failure
+- PR #60129 [2026-10-05] closed merged | [Deprecation] Deprecate sonet dataset as scheduled
+- PR #60120 [2026-10-05] open | [Refactor] Remove dead code multiple places
+- PR #60115 [2026-10-05] closed merged | [Rust Frontend] Preserve explicit zero sampling values in gRPC requests
+- PR #60090 [2026-10-05] closed merged | [CI/Build][NVIDIA] Build NIXL with NIXL EP from source in Rubin image
+- PR #60071 [2026-10-05] closed merged | [Bugfix][KV Offload] Honor speculative cacheability in SimpleCPU
+- PR #60056 [2026-10-05] closed merged | [CI/Build] Run the prefill token scoring test under batch invariance
+- PR #60052 [2026-10-05] closed merged | fix: exclude flashinfer-jit-cache from wheel install_requires
+- PR #60047 [2026-10-05] open | [Bugfix] Register the aten::mm out_dtype overloads for batch invariance
+- PR #60043 [2026-10-05] open | [Core][Mamba] Remove leftovers of mamba_cache_mode="all"
+- PR #60037 [2026-10-05] closed | [Bugfix] Do not rebind torch.bmm when enabling batch invariance
+
+#### repo:sgl-project/sglang deterministic speculative (total 565)
+- PR #43052 [2026-10-08] open | [Speculative] Add draft sampling overrides and retain corrected proposal probabilities
+- PR #42865 [2026-10-07] open | [SM120] Speed up decode-sized MXFP8 linears with a Triton GEMM
+- PR #42864 [2026-10-07] open | [DSv4.1] Speed up decode-size mHC mixing with a vectorized split-K reduce and 160 K slices on SM120
+- PR #42855 [2026-10-07] open | [Spec][DSpark] Opt-in fused int8 Markov walk kernels (Hopper)
+- PR #42755 [2026-10-06] closed merged | [Metrics] Add per-rank DP attention imbalance metrics
+- IS #42752 [2026-10-06] open | [CI] Flaky tests and CI infrastructure failures seen while babysitting PRs
+- IS #42568 [2026-10-05] open | [Bug] `chain_speculative_sampling_triton` rejects every draft whose q rounds just above 1.0 (since #37134)
+- PR #42557 [2026-10-05] open | [Feature] Paged Experts: serve MoE models whose weights do not fit VRAM
+- PR #42534 [2026-10-04] open | Fix zero-residual fallback in CUDA speculative sampling
+- IS #42528 [2026-10-04] open | [Bug] `tree_speculative_sampling_target_only` rejects the only token with target mass when the coin equals the largest float32 below 1 and e
+- IS #42473 [2026-10-04] open | Development Roadmap (2026 Q4)
+- PR #42433 [2026-10-03] open | [HiCache] Reserve HiCache PP counts per in-flight ring round
+- PR #42388 [2026-10-03] open | [GDN] Add --enable-linear-lossless-verify: bit-exact tuple replay for spec verify
+- PR #42360 [2026-10-03] open | [Fix] Select the earliest completing literal stop in speculative decoding
+- PR #42254 [2026-10-02] open | Foundry Adapter
+- IS #42176 [2026-10-02] open | [Feature] Integrate Cake kernels via FlashInfer: model-by-model tracker
+- PR #42122 [2026-10-01] open | [XPU] Use the shared fused decode-metadata kernel in the intel_xpu ba…
+- PR #42032 [2026-10-01] open | Support CUDA DP attention in the shared DFlash/DFlash2 path
+- IS #42012 [2026-10-01] open | [Bug] GLM-5.3-Flash on SM120: fa4 attention backend crashes at CUDA-graph capture (hybrid extend reshape) — triton is the only working backe
+- PR #41893 [2026-09-30] open | [DSV4][Spec] DSPARK verify-merged mixed step, deterministic C4 top-k ties, eager ragged indexer
+- PR #41769 [2026-09-29] open | [HiCache][PD] Allow DSA index-K elision under HiCache and disaggregation
+- IS #41609 [2026-09-29] open | [Bug] GLM-5.3-Flash-NVFP4 teacher-forced logprobs drift vs v0.5.20 on SM100 after 2026-09-18..09-21 (suspect #39688 KDA fusion gate)
+- PR #41446 [2026-09-27] open | [HiSparse] Avoid host synchronization in eager backup
+- PR #41283 [2026-09-25] open | [Perf] EAGLE rejection sampling on each row's top-k support
+- PR #41179 [2026-09-24] closed merged | Fix mixed chunk prefill with DP speculative coordination
+- IS #41070 [2026-09-24] open | [Feature][Spec][XPU] Honor rejection sampling in EAGLE chain verification
+- PR #40893 [2026-09-23] open | Support a reduced draft vocabulary in rejection sampling
+- PR #40874 [2026-09-23] open | [DeepSeek V4.1] Support encoder-only prefill for PD disaggregation
+- PR #40861 [2026-09-23] open | disaggregation: Support Intel XPU for staging-buffer KV transfer
+- IS #40744 [2026-09-22] open | [Bug] DSV v4.1 Flash 2x4 H200 TP8/EP8 + DSPARK causes startup deadlock after DSpark draft weight load on dev-cu13-dsv41 and latest dev-cu13 
+- PR #40650 [2026-09-22] closed | [AMD][CI] Fix Miles nightly image builds: ship a clean sglang checkout in the ROCm images
+- IS #40558 [2026-09-21] open | [Bug] sm_120 - tvm.error.InternalError: Error in function 'TllmGenFmhaRunner' at sglang/lib/python3.12/site-packages/flashinfer/data/include
+- PR #40556 [2026-09-21] closed merged | [DeepSeek V4.1] Add DeepSelect JIT kernel.
+- PR #40552 [2026-09-21] open |  [Performance] Improve HyperConnection performance for Qwen-3.8-Flash
+- PR #40235 [2026-09-18] open | [Qwen4-Exp] Add host staging for file-backed PLE
+- PR #39957 [2026-09-17] closed merged | [DSV4.1] Big fused wo_a quant
+- PR #39859 [2026-09-16] closed merged | Use runtime token widths for Triton speculative verification
+- IS #39830 [2026-09-16] open | [Bug] Hierarchical cache returns wrong output on a hybrid (GDN/Mamba) model: a full-length host-tier hit answers in a different pass's voice
+- IS #39826 [2026-09-16] closed | [Bug] Speculative decoding counts reasoning tokens past EOS, exceeding completion_tokens
+- PR #39806 [2026-09-16] closed | [DO NOT MERGE][CI] Test 1 gpu h100 compatibility with 1 gpu h200
+
+#### repo:sgl-project/sglang deterministic eagle (total 439)
+- PR #43052 [2026-10-08] open | [Speculative] Add draft sampling overrides and retain corrected proposal probabilities
+- IS #42752 [2026-10-06] open | [CI] Flaky tests and CI infrastructure failures seen while babysitting PRs
+- IS #42568 [2026-10-05] open | [Bug] `chain_speculative_sampling_triton` rejects every draft whose q rounds just above 1.0 (since #37134)
+- IS #42528 [2026-10-04] open | [Bug] `tree_speculative_sampling_target_only` rejects the only token with target mass when the coin equals the largest float32 below 1 and e
+- PR #42433 [2026-10-03] open | [HiCache] Reserve HiCache PP counts per in-flight ring round
+- PR #42388 [2026-10-03] open | [GDN] Add --enable-linear-lossless-verify: bit-exact tuple replay for spec verify
+- PR #42122 [2026-10-01] open | [XPU] Use the shared fused decode-metadata kernel in the intel_xpu ba…
+- PR #41769 [2026-09-29] open | [HiCache][PD] Allow DSA index-K elision under HiCache and disaggregation
+- PR #41283 [2026-09-25] open | [Perf] EAGLE rejection sampling on each row's top-k support
+- PR #41179 [2026-09-24] closed merged | Fix mixed chunk prefill with DP speculative coordination
+- IS #41070 [2026-09-24] open | [Feature][Spec][XPU] Honor rejection sampling in EAGLE chain verification
+- PR #40893 [2026-09-23] open | Support a reduced draft vocabulary in rejection sampling
+- PR #40650 [2026-09-22] closed | [AMD][CI] Fix Miles nightly image builds: ship a clean sglang checkout in the ROCm images
+- IS #40558 [2026-09-21] open | [Bug] sm_120 - tvm.error.InternalError: Error in function 'TllmGenFmhaRunner' at sglang/lib/python3.12/site-packages/flashinfer/data/include
+- PR #40556 [2026-09-21] closed merged | [DeepSeek V4.1] Add DeepSelect JIT kernel.
+- PR #40363 [2026-09-19] open | [HiCache][perf] Queue and batch write-through backups off the request-finish path
+- PR #40235 [2026-09-18] open | [Qwen4-Exp] Add host staging for file-backed PLE
+- PR #39859 [2026-09-16] closed merged | Use runtime token widths for Triton speculative verification
+- PR #39857 [2026-09-16] closed | [AMD] Support DeepSeek-V4.1 on gfx950 with DSpark and fused kernels
+- IS #39830 [2026-09-16] open | [Bug] Hierarchical cache returns wrong output on a hybrid (GDN/Mamba) model: a full-length host-tier hit answers in a different pass's voice
+- PR #39806 [2026-09-16] closed | [DO NOT MERGE][CI] Test 1 gpu h100 compatibility with 1 gpu h200
+- PR #39610 [2026-09-15] open | [Docs] Add a KV cache events page
+- IS #39597 [2026-09-15] open | Greedy decoding is not reproducible across server restarts when FlashInfer autotune is enabled (DFLASH speculative decoding)
+- PR #39595 [2026-09-15] open | [AMD] Add FlyDSL GDN prefill backend
+- PR #39287 [2026-09-13] open | [Bugfix] Fix EAGLE sliding-window verification in FlashInfer and Triton
+- PR #39210 [2026-09-12] open | [FlashInfer v0.7.1] Add opt-in NVFP4 W4A16 support to FlashInfer MegaMoE
+- PR #39130 [2026-09-11] closed merged | Add triton autotune on the Mamba2 SSD kernels
+- PR #39126 [2026-09-11] closed merged | [Qwen3.8] Enable NVIDIA NVFP4 on DGX Spark with file-backed PLE and PDL router fix
+- PR #38813 [2026-09-10] open | [AMD] ci: port the AgentX GLM-5.2-MXFP4 agentic-coding MTP benchmark to MI35x nightly
+- PR #38812 [2026-09-10] open | [AMD] Add the AgentX Qwen3.5 MXFP4 + MTP tp2 sweep and eval on MI35x
+- PR #38799 [2026-09-10] open | [AMD][DSA] Extend Triton sparse-MLA prefill to gfx942 (MI308X) via 2-query merged programs
+- PR #38711 [2026-09-09] open | fix(observability): correct speculative FPM timing and decode lengths
+- PR #38621 [2026-09-09] closed merged | [Model] Support GLM-5.3 Flash NVFP4 loading
+- PR #38570 [2026-09-08] closed | [Qwen4] File-backed PLE offload for GB10 / DGX Spark with TP prefetch fix
+- PR #38569 [2026-09-08] closed | [Qwen4] Load nvidia/Qwen3.8-Flash-Next-NVFP4 (ModelOpt MIXED_PRECISION)
+- PR #38565 [2026-09-08] open | [Sampling] Add `SGLANG_RENORM_DETERMINISTIC` for bit-identical top-p / top-k renorm
+- PR #38330 [2026-09-07] open | [Spec] Fix OOB  in EAGLE3 draft-extend prefill BCG on multimodal models
+- PR #38269 [2026-09-07] closed merged | [Unified Cache][AMD] Support DeepSeek-V4 unified KV in direct external linkers
+- PR #38238 [2026-09-07] closed merged | chore: update CI test est_time values
+- PR #38229 [2026-09-06] closed merged | fix(inkling): translate unified-memory checkpoint destinations to physical slots
+
+#### repo:sgl-project/sglang deterministic ROCm (total 724)
+- PR #43078 [2026-10-08] open | [Refactor] trtllm_mha: inherit from AttentionBackend instead of FlashInferAttnBackend
+- PR #43060 [2026-10-08] open | [XPU] Enable symmetric-memory one-shot all-reduce
+- PR #43052 [2026-10-08] open | [Speculative] Add draft sampling overrides and retain corrected proposal probabilities
+- PR #43005 [2026-10-07] open | fix(openai): preserve zero cached tokens when cache reporting is enabled
+- PR #42936 [2026-10-07] open | [Refactor] Remove Kimi K3's own layer communication and let the consumer set an FFN's exit
+- PR #42898 [2026-10-07] open | [Refactor] Run Kimi K3's fused collectives through stage boundaries
+- PR #42897 [2026-10-07] open | [Refactor] Support attention-TP dense FFNs and unpadded batches on stage boundaries
+- PR #42896 [2026-10-07] open | [Fix] Run attention on a padded extend batch's real rows
+- PR #42895 [2026-10-07] open | [Fix] Shard Kimi K3's shared experts over the TP group they sum over
+- PR #42894 [2026-10-07] open | [Refactor] Run Kimi K3 through stage boundaries
+- PR #42892 [2026-10-07] open | [Fix] Return an FFN's output to the attention rows at a pipeline handoff
+- PR #42865 [2026-10-07] open | [SM120] Speed up decode-sized MXFP8 linears with a Triton GEMM
+- PR #42864 [2026-10-07] open | [DSv4.1] Speed up decode-size mHC mixing with a vectorized split-K reduce and 160 K slices on SM120
+- PR #42855 [2026-10-07] open | [Spec][DSpark] Opt-in fused int8 Markov walk kernels (Hopper)
+- PR #42817 [2026-10-06] open | [KV events] Namespace LoRA block hashes by adapter name
+- PR #42755 [2026-10-06] closed merged | [Metrics] Add per-rank DP attention imbalance metrics
+- PR #42744 [2026-10-06] open | [Performance] Add adaptive KV-split cap for Triton GQA decode
+- PR #42702 [2026-10-06] open | [PD] Fix retraction restores racing the in-flight decode forward
+- PR #42695 [2026-10-06] closed merged | Bind the MessageQueue remote socket atomically
+- PR #42557 [2026-10-05] open | [Feature] Paged Experts: serve MoE models whose weights do not fit VRAM
+- PR #42550 [2026-10-05] open | [Fix] Reject removal of an external corpus while its load is pending
+- PR #42534 [2026-10-04] open | Fix zero-residual fallback in CUDA speculative sampling
+- PR #42532 [2026-10-04] open | [cake_kernels] SP all-gather matmul route on the engine operands (view weight, any M, N % 256, capacity-bound launcher)
+- PR #42449 [2026-10-04] open | [Router] kv-indexer: Valkey event log, worker replay, liveness, and indexer failover
+- PR #42447 [2026-10-04] open | [Router] Valkey backend for sgl-kv-indexer: shared, restart-safe placement index
+- PR #42440 [2026-10-04] open | [Fix] SM120 sparse MLA: zero-initialise the 64-token page-split scratch so masked candidates never gather NaN from slot 0
+- PR #42437 [2026-10-04] closed merged | [diffusion] Reset DiT cache state at the start of each request
+- PR #42434 [2026-10-03] open | feat(hicache): restore exact prefixes before continuation arrival
+- PR #42433 [2026-10-03] open | [HiCache] Reserve HiCache PP counts per in-flight ring round
+- PR #42426 [2026-10-03] closed merged | [Refactor] Let linear layers select their parallel group
+- PR #42406 [2026-10-03] open | [cake_kernels] opt-in model routes: Qwen3.5 GDN prefill/decode, FP8 grouped MoE, NVFP4 warp-decode MoE (SGLANG_CAKE_ROUTES) + Qwen3.5 e2e re
+- PR #42405 [2026-10-03] closed merged | Pick the default nccl_port below the kernel ephemeral range
+- PR #42396 [2026-10-03] open | [Feature] Support mxfp8 KV cache on the unified memory pool
+- PR #42388 [2026-10-03] open | [GDN] Add --enable-linear-lossless-verify: bit-exact tuple replay for spec verify
+- PR #42384 [2026-10-03] open | [cake_kernels] attention adapters (dense FMHA, MLA, sparse / DSV4, misc)
+- PR #42381 [2026-10-03] open | [cake_kernels] kvcache / sampling / quantization adapters + shared helpers
+- PR #42360 [2026-10-03] open | [Fix] Select the earliest completing literal stop in speculative decoding
+- PR #42348 [2026-10-03] closed merged | [Refactor] Let the remaining placement consumers read the parallel context
+- PR #42254 [2026-10-02] open | Foundry Adapter
+- PR #42199 [2026-10-02] open | [Scheduler] Stop the prefill delayer's queue trigger from ending its own delay

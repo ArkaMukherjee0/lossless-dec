@@ -1,0 +1,392 @@
+## ngram hybrid repo:vllm-project/vllm total=266
+IS #9006 2024-10-01 closed  | [Roadmap] vLLM Roadmap Q4 2024 | simon-mo
+PR #10017 2024-11-05 closed merged=2024-11-05 | [Misc] vllm CLI flags should be ordered for better user readability | chaunceyjiang
+IS #14452 2025-03-07 closed  | [Doc]: Steps to run vLLM on your RTX5080 or 5090! | pavanimajety
+IS #14628 2025-03-11 closed  | [Bug]: Multi GPU inference using two RTX 5090s(TP=2) | shahizat
+IS #16258 2025-04-08 closed  | [Usage]: The performance of ngram speculative decoding | dtransposed
+IS #17812 2025-05-07 closed  | [Benchmark][V1][Spec Decode][EAGLE] Tracking benchmark for V1 EAGLE | ekagra-ranjan
+IS #18037 2025-05-13 open  | [RFC]: Enabling Suffix Decoding, LSTM Speculator, Sequence Parallelism from Arctic Inference | sfc-gh-aqiao
+PR #23673 2025-08-26 closed merged=2025-09-09 | [Core] Use sha256 bytes instead of BlockHash to reduce GC overhead | linzebing
+PR #24322 2025-09-05 closed merged=2026-01-19 | feat: spec decode with draft models | tomasruizt
+PR #24344 2025-09-05 open merged=None | [Spec Decode][Hybrid] Add ngram-eagle SD method | ekagra-ranjan
+PR #25784 2025-09-26 closed merged=2025-11-03 | [Spec Decode] Integrate Suffix Decoding from Arctic Inference | aurickq
+IS #28947 2025-11-18 closed  | [Tracking Issue][Performance]: Speculative decoding performance/QoL improvements | xinli-sw
+PR #29184 2025-11-21 closed merged=2026-03-07 | [Core] NGram GPU Implementation compatible with Async Scheduler | PatchouliTIS
+IS #29510 2025-11-26 closed  | [CI Failure]: mi325_1: V1 Test e2e + engine | AndreasKaratzas
+PR #32951 2026-01-23 closed merged=2026-03-23 | [Async][Spec Decoding] Zero-bubble async scheduling + spec decoding | MatthewBonanni
+IS #34650 2026-02-16 closed  | Bug: Speculative Decoding (MTP) Causes </think> Detection Failure in Structured Output + Reasoning Mode | cicirori
+IS #35288 2026-02-25 open  | [Bug]: MTP speculative decoding produces corrupted output at concurrency >= 4 (V1 engine) | dkremez
+IS #39273 2026-04-08 open  | [Bug]: Ngram speculative decoding produces corrupted output on hybrid GDN (Qwen3.5) models | bhaktatejas922
+PR #39463 2026-04-10 closed merged=None | [Bugfix] Fix ngram spec decode corrupted output on hybrid GDN models | AjAnubolu
+IS #39749 2026-04-13 closed  | [Roadmap] vLLM Roadmap Q2 2026 | simon-mo
+PR #39798 2026-04-14 closed merged=None | replace torch.cuda.set_stream with accelerator api | xinyu-intel
+IS #39809 2026-04-14 closed  | [Bug]: Mamba prefix caching + MTP speculative decoding crashes on startup for NemotronH models | zeryx
+IS #40124 2026-04-17 open  | [Bug/Feature] TurboQuant + Hybrid MoE (Qwen3.6-35B-A3B) broken on Ampere (SM 80-86) — 13 patches with fixes | Sandermage
+IS #40554 2026-04-21 closed  | [AMD][CI Failure][Tracker] Static dashboard tracker for current CI failures | AndreasKaratzas
+PR #40704 2026-04-23 closed merged=2026-10-06 | [ModelRunner V2] Speculative Decoding NGram GPU Implementations | PatchouliTIS
+PR #40738 2026-04-23 open merged=None | [Bugfix] Fix GDN conv + SSM state corruption with ngram spec decode | tdoublep
+PR #40798 2026-04-24 closed merged=None | [TurboQuant] Share decode scratch workspace across layers | Bot1822
+IS #40831 2026-04-24 closed  | [Bug]: TurboQuant KV × any speculative decoding (MTP or ngram) produces degenerate token loops — confirmed across dense and hybrid attention | noonghunna
+IS #40875 2026-04-25 closed  | [Bug]: ngram speculative decoding default prompt_lookup_min=2 causes tool-call output corruption on Qwen3-class models with structured output (config- | Sandermage
+IS #40880 2026-04-25 closed  | [Bug]: MTP × TurboQuant × CUDA graph capture produces degenerate output on Qwen3-Next hybrid (not closed by v7.13 ngram fix tree) | noonghunna
+PR #40914 2026-04-26 open merged=None | [Bugfix][Spec-Decode] TurboQuant K+1 spec-verify routing (fixes #40880) | Sandermage
+IS #43357 2026-05-21 open  | [Bug]: TurboQuant workspace locked at 3.06 MB — continuation_prefill requires 12 MB on any prompt >4096 tokens (Qwen3.6-27B NVFP4 hybrid, Blackwell SM | s1zad
+IS #43382 2026-05-22 open  | [Bug]: Qwen3.5 397B model occurs assertion error during allocating new blocks | linnea-lin-00638949
+PR #43955 2026-05-29 closed merged=None | [Perf] Reduce MTP decode bubbles for Qwen3.5 hybrid models | Nekofish-L
+IS #44300 2026-06-02 open  | [Feature]: Could you help with  implement the KV cache pruning feature on vLLM? | sankexin
+PR #44409 2026-06-03 closed merged=2026-06-15 | [Bugfix] Two-phase KV allocation for cross-group prefix cache hits (supersedes #33775) | Saddss
+IS #44734 2026-06-06 open  | CUDA device-side assert with nvidia/Qwen3.6-35B-A3B-NVFP4 + MTP on nightly f91fb2f | robert896r1
+PR #44972 2026-06-09 closed merged=2026-08-02 | [Test][V1] Add sleep/wake correctness regression test for hybrid GDN/… | chun-wan
+PR #45466 2026-06-12 closed merged=2026-06-18 | [Bugfix][Kernel] Check output alignment in vectorize_with_alignment (fixes misaligned-address crash for non-multiple-of-8 head sizes) | HumphreySun98
+PR #46424 2026-06-22 open merged=None | [Bugfix][Mamba2] Fix assert crash when prefill-reclassified-as-decode occurs with no concurrent spec tokens | sytianhe
+PR #46426 2026-06-23 closed merged=None | [Model] Fix quantization config resolution for Gemma 4 MTP draft model | melcheikh
+PR #46558 2026-06-24 open merged=None | [Bugfix][Attention] Enable FlashInfer mm-prefix attention | lesj0610
+PR #46963 2026-06-28 closed merged=2026-10-07 | [Attention] Support NVFP4 KV cache on SM8x and SM12x with FlashInfer | lesj0610
+PR #47068 2026-06-29 closed merged=None | [CI/Build] Fix structural tag test for xgrammar 0.2.3 (`any_order` field) | khluu
+PR #47123 2026-06-30 open merged=None | [Bugfix] Fix misclassification of prefill as uniform decode for hybrid models | xiatwhu
+PR #47540 2026-07-03 open merged=None | [Perf] Maintain persistent penalty statistics instead of per-step CPU rebuild in V1 sampler | xiaguan
+PR #48039 2026-07-08 closed merged=2026-10-07 | [Bugfix][Scheduler] Let pooling chunked prefill use full context | TommyTranX
+PR #48186 2026-07-09 closed merged=2026-07-10 | [CI] Right-size test-area timeouts from nightly durations | khluu
+PR #48962 2026-07-17 closed merged=2026-10-06 | [Build] Migrate vendored DeepGEMM from pybind to TORCH_LIBRARY (abi3) | cleonard530
+PR #49194 2026-07-20 closed merged=2026-10-06 | [Perf][MoE] Eliminate staging from NCCL symmetric reduce-scatter | samnordmann
+IS #49224 2026-07-20 closed  | [Bug]: Model Runner V2 (now default for dense models) skips CUDA graph memory reservation — `profile_cudagraph_memory()` returns 0, causing OOM during | anhtra3889
+IS #49694 2026-07-24 open  | [Bug]: ngram_gpu spec decode + structured outputs (xgrammar) + async scheduling: verifier accepts grammar-illegal draft tokens → "Failed to advance FS | pavel-ignatovich-buddyai
+PR #49847 2026-07-26 open merged=None | [Kernel] ReplaySSM: cache SSM inputs for faster Mamba2 speculative decode | Johnny-Liou
+IS #49918 2026-07-26 open  | [Bug]: Prefill with prompt length == 1 + num_speculative_tokens misclassified as uniform decode → FULL spec-verify cudagraph skips GDN/hybrid recurren | avesed
+PR #50272 2026-07-29 closed merged=2026-08-22 | [Bugfix] Fix speculative decoding for short_conv (LFM2) models | zwischenraum
+PR #50415 2026-07-30 open merged=None | Add MoNe experts pruning support | ieBoytsov
+PR #50715 2026-08-02 closed merged=None | [Bugfix][Spec Decode] Support hybrid-attention DFlash drafters spanning multiple KV cache groups | woosebastian
+PR #50897 2026-08-03 open merged=None | [Core][Spec Decode] Add lookahead-aware prefix cache hashing for EAGLE-style draft models | ZJY0516
+PR #51018 2026-08-04 closed merged=2026-10-08 | [BugFix] Pick the DP world-group port at bind time via the coordination store | aoshen02
+PR #51055 2026-08-04 open merged=None | [Perf][Hybrid] Skip redundant num_accepted_tokens H2D copy after preprocess_mamba | fuscof-ibm
+PR #51274 2026-08-06 closed merged=2026-10-03 | [ROCm][Kimi-K3] Add opt-in gfx942 MXFP4-to-int4 conversion | maeehart
+PR #51314 2026-08-06 open merged=None | [ROCm][Perf] Skip cleaning sparse prefill MQA logits | amd-sriram
+PR #51488 2026-08-08 open merged=None | [Core] Reject new requests while generation is paused | aoshen02
+PR #51769 2026-08-11 open merged=None | [Misc] Warn when EAGLE/MTP speculation costs a large prefix-cache hit | WhiteJonas
+PR #52183 2026-08-13 open merged=None | [Core] Update PyTorch to 2.14.1, torchvision to 0.29.1, triton to 3.8.0 (release channel) | atalman
+PR #52558 2026-08-17 open merged=None | [Debug] Add general tensor dumper for Model Runner V2 | aoshen02
+PR #52641 2026-08-17 closed merged=2026-10-03 | [EPLB] Add contention-aware expert migration batching | DOCCA0
+PR #52677 2026-08-18 open merged=None | [Reasoning] Break repeating reasoning loops by forcing the reasoning end sequence | amittell
+IS #52792 2026-08-18 open  | [Bug][ROCm] Kimi-K3 (KimiLinear/GDN hybrid) + ngram spec-decode: GPU memory access fault on concurrent mixed spec/non-spec batches (single-stream work | skimanwhite
+PR #52864 2026-08-19 closed merged=2026-09-30 | [Frontend][RL] Align sleep-mode API responses and operation metrics | Ronald1995
+IS #52873 2026-08-19 closed  | [Bug]: Qwen3-Next GDN + MTP: crossing sequence position 32768 permanently kills draft acceptance engine-wide (0% until restart) | noonghunna
+PR #52928 2026-08-19 closed merged=2026-09-30 | [Mamba] Add FlashInfer ReplaySSM support for MTP | askliar
+PR #52942 2026-08-19 open merged=None | [Bugfix] Fix stale mamba/GDN states with ngram spec decode on hybrid … | sunnyxiaohu
+PR #53065 2026-08-20 closed merged=2026-10-07 | [XPU][MoE] Tune Triton fused MoE for Intel XPU | pmanczak
+PR #53108 2026-08-20 open merged=None | [ROCm][BugFix] Trim MoE GEMM input to valid token prefix  | amd-weisun
+PR #53341 2026-08-22 closed merged=2026-10-02 | [CI] Replace shellcheck-suppressed patterns flagged in #52572 with clean equivalents | wjabbour
+IS #53505 2026-08-24 closed  | [Bug]: [SpecDecode] Hybrid Mamba (align) corrupts under speculative decoding when a KV connector is attached — even with zero retrieved tokens | uraniumchonk
+PR #53558 2026-08-24 open merged=None | [Core][Feat] Pluggable KVCacheConfigBuilder for platform/model-specific KV cache planning | wangxiyuan
+PR #53613 2026-08-24 closed merged=None | [Bugfix][Spec Decode] Order input prep after the previous step's spec-decode postprocess | amittell
+IS #53777 2026-08-25 closed  | [Bug] DFlash2 spec decode + xgrammar: deterministic "Failed to advance FSM" on json_object grammar (same draft token every time) | rickysos
+PR #53896 2026-08-26 closed merged=2026-08-31 | [Model] Support Qwen3.8-Flash-Next | peakcrosser7
+PR #53899 2026-08-26 closed merged=None | Support PLE-Offload for Qwen3.8-Flash-Next  | peakcrosser7
+PR #53911 2026-08-26 open merged=None | [Kernel] Fuse DeepEP-v2 decode globalize+align into one launch | elvircrn
+PR #53948 2026-08-26 open merged=None | [MRV2][PP] Defer sampled-result receives | chengchengpei
+IS #53960 2026-08-26 open  | [Bug]: VLLM_PLE_CPU_OFFLOAD deadlocks at kernel warmup on single GPU (TP=1) - Qwen3.8-Flash-Next on GB10/sm_121 | jdmays13
+PR #54049 2026-08-27 closed merged=2026-10-02 | [feat] FlashInfer CuteDSL MegaMoE integration  | jdebache
+PR #54076 2026-08-27 open merged=None | [Bugfix][V1] Use the Mamba cache group's block size for align-mode chunk splitting | wickist
+PR #54109 2026-08-27 open merged=None | [MoE][DeepEPV2] Add PaddedStandard activation format | bnellnm
+PR #54113 2026-08-27 closed merged=2026-10-08 | [Bugfix] Eliminate frontend ZMQ port TOCTOU with inherited listeners | BugenZhao
+PR #54129 2026-08-28 closed merged=None | [Model] Support disk-backed (mmap) PLE table for Qwen3.8-Flash-Next (VLLM_PLE_MMAP) | Trosfy
+PR #54163 2026-08-28 open merged=None | [Bugfix][Spec Decode] DFlash/DSpark no longer drop the last prefix-cache block (mamba align context recompute) | Ledgero
+IS #54237 2026-08-28 open  | [Bug]: 0.28.0 and 0.29.0 consume all host memory at start and freeze (OK with 0.27.1) | deuch
+PR #54442 2026-08-30 closed merged=2026-10-01 | [Bugfix] Don't let a structured-output request sample from an unmasked row | ArcheyChen
+IS #54506 2026-08-31 open  | [RFC]: Batch invariance for speculative decoding needs to cover the forward pass (M=1 vs M=k+1) | Leonccaa
+IS #54552 2026-08-31 open  | Qwen4Exp: QSA ring assert makes num_speculative_tokens 5..8 unreachable on all block sizes | jschmied
+PR #54576 2026-08-31 closed merged=None | [Sampling] Add Mirostat v2 sampling | chuan932
+PR #54627 2026-08-31 open merged=None | [Core] Apply prefill_schedule_interval outside data parallelism | fululi12
+PR #54706 2026-09-01 closed merged=2026-10-03 | [ROCm][RDNA3] Fix W4A16 split-K accuracy and determinism | AIwork4me
+IS #54740 2026-09-01 open  | [Bug]: [XPU] gdn_attention asserts on ragged ngram draft lengths (single stream, survives #53077) | jbarrio
+PR #54776 2026-09-01 open merged=None | [ROCm] Fix APU unified-memory accounting across GTT and host pressure | sstamenk
+ERR HTTP Error 403: rate limit exceeded
+## ngram mamba repo:vllm-project/vllm total=195
+IS #2021 2023-12-11 closed  | ARM aarch-64 server build failed (host OS: Ubuntu22.04.3)  | zhudy
+IS #6916 2024-07-29 closed  | [Bug]: Unable to build image from `vllm` repo Dockerfile | tadamcz
+IS #7833 2024-08-24 closed  | [Bug]: AI21-Jamba-1.5-Mini RuntimeError: Triton Error [CUDA]: an illegal memory access was encountered | pseudotensor
+IS #9006 2024-10-01 closed  | [Roadmap] vLLM Roadmap Q4 2024 | simon-mo
+IS #13678 2025-02-21 closed  | [Bug]: Mamba2 models (Bamba and Codestral Mamba) fail on RoCM | tlrmchlsmth
+IS #14034 2025-02-28 closed  | [Installation]: Can't find OpenMP headers on macOS | realShengYao
+IS #14452 2025-03-07 closed  | [Doc]: Steps to run vLLM on your RTX5080 or 5090! | pavanimajety
+IS #14628 2025-03-11 closed  | [Bug]: Multi GPU inference using two RTX 5090s(TP=2) | shahizat
+IS #16109 2025-04-05 closed  | [Installation]: how to run swiftkv with vllm | kim90000
+PR #25784 2025-09-26 closed merged=2025-11-03 | [Spec Decode] Integrate Suffix Decoding from Arctic Inference | aurickq
+IS #26372 2025-10-07 closed  | [Bug]: vLLM engine fails with error: 'ValueError: Counters can only be incremented by non-negative amounts.' | Blaze-DSP
+IS #27174 2025-10-19 closed  | [Bug]: Qwen3-VL-30B-A3B OOM on 96GB single gpu | bhaktatejas922
+PR #32951 2026-01-23 closed merged=2026-03-23 | [Async][Spec Decoding] Zero-bubble async scheduling + spec decoding | MatthewBonanni
+PR #34046 2026-02-07 closed merged=None | [Feature][Scheduler] Add split prefix caching feature to eliminate bf16 GEMM tiling divergence across cache-hit/miss paths | AndreasKaratzas
+IS #34154 2026-02-09 closed  | [Bug]: Failing to run DeepSeek-OCR on Radeon GPUs (memory fault) | umarinkovic
+IS #34650 2026-02-16 closed  | Bug: Speculative Decoding (MTP) Causes </think> Detection Failure in Structured Output + Reasoning Mode | cicirori
+IS #35288 2026-02-25 open  | [Bug]: MTP speculative decoding produces corrupted output at concurrency >= 4 (V1 engine) | dkremez
+PR #36945 2026-03-13 closed merged=2026-03-13 | [CI] Split V1 e2e + engine (1 GPU) into parallel jobs | khluu
+IS #39273 2026-04-08 open  | [Bug]: Ngram speculative decoding produces corrupted output on hybrid GDN (Qwen3.5) models | bhaktatejas922
+PR #39337 2026-04-08 closed merged=2026-05-14 | [Model Runner v2] Oracle for model runner v2 - qwen3 dense model by default [1/N] | yewentao256
+PR #39463 2026-04-10 closed merged=None | [Bugfix] Fix ngram spec decode corrupted output on hybrid GDN models | AjAnubolu
+PR #39798 2026-04-14 closed merged=None | replace torch.cuda.set_stream with accelerator api | xinyu-intel
+IS #39809 2026-04-14 closed  | [Bug]: Mamba prefix caching + MTP speculative decoding crashes on startup for NemotronH models | zeryx
+IS #40124 2026-04-17 open  | [Bug/Feature] TurboQuant + Hybrid MoE (Qwen3.6-35B-A3B) broken on Ampere (SM 80-86) — 13 patches with fixes | Sandermage
+PR #40704 2026-04-23 closed merged=2026-10-06 | [ModelRunner V2] Speculative Decoding NGram GPU Implementations | PatchouliTIS
+PR #40738 2026-04-23 open merged=None | [Bugfix] Fix GDN conv + SSM state corruption with ngram spec decode | tdoublep
+PR #40798 2026-04-24 closed merged=None | [TurboQuant] Share decode scratch workspace across layers | Bot1822
+IS #40880 2026-04-25 closed  | [Bug]: MTP × TurboQuant × CUDA graph capture produces degenerate output on Qwen3-Next hybrid (not closed by v7.13 ngram fix tree) | noonghunna
+PR #40914 2026-04-26 open merged=None | [Bugfix][Spec-Decode] TurboQuant K+1 spec-verify routing (fixes #40880) | Sandermage
+PR #41429 2026-05-01 closed merged=2026-05-11 | [Perf][1/n] Eliminate various GPU<->CPU syncs | njhill
+IS #42533 2026-05-13 closed  | [Bug]: ngram_gpu speculative decoding can propose draft tokens past max_model_len budget | glaziermag
+IS #43357 2026-05-21 open  | [Bug]: TurboQuant workspace locked at 3.06 MB — continuation_prefill requires 12 MB on any prompt >4096 tokens (Qwen3.6-27B NVFP4 hybrid, Blackwell SM | s1zad
+IS #43382 2026-05-22 open  | [Bug]: Qwen3.5 397B model occurs assertion error during allocating new blocks | linnea-lin-00638949
+PR #43955 2026-05-29 closed merged=None | [Perf] Reduce MTP decode bubbles for Qwen3.5 hybrid models | Nekofish-L
+PR #44296 2026-06-02 open merged=None | [Bugfix] Fix speculative decoding for short_conv (LFM2) models | Tonoken3
+IS #44300 2026-06-02 open  | [Feature]: Could you help with  implement the KV cache pruning feature on vLLM? | sankexin
+IS #44734 2026-06-06 open  | CUDA device-side assert with nvidia/Qwen3.6-35B-A3B-NVFP4 + MTP on nightly f91fb2f | robert896r1
+PR #44969 2026-06-09 closed merged=2026-08-18 | [ROCm][CI] Gating more ROCm tests | AndreasKaratzas
+PR #44972 2026-06-09 closed merged=2026-08-02 | [Test][V1] Add sleep/wake correctness regression test for hybrid GDN/… | chun-wan
+PR #46424 2026-06-22 open merged=None | [Bugfix][Mamba2] Fix assert crash when prefill-reclassified-as-decode occurs with no concurrent spec tokens | sytianhe
+PR #46426 2026-06-23 closed merged=None | [Model] Fix quantization config resolution for Gemma 4 MTP draft model | melcheikh
+PR #46963 2026-06-28 closed merged=2026-10-07 | [Attention] Support NVFP4 KV cache on SM8x and SM12x with FlashInfer | lesj0610
+PR #47068 2026-06-29 closed merged=None | [CI/Build] Fix structural tag test for xgrammar 0.2.3 (`any_order` field) | khluu
+PR #47123 2026-06-30 open merged=None | [Bugfix] Fix misclassification of prefill as uniform decode for hybrid models | xiatwhu
+PR #47635 2026-07-05 open merged=None | [Bugfix] Pass num_spec to mamba2_state_shape in FalconH1/GraniteMoeHybrid/Zamba2 (spec decode crashes at init) | jethac
+PR #48186 2026-07-09 closed merged=2026-07-10 | [CI] Right-size test-area timeouts from nightly durations | khluu
+PR #48419 2026-07-12 closed merged=2026-09-25 | [Bugfix] V1: fix allowed_token_ids_mask aliasing in InputBatch.swap_states | huthvincent
+PR #48962 2026-07-17 closed merged=2026-10-06 | [Build] Migrate vendored DeepGEMM from pybind to TORCH_LIBRARY (abi3) | cleonard530
+PR #49194 2026-07-20 closed merged=2026-10-06 | [Perf][MoE] Eliminate staging from NCCL symmetric reduce-scatter | samnordmann
+IS #49355 2026-07-21 open  | [Bug]: MTP speculative decoding is broken with pipeline parallelism (PP>1) — three distinct failures | jdwillard19
+PR #49847 2026-07-26 open merged=None | [Kernel] ReplaySSM: cache SSM inputs for faster Mamba2 speculative decode | Johnny-Liou
+IS #49918 2026-07-26 open  | [Bug]: Prefill with prompt length == 1 + num_speculative_tokens misclassified as uniform decode → FULL spec-verify cudagraph skips GDN/hybrid recurren | avesed
+PR #50272 2026-07-29 closed merged=2026-08-22 | [Bugfix] Fix speculative decoding for short_conv (LFM2) models | zwischenraum
+PR #50415 2026-07-30 open merged=None | Add MoNe experts pruning support | ieBoytsov
+PR #50897 2026-08-03 open merged=None | [Core][Spec Decode] Add lookahead-aware prefix cache hashing for EAGLE-style draft models | ZJY0516
+PR #51055 2026-08-04 open merged=None | [Perf][Hybrid] Skip redundant num_accepted_tokens H2D copy after preprocess_mamba | fuscof-ibm
+PR #51274 2026-08-06 closed merged=2026-10-03 | [ROCm][Kimi-K3] Add opt-in gfx942 MXFP4-to-int4 conversion | maeehart
+PR #51314 2026-08-06 open merged=None | [ROCm][Perf] Skip cleaning sparse prefill MQA logits | amd-sriram
+PR #51488 2026-08-08 open merged=None | [Core] Reject new requests while generation is paused | aoshen02
+PR #51769 2026-08-11 open merged=None | [Misc] Warn when EAGLE/MTP speculation costs a large prefix-cache hit | WhiteJonas
+PR #52183 2026-08-13 open merged=None | [Core] Update PyTorch to 2.14.1, torchvision to 0.29.1, triton to 3.8.0 (release channel) | atalman
+PR #52558 2026-08-17 open merged=None | [Debug] Add general tensor dumper for Model Runner V2 | aoshen02
+PR #52641 2026-08-17 closed merged=2026-10-03 | [EPLB] Add contention-aware expert migration batching | DOCCA0
+PR #52677 2026-08-18 open merged=None | [Reasoning] Break repeating reasoning loops by forcing the reasoning end sequence | amittell
+IS #52792 2026-08-18 open  | [Bug][ROCm] Kimi-K3 (KimiLinear/GDN hybrid) + ngram spec-decode: GPU memory access fault on concurrent mixed spec/non-spec batches (single-stream work | skimanwhite
+PR #52864 2026-08-19 closed merged=2026-09-30 | [Frontend][RL] Align sleep-mode API responses and operation metrics | Ronald1995
+PR #52928 2026-08-19 closed merged=2026-09-30 | [Mamba] Add FlashInfer ReplaySSM support for MTP | askliar
+PR #52942 2026-08-19 open merged=None | [Bugfix] Fix stale mamba/GDN states with ngram spec decode on hybrid … | sunnyxiaohu
+PR #53090 2026-08-20 open merged=None | [Perf][Spec Decode] Fuse target temperature in rejection sampler | positive666
+IS #53211 2026-08-21 open  | [Bug][XPU]: AutoRound int4 models silently emit garbage under concurrent requests; ARK WOQ backend is auto-selected with no opt-out | alankessler
+PR #53229 2026-08-21 closed merged=None | [Bugfix][Hardware][XPU] Fix token-indexed GDN conv state copies | recutita
+PR #53341 2026-08-22 closed merged=2026-10-02 | [CI] Replace shellcheck-suppressed patterns flagged in #52572 with clean equivalents | wjabbour
+IS #53505 2026-08-24 closed  | [Bug]: [SpecDecode] Hybrid Mamba (align) corrupts under speculative decoding when a KV connector is attached — even with zero retrieved tokens | uraniumchonk
+PR #53558 2026-08-24 open merged=None | [Core][Feat] Pluggable KVCacheConfigBuilder for platform/model-specific KV cache planning | wangxiyuan
+PR #53613 2026-08-24 closed merged=None | [Bugfix][Spec Decode] Order input prep after the previous step's spec-decode postprocess | amittell
+PR #53896 2026-08-26 closed merged=2026-08-31 | [Model] Support Qwen3.8-Flash-Next | peakcrosser7
+PR #53899 2026-08-26 closed merged=None | Support PLE-Offload for Qwen3.8-Flash-Next  | peakcrosser7
+PR #53911 2026-08-26 open merged=None | [Kernel] Fuse DeepEP-v2 decode globalize+align into one launch | elvircrn
+PR #53948 2026-08-26 open merged=None | [MRV2][PP] Defer sampled-result receives | chengchengpei
+IS #53960 2026-08-26 open  | [Bug]: VLLM_PLE_CPU_OFFLOAD deadlocks at kernel warmup on single GPU (TP=1) - Qwen3.8-Flash-Next on GB10/sm_121 | jdmays13
+PR #54049 2026-08-27 closed merged=2026-10-02 | [feat] FlashInfer CuteDSL MegaMoE integration  | jdebache
+PR #54076 2026-08-27 open merged=None | [Bugfix][V1] Use the Mamba cache group's block size for align-mode chunk splitting | wickist
+PR #54113 2026-08-27 closed merged=2026-10-08 | [Bugfix] Eliminate frontend ZMQ port TOCTOU with inherited listeners | BugenZhao
+PR #54163 2026-08-28 open merged=None | [Bugfix][Spec Decode] DFlash/DSpark no longer drop the last prefix-cache block (mamba align context recompute) | Ledgero
+IS #54237 2026-08-28 open  | [Bug]: 0.28.0 and 0.29.0 consume all host memory at start and freeze (OK with 0.27.1) | deuch
+IS #54506 2026-08-31 open  | [RFC]: Batch invariance for speculative decoding needs to cover the forward pass (M=1 vs M=k+1) | Leonccaa
+PR #54627 2026-08-31 open merged=None | [Core] Apply prefill_schedule_interval outside data parallelism | fululi12
+PR #54706 2026-09-01 closed merged=2026-10-03 | [ROCm][RDNA3] Fix W4A16 split-K accuracy and determinism | AIwork4me
+IS #54740 2026-09-01 open  | [Bug]: [XPU] gdn_attention asserts on ragged ngram draft lengths (single stream, survives #53077) | jbarrio
+PR #54857 2026-09-02 closed merged=2026-10-06 | [ROCm] Fuse MLA dual RMSNorm + FP8 group quant for DeepSeek-R1 | eky-amd
+IS #54906 2026-09-02 open  | [Bug]: thinking_token_budget ignored by Model Runner V2 with Qwen3.8 NVFP4 + MTP | ma-leezc
+PR #54979 2026-09-02 open merged=None | [Bugfix][V1] Register accepted spec-decode tokens before terminal cleanup | kamb-code
+PR #55272 2026-09-04 closed merged=2026-09-07 | [Qwen3.8-Flash-Next] Remove torch.compile for NVIDIA implementation | gau-nernst
+IS #55357 2026-09-04 open  | [Bug] Qwen3.8-Flash-Next (qwen4_exp) + MTP: episodic 0% draft acceptance + repetition collapse in thinking block until max_tokens (SM120, bf16 KV, nig | tgmerritt
+PR #55504 2026-09-05 open merged=None | [Bugfix] Bound GDN speculative decode query widths | DimensionSTP
+PR #55671 2026-09-07 open merged=None | [FlashInfer] Migrate autotune warmup to flashinfer.autotune_v2 managed cache | YangXu1990uiuc
+IS #55766 2026-09-07 open  | [Bug] Qwen3.5/3.8 hybrid GDN: NaN logits after a prefix-cache hit when the previous prefill ended 4-10 tokens past a block boundary (v0.28.0, mamba ca | manu-kerrigan
+PR #55937 2026-09-08 closed merged=2026-10-06 | [vllm-bench, feature] Added support for Mooncake-style, timed-traces replay. | roG0d
+PR #56050 2026-09-09 closed merged=2026-10-02 | [Bugfix][Quantization] Detect NVFP4 in ModelOpt mixed-precision checkpoints | stecasta
+IS #56088 2026-09-09 open  | [Bug]: qwen4_exp (Qwen3.8-Flash-Next) cannot serve DeepSpec DFlash/DSpark drafters: five blockers, patches available | seanphan
+## suffix decoding hybrid repo:vllm-project/vllm total=87
+IS #18037 2025-05-13 open  | [RFC]: Enabling Suffix Decoding, LSTM Speculator, Sequence Parallelism from Arctic Inference | sfc-gh-aqiao
+IS #20336 2025-07-01 closed  | [Roadmap] vLLM Roadmap Q3 2025 | simon-mo
+PR #20466 2025-07-04 closed merged=2025-07-17 | [Attention] Refactor attention metadata builder interface | LucasWilkinson
+PR #24344 2025-09-05 open merged=None | [Spec Decode][Hybrid] Add ngram-eagle SD method | ekagra-ranjan
+PR #25784 2025-09-26 closed merged=2025-11-03 | [Spec Decode] Integrate Suffix Decoding from Arctic Inference | aurickq
+IS #26376 2025-10-07 closed  | [Roadmap] vLLM Roadmap Q4 2025 | simon-mo
+PR #26807 2025-10-14 closed merged=None | [V1][Hybrid] GatedDeltaNet Automatic Prefix Caching (`all`-mode)  | simondanielsson
+IS #27433 2025-10-23 open  | [Feature]: Batch Invariant Feature and Performance Optimization | yewentao256
+PR #32951 2026-01-23 closed merged=2026-03-23 | [Async][Spec Decoding] Zero-bubble async scheduling + spec decoding | MatthewBonanni
+PR #34678 2026-02-17 closed merged=None | [GGUF][Model] Add Qwen3-Coder-Next GGUF support | rudybear
+IS #36094 2026-03-05 closed  | [Bug]: Qwen3.5 NVFP4 Checkpoint has poor accuracy | pavanimajety
+IS #36331 2026-03-07 closed  | [Bug]: 0% acceptance rate (MTP) with Qwen 3.5 122B (NVFP4) | ccdv-ai
+IS #39273 2026-04-08 open  | [Bug]: Ngram speculative decoding produces corrupted output on hybrid GDN (Qwen3.5) models | bhaktatejas922
+PR #39562 2026-04-11 closed merged=2026-06-08 | [Bugfix]: Fix assertion in MambaManager.allocate_slots() | Holworth
+PR #40704 2026-04-23 closed merged=2026-10-06 | [ModelRunner V2] Speculative Decoding NGram GPU Implementations | PatchouliTIS
+IS #40831 2026-04-24 closed  | [Bug]: TurboQuant KV × any speculative decoding (MTP or ngram) produces degenerate token loops — confirmed across dense and hybrid attention | noonghunna
+IS #40875 2026-04-25 closed  | [Bug]: ngram speculative decoding default prompt_lookup_min=2 causes tool-call output corruption on Qwen3-class models with structured output (config- | Sandermage
+IS #41559 2026-05-03 closed  | [Bug] DFlash speculative decoding fundamentally incompatible with all KV cache quantization (fp8, turboquant) due to non-causal attention requirement | seantechco
+PR #41834 2026-05-06 open merged=None | [New Model][Nvidia] Add SM12x support for DeepSeek V4 Flash with essential fixes | jasl
+IS #42259 2026-05-11 open  | [RFC]: Logprobs/Logits Semantics and Determinism Across the vLLM Ecosystem | aoshen02
+PR #42406 2026-05-12 closed merged=2026-06-29 | [Model Runner V2] support mamba hybrid models align prefix cache | izhuhaoran
+IS #42948 2026-05-18 open  | [Bug]: Prefix-cache 0% hit on re-sent request — DeepSeek-V4-Flash hybrid groups lose all first-block cache keys on every request reassignment (DSv4 va | manueldomke
+IS #43009 2026-05-18 open  | [Bug]: Triton kernel JIT compilation during inference | SurealCereal
+PR #43302 2026-05-21 closed merged=None | [KVConnector] Multi-storage replication for shared-prefix KV blocks (fixes #42948 cascade collapse) | manueldomke
+PR #44151 2026-06-01 closed merged=None | [Bugfix] PD: Don't transfer spec-decode lookahead blocks | njhill
+IS #44280 2026-06-02 open  | [Roadmap] Rust Frontend Feature Parity | BugenZhao
+PR #44297 2026-06-02 closed merged=2026-07-04 | [Bugfix][Structured Output][Spec Decode] Constrain bitmask and trim grammar advance at the reasoning boundary | yuyue0225sc
+IS #45238 2026-06-11 open  | [Bug]: Hybrid-model prefix caching silently drops to 0% when the align-mode Mamba checkpoint lands in request-unique tokens | Sahil170595
+PR #46426 2026-06-23 closed merged=None | [Model] Fix quantization config resolution for Gemma 4 MTP draft model | melcheikh
+IS #47194 2026-06-30 open  | [Bug]: Qwen3.6 hybrid model with prefix caching + MTP3 causes tool-call leakage and needle recall failure, while no-MTP path is correct[错误]： | YuYue1208
+IS #49548 2026-07-23 open  | [Performance]: Dynamic speculative decoding (num_speculative_tokens_per_batch_size) causes catastrophic aggregate-throughput collapse under concurrenc | tobby168
+IS #49986 2026-07-27 open  | [Perf] DSD arms pay a large baseline tax vs no-spec under production defaults; PIECEWISE override identified as one factor | seongyun1104
+PR #50897 2026-08-03 open merged=None | [Core][Spec Decode] Add lookahead-aware prefix cache hashing for EAGLE-style draft models | ZJY0516
+PR #51052 2026-08-04 closed merged=2026-09-20 | [KVConnector][MoRIIO] Transfer hybrid mamba/KDA recurrent state in READ mode | YukioZzz
+PR #51255 2026-08-06 closed merged=2026-08-12 | [Model] Add native Dots3 NOTE multimodal support | KurodaKanbei
+PR #51565 2026-08-09 closed merged=2026-09-22 | [Bugfix][GDN] Fix stateless first-chunk classification | taking-lying-flat
+PR #51787 2026-08-11 closed merged=2026-09-16 | [Bugfix][KV Offload] Track cache recency once per request | mindungil
+PR #52677 2026-08-18 open merged=None | [Reasoning] Break repeating reasoning loops by forcing the reasoning end sequence | amittell
+IS #52735 2026-08-18 closed  | [Bug]: OffloadingConnector stores but never serves when MTP/EAGLE speculative decoding is enabled (hybrid GDN model, XPU) | greglechin
+PR #52771 2026-08-18 closed merged=2026-09-07 | [Bugfix] OffloadingConnector: stop zeroing offload hits under MTP/EAGLE spec decode | kamb-code
+PR #52928 2026-08-19 closed merged=2026-09-30 | [Mamba] Add FlashInfer ReplaySSM support for MTP | askliar
+IS #53786 2026-08-25 open  | [Feature][KV cache] Support fine-grained prefix hits for sliding-window groups | Suppressor72
+PR #53945 2026-08-26 closed merged=2026-09-08 | [Bugfix][Spec Decode] Cache the Mamba state at the block-grid position of EAGLE resume | akshaver
+PR #54049 2026-08-27 closed merged=2026-10-02 | [feat] FlashInfer CuteDSL MegaMoE integration  | jdebache
+PR #54442 2026-08-30 closed merged=2026-10-01 | [Bugfix] Don't let a structured-output request sample from an unmasked row | ArcheyChen
+IS #54453 2026-08-30 open  | [Performance]: muse_glimmer makes decoding quadratic under structured output | valeriyischenko
+IS #54623 2026-08-31 open  | [Bug]: Qwen3.5 family never loads checkpoint KV-cache scales — fp8 KV silently runs at scale 1.0 even for calibrated checkpoints | erdholion
+PR #54627 2026-08-31 open merged=None | [Core] Apply prefill_schedule_interval outside data parallelism | fululi12
+PR #54706 2026-09-01 closed merged=2026-10-03 | [ROCm][RDNA3] Fix W4A16 split-K accuracy and determinism | AIwork4me
+PR #54934 2026-09-02 closed merged=2026-09-14 | [CI][CPU] Add speculative-decoding coverage to CPU CI | ganeshr10
+PR #55122 2026-09-03 open merged=None | [Kernel] persistent_topk: deterministic select, faster than the exact-topk workaround | jschmied
+IS #55279 2026-09-04 open  | [Bug]: DFlash2 (dflash method) deterministic cumulative OOB — engine dies with CUDA IMA / Xid 31 after ~11k decode steps under sampling load (sm_80, v | 13961121138
+PR #55876 2026-09-08 open merged=None | [3/3][Mamba] Batched two-phase grouped prefill execution for hybrid GDN/Mamba (+7.58x) | nicholaskh-ai
+PR #56050 2026-09-09 closed merged=2026-10-02 | [Bugfix][Quantization] Detect NVFP4 in ModelOpt mixed-precision checkpoints | stecasta
+PR #56273 2026-09-10 open merged=None | [Quantization] Support packed NVFP4 Qwen4Exp PLE embeddings | stecasta
+PR #56449 2026-09-11 closed merged=None | [KV Cache] Preserve EAGLE SWA replay blocks for external APC | wangyicong52
+PR #56531 2026-09-11 closed merged=2026-10-05 | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent | vadiklyutiy
+PR #56801 2026-09-14 closed merged=2026-10-05 | [watermark] compatibility validation | TQCB
+IS #57032 2026-09-15 open  | [Spec Decode][dflash] Drafter KV group is never identified, so prefix-cache reuse is silently disabled for the Mamba groups | Karl0007
+PR #57053 2026-09-15 closed merged=2026-10-05 | [Bugfix][MRV2][Spec Decode] Honor dynamic K in autoregressive speculators, 1.2~1.3x kernel perf improvement | yewentao256
+IS #57103 2026-09-16 open  | [RFC]: Programmable KV Cache: Composable Policies for Agentic Serving | zhhangBian
+PR #57325 2026-09-17 open merged=None | [Feature][KV Offload] Support joint GPU/CPU prefix cache lookup | iMMIQ
+PR #57441 2026-09-17 closed merged=2026-10-05 | feat: Add video support for the Transformers backend | harshaljanjani
+PR #57549 2026-09-18 open merged=None | [EPLB] Add EPLB support to dspark draft models (DeepSeekV4) | ilmarkov
+PR #57733 2026-09-20 open merged=None | [Model Loader] Run model-level post-load finalization from the loader hook | aoshen02
+PR #57789 2026-09-20 open merged=None | [Feature][KVEvents] Add state snapshots support | vMaroon
+PR #57875 2026-09-21 closed merged=2026-10-06 | [Profiler] Add per-session profiling controls to Python and Rust frontends | czhu-cohere
+PR #58165 2026-09-22 closed merged=2026-10-07 | [Bugfix]Fix FlashInfer warmup crash: autotune(tuning_buckets=...) must round M up, not down (Invalid MXFP8 split-K tactic with spec-decode) | ebfio
+PR #58181 2026-09-22 closed merged=2026-10-06 | [Frontend] Integer token IDs for generate output logprobs (GenerateLogProbs) | yinli-systems
+PR #58463 2026-09-23 closed merged=2026-10-06 | [Spec Decode] Remove eager metadata rebuild during MTP fused multi-step decode | TheEpicDolphin
+IS #58580 2026-09-24 open  | [Feature]: [Rust Frontend][Multimodal] Add Gemma 4 image support / multimodal model spec | etatros
+PR #59031 2026-09-28 closed merged=2026-10-05 | [Bugfix] Load stacked expert weights for non-gated MoE | roikoren755
+PR #59105 2026-09-28 closed merged=2026-10-05 | [Bugfix][Spec Decode] Reserve the bonus KV slot for fill-in DSpark | notimesea
+PR #59128 2026-09-29 closed merged=2026-10-06 | [Perf][MoE] Skip padded work in block-FP8 DeepGEMM experts | tlrmchlsmth
+PR #59132 2026-09-29 closed merged=2026-10-06 | [ROCM][Perf] Add ROCM_SEGMENTED_ATTN attention-backend works across RDNA3/3.5/4 | big-yellow-duck
+PR #59142 2026-09-29 closed merged=None | [Feature] Transfer bounded replay checkpoints from Prefill | wangyicong52
+PR #59149 2026-09-29 closed merged=2026-09-30 | [Hardware][Power] Enable W4A16 (AWQ & GPTQ) quantization on POWER10 using VSX | Rukhaiya2004
+PR #59160 2026-09-29 closed merged=2026-10-04 | [Feature] Release the CUDA graph pool on sleep | aoshen02
+PR #59293 2026-09-29 closed merged=2026-10-02 | [Bugfix][Spec Decode] Qualify Transformers backend attention layer names with the model prefix | Legend-2727
+PR #59550 2026-10-01 closed merged=2026-10-04 | [ROCm][Bugfix] Fix ROCM_ATTN sliding-window boundary | tangzzycc
+PR #59735 2026-10-02 closed merged=2026-10-02 | [Perf] Keep non-speculative GDN decode on the standard path | DimensionSTP
+IS #59823 2026-10-02 closed  | SimpleCPUOffloadConnector is queried on every request but never serves a hit on a hybrid GDN + full-attention model | mgabor3141
+IS #59926 2026-10-04 open  | [Bug] DeepSeek-V4-Flash tool-call format failures associated with prefix-cache reuse; worst for short cached head + long uncached suffix; `cache_salt` | kukjun
+PR #59965 2026-10-04 closed merged=2026-10-07 | [ROCm][DCP] Default MLA DCP verify to the round-robin asm decode where it applies | hyukjlee
+PR #60071 2026-10-05 closed merged=2026-10-06 | [Bugfix][KV Offload] Honor speculative cacheability in SimpleCPU | SherifWaly
+IS #60366 2026-10-07 open  | [RFC]: Bounded prefix reuse for target-token prefill scoring | LinzeShi
+PR #60397 2026-10-07 open merged=None | [ROCm][Perf][DSv4.1] Mono decode layer for DeepSeek-V4.1-Flash on MI355X | Fangzhou-Ai
+## ngram Qwen3-Next repo:vllm-project/vllm total=174
+PR #24799 2025-09-13 closed merged=2025-11-17 | [Core] Async Scheduling X Spec Decoding Compatibility | Ronald1995
+IS #26372 2025-10-07 closed  | [Bug]: vLLM engine fails with error: 'ValueError: Counters can only be incremented by non-negative amounts.' | Blaze-DSP
+PR #34722 2026-02-17 closed merged=None | fix(spec): extend vocab size validation to MTP and Eagle methods | timon0305
+IS #35288 2026-02-25 open  | [Bug]: MTP speculative decoding produces corrupted output at concurrency >= 4 (V1 engine) | dkremez
+IS #40124 2026-04-17 open  | [Bug/Feature] TurboQuant + Hybrid MoE (Qwen3.6-35B-A3B) broken on Ampere (SM 80-86) — 13 patches with fixes | Sandermage
+IS #40554 2026-04-21 closed  | [AMD][CI Failure][Tracker] Static dashboard tracker for current CI failures | AndreasKaratzas
+PR #40704 2026-04-23 closed merged=2026-10-06 | [ModelRunner V2] Speculative Decoding NGram GPU Implementations | PatchouliTIS
+IS #40831 2026-04-24 closed  | [Bug]: TurboQuant KV × any speculative decoding (MTP or ngram) produces degenerate token loops — confirmed across dense and hybrid attention | noonghunna
+IS #40880 2026-04-25 closed  | [Bug]: MTP × TurboQuant × CUDA graph capture produces degenerate output on Qwen3-Next hybrid (not closed by v7.13 ngram fix tree) | noonghunna
+IS #42744 2026-05-15 open  | [Bug]: rejection sampler skips argmax-invariant procs — patching the min_p/logit_bias 400 alone is insufficient | camerono
+IS #43357 2026-05-21 open  | [Bug]: TurboQuant workspace locked at 3.06 MB — continuation_prefill requires 12 MB on any prompt >4096 tokens (Qwen3.6-27B NVFP4 hybrid, Blackwell SM | s1zad
+PR #44972 2026-06-09 closed merged=2026-08-02 | [Test][V1] Add sleep/wake correctness regression test for hybrid GDN/… | chun-wan
+IS #46295 2026-06-21 open  | [RFC]: Adaptive Speculation Depth for MoE Models via Per-Iteration Utility Budgeting | Mattral
+PR #46426 2026-06-23 closed merged=None | [Model] Fix quantization config resolution for Gemma 4 MTP draft model | melcheikh
+PR #46963 2026-06-28 closed merged=2026-10-07 | [Attention] Support NVFP4 KV cache on SM8x and SM12x with FlashInfer | lesj0610
+PR #48039 2026-07-08 closed merged=2026-10-07 | [Bugfix][Scheduler] Let pooling chunked prefill use full context | TommyTranX
+PR #48962 2026-07-17 closed merged=2026-10-06 | [Build] Migrate vendored DeepGEMM from pybind to TORCH_LIBRARY (abi3) | cleonard530
+PR #49194 2026-07-20 closed merged=2026-10-06 | [Perf][MoE] Eliminate staging from NCCL symmetric reduce-scatter | samnordmann
+IS #49224 2026-07-20 closed  | [Bug]: Model Runner V2 (now default for dense models) skips CUDA graph memory reservation — `profile_cudagraph_memory()` returns 0, causing OOM during | anhtra3889
+IS #49918 2026-07-26 open  | [Bug]: Prefill with prompt length == 1 + num_speculative_tokens misclassified as uniform decode → FULL spec-verify cudagraph skips GDN/hybrid recurren | avesed
+PR #50415 2026-07-30 open merged=None | Add MoNe experts pruning support | ieBoytsov
+PR #50897 2026-08-03 open merged=None | [Core][Spec Decode] Add lookahead-aware prefix cache hashing for EAGLE-style draft models | ZJY0516
+PR #51018 2026-08-04 closed merged=2026-10-08 | [BugFix] Pick the DP world-group port at bind time via the coordination store | aoshen02
+PR #51156 2026-08-05 open merged=None | [Bugfix][Spec Decode] Bound draft max_model_len by the target before logging | adityasingh2400
+PR #51769 2026-08-11 open merged=None | [Misc] Warn when EAGLE/MTP speculation costs a large prefix-cache hit | WhiteJonas
+PR #52183 2026-08-13 open merged=None | [Core] Update PyTorch to 2.14.1, torchvision to 0.29.1, triton to 3.8.0 (release channel) | atalman
+IS #52873 2026-08-19 closed  | [Bug]: Qwen3-Next GDN + MTP: crossing sequence position 32768 permanently kills draft acceptance engine-wide (0% until restart) | noonghunna
+PR #52942 2026-08-19 open merged=None | [Bugfix] Fix stale mamba/GDN states with ngram spec decode on hybrid … | sunnyxiaohu
+PR #53065 2026-08-20 closed merged=2026-10-07 | [XPU][MoE] Tune Triton fused MoE for Intel XPU | pmanczak
+PR #53229 2026-08-21 closed merged=None | [Bugfix][Hardware][XPU] Fix token-indexed GDN conv state copies | recutita
+PR #53896 2026-08-26 closed merged=2026-08-31 | [Model] Support Qwen3.8-Flash-Next | peakcrosser7
+PR #53899 2026-08-26 closed merged=None | Support PLE-Offload for Qwen3.8-Flash-Next  | peakcrosser7
+IS #53908 2026-08-26 open  | [Feature]: Support auxiliary-GPU offloading for Qwen3.8-Flash-Next N-gram / PLE embeddings | sczhengyabin
+PR #53911 2026-08-26 open merged=None | [Kernel] Fuse DeepEP-v2 decode globalize+align into one launch | elvircrn
+PR #53948 2026-08-26 open merged=None | [MRV2][PP] Defer sampled-result receives | chengchengpei
+IS #53960 2026-08-26 open  | [Bug]: VLLM_PLE_CPU_OFFLOAD deadlocks at kernel warmup on single GPU (TP=1) - Qwen3.8-Flash-Next on GB10/sm_121 | jdmays13
+PR #54076 2026-08-27 open merged=None | [Bugfix][V1] Use the Mamba cache group's block size for align-mode chunk splitting | wickist
+PR #54113 2026-08-27 closed merged=2026-10-08 | [Bugfix] Eliminate frontend ZMQ port TOCTOU with inherited listeners | BugenZhao
+PR #54129 2026-08-28 closed merged=None | [Model] Support disk-backed (mmap) PLE table for Qwen3.8-Flash-Next (VLLM_PLE_MMAP) | Trosfy
+IS #54219 2026-08-28 open  | [Bug]: fp8e4nv data type error on A100 | Alireza3242
+IS #54237 2026-08-28 open  | [Bug]: 0.28.0 and 0.29.0 consume all host memory at start and freeze (OK with 0.27.1) | deuch
+PR #54371 2026-08-29 closed merged=2026-09-09 | [Qwen4Exp] Support UVA PLE-offload and Engram tensor parallelism | peakcrosser7
+IS #54437 2026-08-30 open  | [Bug]: structured output can sample unconstrained tokens when the draft hand-off goes stale (spec decode + async scheduling + PP) | ArcheyChen
+IS #54552 2026-08-31 open  | Qwen4Exp: QSA ring assert makes num_speculative_tokens 5..8 unreachable on all block sizes | jschmied
+PR #54627 2026-08-31 open merged=None | [Core] Apply prefill_schedule_interval outside data parallelism | fululi12
+PR #54706 2026-09-01 closed merged=2026-10-03 | [ROCm][RDNA3] Fix W4A16 split-K accuracy and determinism | AIwork4me
+IS #54709 2026-09-01 open  | [Bug]: Qwen4Exp (Qwen3.8-Flash-Next) hard-refuses PP>1 for any PLE checkpoint, and its MTP draft head branches on the global `is_first_rank` | hackxixi
+PR #54722 2026-09-01 closed merged=2026-09-02 | [Qwen4] validate FP8 PLE weight scale after loading | peakcrosser7
+IS #54740 2026-09-01 open  | [Bug]: [XPU] gdn_attention asserts on ragged ngram draft lengths (single stream, survives #53077) | jbarrio
+IS #54765 2026-09-01 open  | [Bug]: Qwen3.8-Flash-Next: ModelOpt NVFP4 checkpoint with an FP8-quantized PLE n-gram table fails to load (ngram_embedding.weight_scale) | dermodmaster
+PR #54776 2026-09-01 open merged=None | [ROCm] Fix APU unified-memory accounting across GTT and host pressure | sstamenk
+PR #54835 2026-09-01 closed merged=2026-10-06 | [Bugfix][Frontend] Apply model-default reasoning parser in GPU-less render server | shimib
+PR #55040 2026-09-03 open merged=None | [Qwen4Exp][ROCm] Support FP8 PLE n-gram checkpoints on the AMD path | jebchowDCGPU
+PR #55272 2026-09-04 closed merged=2026-09-07 | [Qwen3.8-Flash-Next] Remove torch.compile for NVIDIA implementation | gau-nernst
+PR #55334 2026-09-04 closed merged=None | [Bugfix][Quantization] Load the FP8 PLE n-gram table under a ModelOpt NVFP4 checkpoint | stecasta
+IS #55357 2026-09-04 open  | [Bug] Qwen3.8-Flash-Next (qwen4_exp) + MTP: episodic 0% draft acceptance + repetition collapse in thinking block until max_tokens (SM120, bf16 KV, nig | tgmerritt
+PR #55684 2026-09-07 closed merged=2026-10-06 | [Quantization] Layer re-quantization for linear layers through online quantization API (MXFP8 -> FP8 PTPC showcase) | fxmarty-amd
+PR #55686 2026-09-07 open merged=None | [Quantization] Enable shared expert fusion compatibility with online `shared_expert` quantization (showcase: along Quark MXFP4 routed experts) | fxmarty-amd
+PR #55937 2026-09-08 closed merged=2026-10-06 | [vllm-bench, feature] Added support for Mooncake-style, timed-traces replay. | roG0d
+IS #56088 2026-09-09 open  | [Bug]: qwen4_exp (Qwen3.8-Flash-Next) cannot serve DeepSpec DFlash/DSpark drafters: five blockers, patches available | seanphan
+IS #56272 2026-09-10 open  | [Feature] Support packed NVFP4 PLE tables in Qwen4Exp | stecasta
+PR #56273 2026-09-10 open merged=None | [Quantization] Support packed NVFP4 Qwen4Exp PLE embeddings | stecasta
+PR #56318 2026-09-10 closed merged=2026-10-06 | [Metrics] Expose cached prompt tokens by cache tier | cquil11
+PR #56326 2026-09-10 open merged=None | [Model][Hardware][AMD] Fuse AR + RMSNorm + Per-token Quant for DeepSeek R1 | farlukas
+PR #56531 2026-09-11 closed merged=2026-10-05 | [Bugfix] Route every speculation-capable row through the speculative path so recurrent state stays consistent | vadiklyutiy
+PR #56679 2026-09-13 closed merged=2026-10-03 | [ROCm][CI] Extend AMD coverage for distributed, model, and eval tests | AndreasKaratzas
+PR #56740 2026-09-14 closed merged=2026-10-07 | [quantization] Add per-token NVFP4 quantization MoE support for ReLU2 | xuantengh
+PR #56801 2026-09-14 closed merged=2026-10-05 | [watermark] compatibility validation | TQCB
+IS #56815 2026-09-14 closed  | [Bug]: Silent ctx-load decode flake on single-GPU Qwen4Exp PLE CPU-offload — nightly range eed1f3d0→dc36fcce (#56512 ruled out) | wombat
+PR #56971 2026-09-15 open merged=None | [KV Connector] Save decode-phase Mamba states and fingerprint MooncakeStoreConnector keys | CAICAIIs
+PR #56984 2026-09-15 closed merged=2026-10-03 | [Feature] Per-row candidate IDs for prefill token scoring (M2 of #56860) | aoshen02
+PR #56997 2026-09-15 closed merged=2026-10-06 | [Quantization] Prefer Humming before Marlin backends on SM90 | jinzhen-lin
+PR #57057 2026-09-15 closed merged=2026-10-06 | [Attention] Add UltraQuant 4-bit KV cache backend (FlyDSL D=256) | aditi-amd
+PR #57092 2026-09-16 open merged=None | [Bugfix] Make online FP8 MoE experts batch-invariant under VLLM_BATCH_INVARIANT | ybwbqg9379
+PR #57294 2026-09-17 open merged=None | [CPU] Add Qwen3.8-Flash-Next CPU backend | tianmu-li
+PR #57329 2026-09-17 closed merged=2026-10-06 | [Feat][Mamba2] Enable internal prefill checkpoints | roikoren755
+PR #57441 2026-09-17 closed merged=2026-10-05 | feat: Add video support for the Transformers backend | harshaljanjani
+PR #57497 2026-09-18 closed merged=2026-09-25 | [Qwen4Exp][ROCm] PLE n-gram table CPU offload | mrodden
+PR #57560 2026-09-18 closed merged=2026-10-07 | [ROCm][Perf] Add AITER FlyDSL GDN prefill backend | mjkvaak-amd
+IS #57721 2026-09-19 closed  | [Bug]: Mamba-hybrid models cannot start with speculative decoding. Mamba page padding is planned without the speculative widening | Yunzez
+PR #57733 2026-09-20 open merged=None | [Model Loader] Run model-level post-load finalization from the loader hook | aoshen02
+IS #57759 2026-09-20 open  | [Bug]: FULL_AND_PIECEWISE capture fails intermittently with cudaErrorNotPermitted when Engram PLE cpu_offload is enabled under load | quanliu1991
+PR #57785 2026-09-20 open merged=None | [Bugfix] Join side-stream work before resuming breakable CUDA graph c… | quanliu1991
+PR #57849 2026-09-21 closed merged=2026-10-08 | [Frontend] Consolidate rl entrypoints. | noooop
+PR #57875 2026-09-21 closed merged=2026-10-06 | [Profiler] Add per-session profiling controls to Python and Rust frontends | czhu-cohere
+PR #58053 2026-09-22 closed merged=2026-10-08 | [Refactor] Abstract DeepGemm MegaMOE backend | huishi-hs
+PR #58088 2026-09-22 closed merged=2026-10-07 | [Bugfix][KV Offload] Restore KVCR construction through the secondary-tier factory | ai-yang
+PR #58124 2026-09-22 closed merged=2026-10-07 | [Bugfix][Model Loader] Support reload_weights with runai_streamer load format | viktorkou
+PR #58181 2026-09-22 closed merged=2026-10-06 | [Frontend] Integer token IDs for generate output logprobs (GenerateLogProbs) | yinli-systems
+PR #58356 2026-09-23 open merged=None | [Perf][Spec Decode] Drop the per-request .item() from the ngram_gpu draft-trim loop | ZhengGong-amd
+PR #58373 2026-09-23 closed merged=2026-10-07 | [Bugfix] Widen ep_gather output offset to int64 | robertgshaw2-redhat
+PR #58381 2026-09-23 open merged=None | [ROCm][MLA] Cut ~21x host dispatch from the MLA metadata build | fululi12
+PR #58439 2026-09-23 open merged=None | [Qwen4Exp] Checkpoint-mapped PLE storage for unified-memory GPUs (DGX Spark) | jschmied
+IS #58441 2026-09-23 closed  | [Bug]: Qwen4Exp PinnedHost PLE prefetch reads n-gram ids from graph-pool memory that later segments reuse | jschmied
+PR #58463 2026-09-23 closed merged=2026-10-06 | [Spec Decode] Remove eager metadata rebuild during MTP fused multi-step decode | TheEpicDolphin
+PR #58584 2026-09-24 closed merged=2026-10-08 | [ROCm][Perf][GLM-5.3-Flash] BF16 splitk kernel for sparse MLA decode | simondanielsson
+PR #58625 2026-09-24 open merged=None | [Core] Add --release-weight-page-cache to drop checkpoint pages after load | vMaroon
+PR #58676 2026-09-25 open merged=None | [Test][Hybrid] Add TP2 Mamba2 prefix-cache hit regression | Taimys
+IS #58688 2026-09-25 open  | [Bug][ROCm]: Qwen3.8-Flash-Next-FP8 cannot load on ROCm, the AMD Qwen4ExpNGramEmbedding has no FP8 weight_scale | JPedro2
+PR #58761 2026-09-25 open merged=None | [ROCm][CI] Make ROCm 10.0 the default image; keep ROCm 7.2 as -rocm72 | Rohan138
